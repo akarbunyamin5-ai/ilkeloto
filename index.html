@@ -1,38 +1,78 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>İlkel Oto</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>İlkel Oto</title>
 </head>
 <body>
 
-<div class="container">
-<h1>🚗 İlkel Oto</h1>
+<h1>İlkel Oto</h1>
 <p>Onaylı ilanlar</p>
 
 <div id="ilanlar"></div>
 
-<div class="nav">
-  <a href="ilan-ver.html">➕ İlan Ver</a> |
-  <a href="admin-login.html">🔐 Admin</a>
-</div>
-</div>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    query,
+    where
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<script>
-const ilanlar = JSON.parse(localStorage.getItem("ilanlar") || "[]");
-const alan = document.getElementById("ilanlar");
+  // 🔥 FIREBASE CONFIG
+  const firebaseConfig = {
+    apiKey: "AIzaSyDp3wjVF9w3MTF0B1o4Jcdc_H9nvlqSY8",
+    authDomain: "ilkeloto.firebaseapp.com",
+    projectId: "ilkeloto",
+    storageBucket: "ilkeloto.appspot.com",
+    messagingSenderId: "503658235063",
+    appId: "1:503658235063:web:e271d2bc989be290b97932"
+  };
 
-ilanlar.filter(i => i.durum === "onayli").forEach(i => {
-  alan.innerHTML += `
-  <div class="card">
-    <img src="${i.foto}" style="width:100%;height:180px;object-fit:cover;border-radius:4px">
-    <b>${i.marka} ${i.model}</b><br>
-    Yıl: ${i.yil} | KM: ${i.km}<br>
-    <b>${i.fiyat} ₺</b><br>
-    📞 ${i.tel}
-  </div>`;
-});
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const ilanlarDiv = document.getElementById("ilanlar");
+
+  async function ilanlariGetir() {
+    ilanlarDiv.innerHTML = "";
+
+    const q = query(
+      collection(db, "ilanlar"),
+      where("Durum", "==", "onayli")
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      ilanlarDiv.innerHTML = "<p>Henüz onaylı ilan yok.</p>";
+      return;
+    }
+
+    snapshot.forEach((docSnap) => {
+      const d = docSnap.data();
+
+      const div = document.createElement("div");
+      div.style.border = "1px solid #000";
+      div.style.margin = "10px";
+      div.style.padding = "10px";
+
+      div.innerHTML = `
+        <h3>${d.Marka} ${d.Model}</h3>
+        <b>Yıl:</b> ${d.Yil}<br>
+        <b>Kilometre:</b> ${d.Km}<br>
+        <b>Fiyat:</b> ${d.Fiyat} ₺<br>
+        <b>Telefon:</b> ${d.Gsm}
+      `;
+
+      ilanlarDiv.appendChild(div);
+    });
+  }
+
+  ilanlariGetir();
 </script>
 
 </body>
