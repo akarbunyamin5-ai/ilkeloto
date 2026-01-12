@@ -1,62 +1,76 @@
-<script type="module">
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<title>İlkel Oto</title>
+<style>
+body { font-family: Arial; margin:0; background:#f5f5f5 }
+header, footer { background:#000; color:#fff; padding:20px; text-align:center }
+.container { padding:20px }
+.ilan { background:#fff; padding:15px; margin-bottom:10px; border-radius:6px }
+</style>
+</head>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<body>
 
-console.log("🔥 Firebase script çalıştı");
+<header>
+  <h1>İLKEL OTO</h1>
+  <p>Onaylı Sahibinden İlanlar</p>
+</header>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDp3wJVF9w3MTFt0B1o4Jcdc_H9nvlqSY8",
-  authDomain: "ilkeloto.firebaseapp.com",
-  projectId: "ilkeloto",
-  storageBucket: "ilkeloto.appspot.com",
-  messagingSenderId: "503658235063",
-  appId: "1:503658235063:web:e271d2bc989be290b97932"
-};
+<div class="container" id="ilanlar">
+  Yükleniyor...
+</div>
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+<footer>
+  © 2026 İlkel Oto
+</footer>
 
-console.log("📡 Firestore bağlandı");
+<!-- 🔥 FIREBASE (CDN – EN STABİL YOL) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-const ilanlarDiv = document.getElementById("ilanlar");
+<script>
+  // 🔐 Firebase config (SENİN PROJENDEN)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDp3wjVF9w3MTt0B1o4Jcdc_H9nvlqSY8",
+    authDomain: "ilkeloto.firebaseapp.com",
+    projectId: "ilkeloto"
+  };
 
-async function ilanlariGetir() {
-  const q = query(
-    collection(db, "ilanlar"),
-    where("Durum", "==", "onayli")
-  );
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-  const snapshot = await getDocs(q);
-
-  console.log("📦 Gelen ilan sayısı:", snapshot.size);
-
-  if (snapshot.empty) {
-    ilanlarDiv.innerHTML = "Henüz onaylı ilan yok.";
-    return;
-  }
-
+  const ilanlarDiv = document.getElementById("ilanlar");
   ilanlarDiv.innerHTML = "";
 
-  snapshot.forEach(doc => {
-    const d = doc.data();
-    ilanlarDiv.innerHTML += `
-      <div style="border:1px solid #ccc; padding:10px; margin:10px">
-        <b>${d.Marka} ${d.Model}</b><br>
-        Yıl: ${d.Yil} | Km: ${d.Km}<br>
-        Fiyat: ${d.Fiyat} TL<br>
-        Tel: ${d.Gsm}
-      </div>
-    `;
-  });
-}
+  db.collection("ilanlar")
+    .where("Durum", "==", "onaylı")
+    .get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        ilanlarDiv.innerHTML = "Henüz onaylı ilan yok.";
+        return;
+      }
 
-ilanlariGetir();
-
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        ilanlarDiv.innerHTML += `
+          <div class="ilan">
+            <b>${d.Marka} ${d.Model}</b><br>
+            Yıl: ${d.Yil}<br>
+            KM: ${d.Km}<br>
+            Fiyat: ${d.Fiyat} ₺<br>
+            Tel: ${d.Gsm}
+          </div>
+        `;
+      });
+    })
+    .catch(err => {
+      ilanlarDiv.innerHTML = "Hata: " + err.message;
+      console.error(err);
+    });
 </script>
+
+</body>
+</html>
