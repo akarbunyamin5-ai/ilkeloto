@@ -3,15 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <title>İlkel Oto</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #111;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .ilanlar {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+    }
+
+    .ilan {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .ilan h3 {
+      margin: 0 0 10px;
+      color: #333;
+    }
+
+    .fiyat {
+      font-size: 20px;
+      font-weight: bold;
+      color: #0a7;
+      margin: 10px 0;
+    }
+
+    .etiket {
+      background: #eee;
+      padding: 5px 8px;
+      margin-right: 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      display: inline-block;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #111;
+      color: #fff;
+      margin-top: 30px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>İlkel Oto</h1>
-<p>Onaylı ilanlar</p>
+<header>
+  <h1>İLKEL OTO</h1>
+  <p>Onaylı Sahibinden İlanlar</p>
+</header>
 
-<div id="ilanlar"></div>
+<div class="container">
+  <div class="ilanlar" id="ilanlar"></div>
+</div>
 
-<!-- Firebase SDK -->
+<footer>
+  © 2026 İlkel Oto
+</footer>
+
+<!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
@@ -22,7 +94,6 @@
     where
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // 🔥 FIREBASE CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyDp3wjVF9w3MTF0B1o4Jcdc_H9nvlqSY8",
     authDomain: "ilkeloto.firebaseapp.com",
@@ -38,8 +109,6 @@
   const ilanlarDiv = document.getElementById("ilanlar");
 
   async function ilanlariGetir() {
-    ilanlarDiv.innerHTML = "";
-
     const q = query(
       collection(db, "ilanlar"),
       where("Durum", "==", "onayli")
@@ -48,24 +117,25 @@
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
-      ilanlarDiv.innerHTML = "<p>Henüz onaylı ilan yok.</p>";
+      ilanlarDiv.innerHTML = "<p>Henüz ilan yok.</p>";
       return;
     }
 
-    snapshot.forEach((docSnap) => {
+    snapshot.forEach(docSnap => {
       const d = docSnap.data();
 
       const div = document.createElement("div");
-      div.style.border = "1px solid #000";
-      div.style.margin = "10px";
-      div.style.padding = "10px";
+      div.className = "ilan";
 
       div.innerHTML = `
         <h3>${d.Marka} ${d.Model}</h3>
-        <b>Yıl:</b> ${d.Yil}<br>
-        <b>Kilometre:</b> ${d.Km}<br>
-        <b>Fiyat:</b> ${d.Fiyat} ₺<br>
-        <b>Telefon:</b> ${d.Gsm}
+
+        <span class="etiket">${d.Yil}</span>
+        <span class="etiket">${d.Km} km</span>
+
+        <div class="fiyat">${d.Fiyat} ₺</div>
+
+        <p><b>Telefon:</b> ${d.Gsm}</p>
       `;
 
       ilanlarDiv.appendChild(div);
