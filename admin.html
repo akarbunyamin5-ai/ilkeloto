@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin Panel</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -12,57 +13,49 @@ if(localStorage.getItem("admin")!=="1"){
 }
 </script>
 
-<h1>Admin Panel</h1>
+<div class="container">
+<h2>Admin Panel</h2>
 
-<button onclick="hepsiniSil()">🗑 TÜM İLANLARI SİL</button>
-<button onclick="cikis()">Çıkış</button>
+<button class="btn-danger" onclick="hepsiniSil()">🗑 Tümünü Sil</button>
+<button class="btn" onclick="cikis()">Çıkış</button>
+
 <hr>
-
 <div id="liste"></div>
+</div>
 
 <script>
-let ilanlar = JSON.parse(localStorage.getItem("ilanlar") || "[]");
-const alan = document.getElementById("liste");
+let ilanlar=JSON.parse(localStorage.getItem("ilanlar")||"[]");
+const alan=document.getElementById("liste");
 
 function ciz(){
   alan.innerHTML="";
   ilanlar.forEach((i,index)=>{
     alan.innerHTML+=`
-    <div style="border:1px solid #aaa;padding:10px;margin-bottom:10px">
+    <div class="card">
       <b>${i.marka} ${i.model}</b><br>
       Yıl:${i.yil} KM:${i.km}<br>
       Fiyat:${i.fiyat} ₺<br>
       Tel:${i.tel}<br>
-      Durum: ${i.durum}<br><br>
-      <button onclick="onayla(${index})">Onayla</button>
-      <button onclick="sil(${index})">Sil</button>
+      Durum:${i.durum}<br><br>
+      <button class="btn-success" onclick="onayla(${index})">Onayla</button>
+      <button class="btn-danger" onclick="sil(${index})">Sil</button>
     </div>`;
   });
 }
 
-function onayla(i){
-  ilanlar[i].durum="onayli";
-  kaydet();
-}
-
-function sil(i){
-  ilanlar.splice(i,1);
-  kaydet();
-}
-
+function onayla(i){ ilanlar[i].durum="onayli"; kaydet(); }
+function sil(i){ ilanlar.splice(i,1); kaydet(); }
 function hepsiniSil(){
   if(confirm("Hepsi silinsin mi?")){
-    localStorage.removeItem("ilanlar");
     ilanlar=[];
+    localStorage.removeItem("ilanlar");
     ciz();
   }
 }
-
 function kaydet(){
   localStorage.setItem("ilanlar",JSON.stringify(ilanlar));
   ciz();
 }
-
 function cikis(){
   localStorage.removeItem("admin");
   location.href="admin-login.html";
