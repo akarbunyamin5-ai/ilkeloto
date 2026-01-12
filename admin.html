@@ -2,16 +2,62 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Panel</title>
+  <title>İlkel Oto – Admin Panel</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      margin: 0;
+    }
+    header {
+      background: #000;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+    }
+    .card {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+    .onay {
+      background: green;
+      color: white;
+    }
+    .sil {
+      background: crimson;
+      color: white;
+    }
+    .durum {
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Admin Panel</h1>
-<p>Gelen ilanlar (onayla / sil)</p>
+<header>
+  <h1>ADMIN PANEL</h1>
+  <p>İlan Onay / Silme</p>
+</header>
 
-<div id="ilanlar"></div>
+<div class="container" id="ilanlar">
+  Yükleniyor...
+</div>
 
-<!-- Firebase SDK -->
+<!-- 🔥 FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
@@ -23,9 +69,9 @@
     deleteDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // 🔥 FIREBASE CONFIG (SENİN PROJENDEN)
+  // 🔑 Firebase config (SENİN PROJENDEN)
   const firebaseConfig = {
-    apiKey: "AIzaSyDp3wjVF9w3MTF0B1o4Jcdc_H9nvlqSY8",
+    apiKey: "AIzaSyDp3wJVF9w3MTf0B1o4Jcdc_H9nvlqSY8",
     authDomain: "ilkeloto.firebaseapp.com",
     projectId: "ilkeloto",
     storageBucket: "ilkeloto.appspot.com",
@@ -40,45 +86,52 @@
 
   async function ilanlariGetir() {
     ilanlarDiv.innerHTML = "";
-    const querySnapshot = await getDocs(collection(db, "ilanlar"));
+    const snapshot = await getDocs(collection(db, "ilanlar"));
 
-    querySnapshot.forEach((docSnap) => {
+    if (snapshot.empty) {
+      ilanlarDiv.innerHTML = "Hiç ilan yok.";
+      return;
+    }
+
+    snapshot.forEach(docSnap => {
       const d = docSnap.data();
+      const id = docSnap.id;
 
       const div = document.createElement("div");
-      div.style.border = "1px solid #ccc";
-      div.style.margin = "10px";
-      div.style.padding = "10px";
+      div.className = "card";
 
       div.innerHTML = `
-        <b>${d.Marka} ${d.Model}</b><br>
-        Yıl: ${d.Yil}<br>
-        KM: ${d.Km}<br>
-        Fiyat: ${d.Fiyat} ₺<br>
-        Telefon: ${d.Gsm}<br>
-        Durum: <b>${d.Durum || "bekliyor"}</b><br><br>
-
-        <button onclick="onayla('${docSnap.id}')">Onayla</button>
-        <button onclick="sil('${docSnap.id}')">Sil</button>
+        <h3>${d.Marka} ${d.Model}</h3>
+        <p>Yıl: ${d.Yil}</p>
+        <p>KM: ${d.Km}</p>
+        <p>Fiyat: ${d.Fiyat} ₺</p>
+        <p>Telefon: ${d.Gsm}</p>
+        <p class="durum">Durum: ${d.Durum}</p>
+        <button class="onay">Onayla</button>
+        <button class="sil">Sil</button>
       `;
+
+      // ✅ ONAYLA
+      div.querySelector(".onay").onclick = async () => {
+        await updateDoc(doc(db, "ilanlar", id), {
+          Durum: "onaylı"
+        });
+        alert("İlan ONAYLANDI");
+        ilanlariGetir();
+      };
+
+      // ❌ SİL
+      div.querySelector(".sil").onclick = async () => {
+        if (confirm("İlan silinsin mi?")) {
+          await deleteDoc(doc(db, "ilanlar", id));
+          alert("İlan SİLİNDİ");
+          ilanlariGetir();
+        }
+      };
 
       ilanlarDiv.appendChild(div);
     });
   }
-
-  window.onayla = async function (id) {
-    const ref = doc(db, "ilanlar", id);
-    await updateDoc(ref, { Durum: "onayli" });
-    alert("İlan onaylandı");
-    ilanlariGetir();
-  };
-
-  window.sil = async function (id) {
-    if (!confirm("İlan silinsin mi?")) return;
-    await deleteDoc(doc(db, "ilanlar", id));
-    alert("İlan silindi");
-    ilanlariGetir();
-  };
 
   ilanlariGetir();
 </script>
