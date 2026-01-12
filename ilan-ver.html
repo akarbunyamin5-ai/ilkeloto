@@ -3,39 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <title>İlan Ver</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>İlan Ver</h1>
-<p>Sadece ilk sahibinden otomobiller kabul edilir.</p>
+<div class="container">
+<h2>➕ İlan Ver</h2>
 
-<input id="marka" placeholder="Marka"><br><br>
-<input id="model" placeholder="Model"><br><br>
-<input id="yil" placeholder="Yıl"><br><br>
-<input id="km" placeholder="Kilometre"><br><br>
-<input id="fiyat" placeholder="Fiyat"><br><br>
-<input id="tel" placeholder="Telefon"><br><br>
+<input id="marka" placeholder="Marka">
+<input id="model" placeholder="Model">
+<input id="yil" placeholder="Yıl">
+<input id="km" placeholder="Kilometre">
+<input id="fiyat" placeholder="Fiyat">
+<input id="tel" placeholder="Telefon">
 
-<button onclick="gonder()">İlanı Gönder</button>
+<button class="btn" onclick="gonder()">İlanı Gönder</button>
+</div>
 
 <script>
-function gonder() {
-  const ilan = {
-    marka: marka.value,
-    model: model.value,
-    yil: yil.value,
-    km: km.value,
-    fiyat: fiyat.value,
-    tel: tel.value,
-    durum: "bekliyor"
+function gonder(){
+  const ilan={
+    marka:marka.value,
+    model:model.value,
+    yil:yil.value,
+    km:km.value,
+    fiyat:fiyat.value,
+    tel:tel.value,
+    durum:"bekliyor"
   };
-
-  const ilanlar = JSON.parse(localStorage.getItem("ilanlar") || "[]");
+  const ilanlar=JSON.parse(localStorage.getItem("ilanlar")||"[]");
   ilanlar.push(ilan);
-  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
-
-  alert("İlan kaydedildi! Admin onayı bekleniyor.");
-  location.href = "index.html";
+  localStorage.setItem("ilanlar",JSON.stringify(ilanlar));
+  alert("İlan gönderildi, admin onayı bekleniyor.");
+  location.href="index.html";
 }
 </script>
 
