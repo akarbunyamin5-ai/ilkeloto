@@ -1,39 +1,58 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>İlan Ver</title>
+<meta charset="UTF-8">
+<title>İlan Ver</title>
 </head>
 <body>
 
-<h1>İlan Ver</h1>
-<p>Sadece ilk sahibinden otomobiller kabul edilir.</p>
+<h2>İlan Ver</h2>
 
-<form id="ilanForm">
-  <label>Marka</label><br>
-  <input id="marka" required><br><br>
-
-  <label>Model</label><br>
-  <input id="model" required><br><br>
-
-  <label>Yıl</label><br>
-  <input id="yil" type="number" required><br><br>
-
-  <label>Kilometre</label><br>
-  <input id="km" type="number" required><br><br>
-
-  <label>Fiyat</label><br>
-  <input id="fiyat" type="number" required><br><br>
-
-  <label>Telefon</label><br>
-  <input id="telefon" required><br><br>
-
-  <button type="submit">İlanı Gönder</button>
-</form>
+<input id="marka" placeholder="Marka"><br>
+<input id="model" placeholder="Model"><br>
+<input id="yil" placeholder="Yıl"><br>
+<input id="km" placeholder="KM"><br>
+<input id="fiyat" placeholder="Fiyat"><br>
+<button onclick="kaydet()">Gönder</button>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey:
+const firebaseConfig = {
+  apiKey: "AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvlqSY8",
+  authDomain: "ilkeloto.firebaseapp.com",
+  projectId: "ilkeloto"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    window.location.href = "auth.html";
+  } else {
+    currentUser = user;
+  }
+});
+
+window.kaydet = async () => {
+  await addDoc(collection(db, "ilanlar"), {
+    Marka: marka.value,
+    Model: model.value,
+    Yil: Number(yil.value),
+    Km: Number(km.value),
+    Fiyat: Number(fiyat.value),
+    Durum: "beklemede",
+    userId: currentUser.uid
+  });
+  alert("İlan gönderildi, onay bekliyor");
+};
+</script>
+
+</body>
+</html>
