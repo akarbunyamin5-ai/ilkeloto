@@ -3,25 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin Giriş</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body style="background:#111;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh">
+<body style="background:#111;color:white">
 
-<div style="background:#222;padding:20px">
-  <h2>Admin Giriş</h2>
-  <input id="sifre" type="password" placeholder="Şifre"><br><br>
-  <button onclick="giris()">Giriş</button>
+<div class="container" style="max-width:400px">
+<h2>Admin Giriş</h2>
+<input id="sifre" type="password" placeholder="Şifre">
+<button class="btn" onclick="giris()">Giriş</button>
 </div>
 
 <script>
-const SIFRE = "1234";
-
 function giris(){
-  if(sifre.value === SIFRE){
+  if(sifre.value==="1234"){
     localStorage.setItem("admin","1");
     location.href="admin.html";
-  } else {
-    alert("Hatalı şifre");
-  }
+  } else alert("Hatalı şifre");
 }
 </script>
 
