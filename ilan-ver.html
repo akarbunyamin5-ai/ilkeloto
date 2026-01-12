@@ -23,35 +23,4 @@
   <label>Kilometre</label><br>
   <input type="number" id="km" required><br><br>
 
-  <label>Fiyat</label><br>
-  <input type="number" id="fiyat" required><br><br>
-
-  <label>Telefon</label><br>
-  <input type="tel" id="telefon" required><br><br>
-
-  <button type="submit">İlanı Gönder</button>
-
-</form>
-
-<script>
-function ilanGonder() {
-  const ilan = {
-    marka: document.getElementById("marka").value,
-    model: document.getElementById("model").value,
-    yil: document.getElementById("yil").value,
-    km: document.getElementById("km").value,
-    fiyat: document.getElementById("fiyat").value,
-    telefon: document.getElementById("telefon").value
-  };
-
-  let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
-  ilanlar.push(ilan);
-  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
-
-  alert("İlan kaydedildi! Ana sayfada görünecek.");
-  return false;
-}
-</script>
-
-</body>
-</html>
+  <label>Fiyat</
