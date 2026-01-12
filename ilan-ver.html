@@ -1,12 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>İlan Ver - İlkel Oto</title>
+</head>
+<body>
+
+<h1>İlan Ver</h1>
+<p>Sadece ilk sahibinden otomobiller kabul edilir.</p>
+
+<form onsubmit="return ilanGonder()">
+
+  <label>Marka</label><br>
+  <input type="text" id="marka" required><br><br>
+
+  <label>Model</label><br>
+  <input type="text" id="model" required><br><br>
+
+  <label>Yıl</label><br>
+  <input type="number" id="yil" required><br><br>
+
+  <label>Kilometre</label><br>
+  <input type="number" id="km" required><br><br>
+
+  <label>Fiyat</label><br>
+  <input type="number" id="fiyat" required><br><br>
+
+  <label>Telefon</label><br>
+  <input type="tel" id="telefon" required><br><br>
+
+  <button type="submit">İlanı Gönder</button>
+
+</form>
+
 <script>
 function ilanGonder() {
   const ilan = {
-    marka: marka.value,
-    model: model.value,
-    yil: yil.value,
-    km: km.value,
-    fiyat: fiyat.value,
-    telefon: telefon.value
+    marka: document.getElementById("marka").value,
+    model: document.getElementById("model").value,
+    yil: document.getElementById("yil").value,
+    km: document.getElementById("km").value,
+    fiyat: document.getElementById("fiyat").value,
+    telefon: document.getElementById("telefon").value
   };
 
   let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
@@ -17,3 +52,6 @@ function ilanGonder() {
   return false;
 }
 </script>
+
+</body>
+</html>
