@@ -1,13 +1,40 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>İlkel Oto</title>
 </head>
 <body>
-  <h1>İlkel Oto</h1>
-  <p>İlk sahibinden otomobiller</p>
-  <a href="ilan-ver.html">İlan Ver</a><br><br>
-  <a href="admin.html">Admin Panel</a>
+
+<h1>İlkel Oto</h1>
+<p>Sadece ilk sahibinden otomobiller</p>
+
+<a href="ilan-ver.html">➕ İlan Ver</a>
+<hr>
+
+<h2>Yayındaki İlanlar</h2>
+<div id="ilanlar"></div>
+
+<script>
+let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
+let alan = document.getElementById("ilanlar");
+
+if (ilanlar.length === 0) {
+  alan.innerHTML = "<p>Henüz ilan yok.</p>";
+}
+
+ilanlar.forEach((ilan, index) => {
+  alan.innerHTML += `
+    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px">
+      <strong>${ilan.marka} ${ilan.model}</strong><br>
+      Yıl: ${ilan.yil}<br>
+      KM: ${ilan.km}<br>
+      Fiyat: ${ilan.fiyat} ₺<br>
+      Telefon: ${ilan.telefon}
+    </div>
+  `;
+});
+</script>
+
 </body>
 </html>
