@@ -1,12 +1,43 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin – İlkel Oto</title>
+  <meta charset="UTF-8">
+  <title>Admin Panel - İlkel Oto</title>
 </head>
 <body>
-  <h1>Admin Panel</h1>
-  <p>İlan onay / reddetme burada olacak.</p>
-  <a href="index.html">Ana Sayfa</a>
+
+<h1>Admin Panel</h1>
+<p>Gelen ilanlar</p>
+
+<div id="ilanlar"></div>
+
+<script>
+let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
+let alan = document.getElementById("ilanlar");
+
+if (ilanlar.length === 0) {
+  alan.innerHTML = "<p>Hiç ilan yok.</p>";
+}
+
+ilanlar.forEach((ilan, index) => {
+  alan.innerHTML += `
+    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px">
+      <strong>${ilan.marka} ${ilan.model}</strong><br>
+      Yıl: ${ilan.yil}<br>
+      KM: ${ilan.km}<br>
+      Fiyat: ${ilan.fiyat} ₺<br>
+      Telefon: ${ilan.telefon}<br><br>
+      <button onclick="sil(${index})">Sil</button>
+    </div>
+  `;
+});
+
+function sil(index) {
+  ilanlar.splice(index, 1);
+  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
+  location.reload();
+}
+</script>
+
 </body>
 </html>
