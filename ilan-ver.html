@@ -3,17 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <title>İlan Ver</title>
+<style>
+body {
+  font-family: Arial;
+  background:#f5f5f5;
+  padding:30px;
+}
+.box {
+  background:#fff;
+  padding:20px;
+  max-width:400px;
+  margin:auto;
+  border-radius:8px;
+}
+input, button {
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+button {
+  background:#000;
+  color:#fff;
+  border:none;
+}
+</style>
 </head>
 <body>
 
-<h2>İlan Ver</h2>
+<div class="box">
+  <h2>İlan Ver</h2>
 
-<input id="marka" placeholder="Marka"><br>
-<input id="model" placeholder="Model"><br>
-<input id="yil" placeholder="Yıl"><br>
-<input id="km" placeholder="KM"><br>
-<input id="fiyat" placeholder="Fiyat"><br>
-<button onclick="kaydet()">Gönder</button>
+  <input id="marka" placeholder="Marka">
+  <input id="model" placeholder="Model">
+  <input id="yil" type="number" placeholder="Yıl">
+  <input id="km" type="number" placeholder="KM">
+  <input id="fiyat" type="number" placeholder="Fiyat">
+
+  <button onclick="kaydet()">İlanı Gönder</button>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -32,6 +59,7 @@ const db = getFirestore(app);
 
 let currentUser = null;
 
+// 🔐 Giriş kontrolü
 onAuthStateChanged(auth, user => {
   if (!user) {
     window.location.href = "auth.html";
@@ -50,7 +78,9 @@ window.kaydet = async () => {
     Durum: "beklemede",
     userId: currentUser.uid
   });
-  alert("İlan gönderildi, onay bekliyor");
+
+  alert("İlan gönderildi, admin onayı bekleniyor");
+  window.location.href = "index.html";
 };
 </script>
 
