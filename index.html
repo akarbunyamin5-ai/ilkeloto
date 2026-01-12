@@ -9,7 +9,9 @@
 <h1>İlkel Oto</h1>
 <p>Sadece ilk sahibinden otomobiller</p>
 
-<a href="ilan-ver.html">➕ İlan Ver</a>
+<a href="ilan-ver.html">➕ İlan Ver</a> |
+<a href="admin.html">🛠 Admin Panel</a>
+
 <hr>
 
 <h2>Yayındaki İlanlar</h2>
@@ -19,11 +21,12 @@
 let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
 let alan = document.getElementById("ilanlar");
 
-if (ilanlar.length === 0) {
-  alan.innerHTML = "<p>Henüz ilan yok.</p>";
-}
+let onayliVar = false;
 
-ilanlar.forEach((ilan, index) => {
+ilanlar.forEach((ilan) => {
+  if (!ilan.onay) return;
+
+  onayliVar = true;
   alan.innerHTML += `
     <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px">
       <strong>${ilan.marka} ${ilan.model}</strong><br>
@@ -34,6 +37,10 @@ ilanlar.forEach((ilan, index) => {
     </div>
   `;
 });
+
+if (!onayliVar) {
+  alan.innerHTML = "<p>Henüz onaylanmış ilan yok.</p>";
+}
 </script>
 
 </body>
