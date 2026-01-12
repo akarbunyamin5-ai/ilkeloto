@@ -1,61 +1,39 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>İlan Ver</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>İlan Ver</title>
 </head>
 <body>
 
-<div class="container">
-<h2>➕ İlan Ver</h2>
+<h1>İlan Ver</h1>
+<p>Sadece ilk sahibinden otomobiller kabul edilir.</p>
 
-<input id="marka" placeholder="Marka">
-<input id="model" placeholder="Model">
-<input id="yil" placeholder="Yıl">
-<input id="km" placeholder="Kilometre">
-<input id="fiyat" placeholder="Fiyat">
-<input id="tel" placeholder="Telefon">
+<form id="ilanForm">
+  <label>Marka</label><br>
+  <input id="marka" required><br><br>
 
-<label>Fotoğraf</label>
-<input type="file" id="foto" accept="image/*">
+  <label>Model</label><br>
+  <input id="model" required><br><br>
 
-<button class="btn" onclick="gonder()">İlanı Gönder</button>
-</div>
+  <label>Yıl</label><br>
+  <input id="yil" type="number" required><br><br>
 
-<script>
-function gonder() {
-  const file = document.getElementById("foto").files[0];
-  if (!file) {
-    alert("Fotoğraf seç");
-    return;
-  }
+  <label>Kilometre</label><br>
+  <input id="km" type="number" required><br><br>
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
+  <label>Fiyat</label><br>
+  <input id="fiyat" type="number" required><br><br>
 
-    const ilan = {
-      marka: marka.value,
-      model: model.value,
-      yil: yil.value,
-      km: km.value,
-      fiyat: fiyat.value,
-      tel: tel.value,
-      foto: e.target.result,   // BASE64
-      durum: "bekliyor"
-    };
+  <label>Telefon</label><br>
+  <input id="telefon" required><br><br>
 
-    let ilanlar = JSON.parse(localStorage.getItem("ilanlar") || "[]");
-    ilanlar.push(ilan);
-    localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
+  <button type="submit">İlanı Gönder</button>
+</form>
 
-    alert("İlan gönderildi, admin onayı bekleniyor.");
-    location.href = "index.html";
-  };
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  reader.readAsDataURL(file);
-}
-</script>
-
-</body>
-</html>
+  const firebaseConfig = {
+    apiKey:
