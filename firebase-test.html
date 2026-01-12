@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Firebase Test</title>
+</head>
+<body>
+
+<h1>Firebase Test</h1>
+<button onclick="testEkle()">Test Veri Ekle</button>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDp3wJVf9w3MTF0B1o4Jcdc_H9nvlqSY8",
+    authDomain: "ilkeloto.firebaseapp.com",
+    projectId: "ilkeloto",
+    storageBucket: "ilkeloto.appspot.com",
+    messagingSenderId: "503658235063",
+    appId: "1:503658235063:web:e271d2bc989be290b97932"
+  };
+
+  // Firebase başlat
+  firebase.initializeApp(firebaseConfig);
+
+  // Firestore
+  const db = firebase.firestore();
+
+  function testEkle() {
+    db.collection("test").add({
+      mesaj: "Firebase çalışıyor",
+      zaman: new Date()
+    }).then(() => {
+      alert("Firestore OK ✅");
+    }).catch(err => {
+      alert("HATA ❌ " + err.message);
+    });
+  }
+</script>
+
+</body>
+</html>
