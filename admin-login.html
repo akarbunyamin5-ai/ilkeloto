@@ -5,63 +5,62 @@
 <title>Admin Giriş</title>
 <style>
 body{
-  background:#111;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-  font-family:Arial;
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#111;
+    font-family:Arial;
 }
 .box{
-  background:#222;
-  padding:30px;
-  border-radius:8px;
-  width:300px;
-  text-align:center;
+    background:#222;
+    padding:30px;
+    width:300px;
+    border-radius:8px;
+    text-align:center;
 }
 input{
-  width:100%;
-  padding:10px;
-  margin-bottom:10px;
+    width:100%;
+    padding:10px;
+    margin-bottom:10px;
+    border:none;
 }
 button{
-  width:100%;
-  padding:10px;
-  background:#2563eb;
-  color:#fff;
-  border:none;
-  cursor:pointer;
+    width:100%;
+    padding:10px;
+    background:#0d6efd;
+    color:white;
+    border:none;
+    cursor:pointer;
 }
-.error{
-  color:red;
-  margin-top:10px;
+#error{
+    color:red;
+    margin-top:10px;
 }
 </style>
 </head>
 <body>
 
 <div class="box">
-  <h2>Admin Giriş</h2>
-
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Şifre">
-  <button onclick="login()">Giriş</button>
-
-  <div class="error" id="error"></div>
+    <h2 style="color:white">Admin Giriş</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Şifre">
+    <button onclick="login()">Giriş</button>
+    <div id="error"></div>
 </div>
 
 <script>
 function login(){
-  const email = document.getElementById("email").value;
-  const pass  = document.getElementById("password").value;
+    const email = document.getElementById("email").value;
+    const pass  = document.getElementById("password").value;
 
-  // 🔐 SABİT ADMİN BİLGİLERİ
-  if(email === "admin@ilkeloto.com" && pass === "123456"){
-    localStorage.setItem("admin", "true");
-    window.location.href = "admin.html";
-  }else{
-    document.getElementById("error").innerText = "Hatalı email veya şifre";
-  }
+    if(email === "admin@ilkeloto.com" && pass === "123456"){
+        localStorage.setItem("admin","true");
+        window.location.href = "admin.html";
+    }else{
+        document.getElementById("error").innerText = "Hatalı giriş!";
+    }
 }
 </script>
 
