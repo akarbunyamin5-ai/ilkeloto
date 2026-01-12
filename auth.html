@@ -4,20 +4,44 @@
 <meta charset="UTF-8">
 <title>Üyelik</title>
 <style>
-body { font-family: Arial; background:#f5f5f5; display:flex; justify-content:center; align-items:center; height:100vh }
-.box { background:#fff; padding:30px; width:300px; border-radius:8px }
-input, button { width:100%; padding:10px; margin-top:10px }
-button { background:#000; color:#fff; border:none }
+body {
+  font-family: Arial;
+  background:#f5f5f5;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.box {
+  background:#fff;
+  padding:30px;
+  width:300px;
+  border-radius:8px;
+}
+input, button {
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+button {
+  background:#000;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
 </style>
 </head>
 <body>
 
 <div class="box">
   <h3>Giriş / Kayıt</h3>
+
   <input id="email" type="email" placeholder="E-posta">
   <input id="password" type="password" placeholder="Şifre">
+
   <button onclick="login()">Giriş Yap</button>
   <button onclick="register()">Kayıt Ol</button>
+
   <p id="msg"></p>
 </div>
 
@@ -50,7 +74,7 @@ window.login = async () => {
 window.register = async () => {
   try {
     await createUserWithEmailAndPassword(auth, email.value, password.value);
-    msg.innerText = "Kayıt başarılı, giriş yapabilirsiniz";
+    msg.innerText = "Kayıt başarılı, şimdi giriş yap";
   } catch {
     msg.innerText = "Kayıt başarısız";
   }
