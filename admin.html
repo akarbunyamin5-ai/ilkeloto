@@ -7,7 +7,7 @@
 <body>
 
 <h1>Admin Panel</h1>
-<p>Gelen ilanlar</p>
+<p>Gelen ilanlar (onayla / sil)</p>
 
 <div id="ilanlar"></div>
 
@@ -26,11 +26,20 @@ ilanlar.forEach((ilan, index) => {
       Yıl: ${ilan.yil}<br>
       KM: ${ilan.km}<br>
       Fiyat: ${ilan.fiyat} ₺<br>
-      Telefon: ${ilan.telefon}<br><br>
+      Telefon: ${ilan.telefon}<br>
+      Durum: ${ilan.onay ? "✅ Onaylı" : "⏳ Bekliyor"}<br><br>
+
+      ${ilan.onay ? "" : `<button onclick="onayla(${index})">Onayla</button>`}
       <button onclick="sil(${index})">Sil</button>
     </div>
   `;
 });
+
+function onayla(index) {
+  ilanlar[index].onay = true;
+  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
+  location.reload();
+}
 
 function sil(index) {
   ilanlar.splice(index, 1);
