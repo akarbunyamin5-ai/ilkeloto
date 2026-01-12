@@ -1,16 +1,37 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<title>İlkel Oto</title>
-<style>
-body { font-family: Arial; margin:0; background:#f5f5f5 }
-header, footer { background:#000; color:#fff; padding:20px; text-align:center }
-.container { padding:20px }
-.ilan { background:#fff; padding:15px; margin-bottom:10px; border-radius:6px }
-</style>
+  <meta charset="UTF-8" />
+  <title>İlkel Oto</title>
+  <style>
+    body {
+      font-family: Arial;
+      margin: 0;
+      background: #f5f5f5;
+    }
+    header {
+      background: #000;
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .container {
+      padding: 20px;
+    }
+    .ilan {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+    }
+    footer {
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+    }
+  </style>
 </head>
-
 <body>
 
 <header>
@@ -26,50 +47,55 @@ header, footer { background:#000; color:#fff; padding:20px; text-align:center }
   © 2026 İlkel Oto
 </footer>
 
-<!-- 🔥 FIREBASE (CDN – EN STABİL YOL) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- 🔥 FIREBASE -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    query,
+    where,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<script>
-  // 🔐 Firebase config (SENİN PROJENDEN)
   const firebaseConfig = {
-    apiKey: "AIzaSyDp3wjVF9w3MTt0B1o4Jcdc_H9nvlqSY8",
+    apiKey: "AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvIqSY8",
     authDomain: "ilkeloto.firebaseapp.com",
-    projectId: "ilkeloto"
+    projectId: "ilkeloto",
+    storageBucket: "ilkeloto.appspot.com",
+    messagingSenderId: "503658235063",
+    appId: "1:503658235063:web:e271d2bc989be290b97932"
   };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
   const ilanlarDiv = document.getElementById("ilanlar");
   ilanlarDiv.innerHTML = "";
 
-  db.collection("ilanlar")
-    .where("Durum", "==", "onaylı")
-    .get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        ilanlarDiv.innerHTML = "Henüz onaylı ilan yok.";
-        return;
-      }
+  const q = query(
+    collection(db, "ilanlar"),
+    where("Durum", "==", "onaylı")
+  );
 
-      snapshot.forEach(doc => {
-        const d = doc.data();
-        ilanlarDiv.innerHTML += `
-          <div class="ilan">
-            <b>${d.Marka} ${d.Model}</b><br>
-            Yıl: ${d.Yil}<br>
-            KM: ${d.Km}<br>
-            Fiyat: ${d.Fiyat} ₺<br>
-            Tel: ${d.Gsm}
-          </div>
-        `;
-      });
-    })
-    .catch(err => {
-      ilanlarDiv.innerHTML = "Hata: " + err.message;
-      console.error(err);
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) {
+    ilanlarDiv.innerHTML = "Henüz onaylı ilan yok.";
+  } else {
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      ilanlarDiv.innerHTML += `
+        <div class="ilan">
+          <strong>${d.Marka} ${d.Model}</strong><br>
+          Yıl: ${d.Yil}<br>
+          KM: ${d.Km}<br>
+          Fiyat: ${d.Fiyat} ₺<br>
+          Telefon: ${d.Gsm}
+        </div>
+      `;
     });
+  }
 </script>
 
 </body>
