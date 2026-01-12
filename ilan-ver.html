@@ -17,25 +17,43 @@
 <input id="fiyat" placeholder="Fiyat">
 <input id="tel" placeholder="Telefon">
 
+<label>Fotoğraf</label>
+<input type="file" id="foto" accept="image/*">
+
 <button class="btn" onclick="gonder()">İlanı Gönder</button>
 </div>
 
 <script>
-function gonder(){
-  const ilan={
-    marka:marka.value,
-    model:model.value,
-    yil:yil.value,
-    km:km.value,
-    fiyat:fiyat.value,
-    tel:tel.value,
-    durum:"bekliyor"
+function gonder() {
+  const file = document.getElementById("foto").files[0];
+  if (!file) {
+    alert("Fotoğraf seç");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+
+    const ilan = {
+      marka: marka.value,
+      model: model.value,
+      yil: yil.value,
+      km: km.value,
+      fiyat: fiyat.value,
+      tel: tel.value,
+      foto: e.target.result,   // BASE64
+      durum: "bekliyor"
+    };
+
+    let ilanlar = JSON.parse(localStorage.getItem("ilanlar") || "[]");
+    ilanlar.push(ilan);
+    localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
+
+    alert("İlan gönderildi, admin onayı bekleniyor.");
+    location.href = "index.html";
   };
-  const ilanlar=JSON.parse(localStorage.getItem("ilanlar")||"[]");
-  ilanlar.push(ilan);
-  localStorage.setItem("ilanlar",JSON.stringify(ilanlar));
-  alert("İlan gönderildi, admin onayı bekleniyor.");
-  location.href="index.html";
+
+  reader.readAsDataURL(file);
 }
 </script>
 
