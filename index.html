@@ -3,32 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <title>İlkel Oto</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>İlkel Oto</h1>
-<p>Sadece onaylı ilanlar gösterilir</p>
-<hr>
+<div class="container">
+  <h1>🚗 İlkel Oto</h1>
+  <p style="text-align:center">Onaylı ilanlar</p>
 
-<div id="ilanlar"></div>
+  <div id="ilanlar"></div>
+
+  <div class="nav">
+    <a href="ilan-ver.html">➕ İlan Ver</a> |
+    <a href="admin-login.html">🔐 Admin</a>
+  </div>
+</div>
 
 <script>
 const ilanlar = JSON.parse(localStorage.getItem("ilanlar") || "[]");
 const alan = document.getElementById("ilanlar");
 
-ilanlar.filter(i => i.durum === "onayli").forEach(i => {
-  alan.innerHTML += `
-  <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px">
+ilanlar.filter(i=>i.durum==="onayli").forEach(i=>{
+  alan.innerHTML+=`
+  <div class="card">
     <b>${i.marka} ${i.model}</b><br>
-    Yıl: ${i.yil}<br>
-    KM: ${i.km}<br>
-    Fiyat: ${i.fiyat} ₺<br>
-    Telefon: ${i.tel}
+    Yıl: ${i.yil} | KM: ${i.km}<br>
+    Fiyat: <b>${i.fiyat} ₺</b><br>
+    📞 ${i.tel}
   </div>`;
 });
 </script>
-
-<a href="ilan-ver.html">➕ İlan Ver</a>
 
 </body>
 </html>
