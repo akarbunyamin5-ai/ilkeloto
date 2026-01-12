@@ -3,113 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <title>İlkel Oto</title>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  margin: 0;
-  padding: 20px;
-}
-
-header {
-  background: #222;
-  color: white;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-
-header a {
-  color: #00ff90;
-  margin-right: 15px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.ilanlar {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 15px;
-}
-
-.ilan {
-  background: white;
-  border-radius: 6px;
-  padding: 15px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  border-left: 5px solid #2ecc71;
-}
-
-.ilan h3 {
-  margin: 0 0 8px 0;
-}
-
-.bilgi {
-  font-size: 14px;
-  margin-bottom: 4px;
-}
-
-.fiyat {
-  font-size: 20px;
-  font-weight: bold;
-  color: #2ecc71;
-  margin-top: 10px;
-}
-
-.bos {
-  background: white;
-  padding: 20px;
-  border-radius: 6px;
-}
-</style>
 </head>
-
 <body>
 
-<header>
-  <h1>İlkel Oto</h1>
-  <p>Sadece ilk sahibinden otomobiller</p>
-  <a href="ilan-ver.html">➕ İlan Ver</a>
-  <a href="admin.html">🛠 Admin</a>
-</header>
+<h1>İlkel Oto</h1>
+<p>Sadece onaylı ilanlar gösterilir</p>
+<hr>
 
-<h2>Yayındaki İlanlar</h2>
-
-<div class="ilanlar" id="ilanlar"></div>
+<div id="ilanlar"></div>
 
 <script>
-const ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
+const ilanlar = JSON.parse(localStorage.getItem("ilanlar") || "[]");
 const alan = document.getElementById("ilanlar");
 
-let varMi = false;
-
-ilanlar.forEach(i => {
-  if (i.durum !== "onaylandi") return;
-
-  varMi = true;
-
-  const div = document.createElement("div");
-  div.className = "ilan";
-
-  div.innerHTML = `
-    <h3>${i.marka} ${i.model}</h3>
-    <div class="bilgi">📅 Yıl: ${i.yil}</div>
-    <div class="bilgi">🛣 KM: ${i.km}</div>
-    <div class="bilgi">📞 ${i.tel}</div>
-    <div class="fiyat">${i.fiyat} ₺</div>
-  `;
-
-  alan.appendChild(div);
+ilanlar.filter(i => i.durum === "onayli").forEach(i => {
+  alan.innerHTML += `
+  <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px">
+    <b>${i.marka} ${i.model}</b><br>
+    Yıl: ${i.yil}<br>
+    KM: ${i.km}<br>
+    Fiyat: ${i.fiyat} ₺<br>
+    Telefon: ${i.tel}
+  </div>`;
 });
-
-if (!varMi) {
-  alan.innerHTML = `
-    <div class="bos">
-      Henüz onaylanmış ilan yok.
-    </div>
-  `;
-}
 </script>
+
+<a href="ilan-ver.html">➕ İlan Ver</a>
 
 </body>
 </html>
