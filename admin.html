@@ -1,144 +1,167 @@
-<script>
-  if (localStorage.getItem("adminAuth") !== "true") {
-    window.location.href = "admin-login.html";
-  }
-</script>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>İlkel Oto – Admin Panel</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f5f5f5;
-      margin: 0;
-    }
-    header {
-      background: #000;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-    }
-    .container {
-      max-width: 900px;
-      margin: 20px auto;
-    }
-    .card {
-      background: #fff;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    button {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-right: 8px;
-    }
-    .onay {
-      background: green;
-      color: white;
-    }
-    .sil {
-      background: crimson;
-      color: white;
-    }
-    .durum {
-      font-weight: bold;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>İlkel Oto – Admin Panel</title>
+
+<style>
+body {
+  font-family: Arial;
+  background:#f5f5f5;
+  margin:0;
+}
+header {
+  background:#000;
+  color:#fff;
+  padding:20px;
+  text-align:center;
+}
+.container {
+  max-width:900px;
+  margin:20px auto;
+}
+.card {
+  background:#fff;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:6px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+button {
+  padding:8px 12px;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  margin-right:8px;
+}
+.onay {
+  background:green;
+  color:white;
+}
+.sil {
+  background:crimson;
+  color:white;
+}
+.cikis {
+  background:#444;
+  color:white;
+  margin:10px;
+}
+</style>
 </head>
+
 <body>
 
 <header>
   <h1>ADMIN PANEL</h1>
-  <p>İlan Onay / Silme</p>
+  <p>Sadece Beklemede Olan İlanlar</p>
+  <button class="cikis" onclick="logout()">Çıkış</button>
 </header>
 
 <div class="container" id="ilanlar">
   Yükleniyor...
 </div>
 
-<!-- 🔥 FIREBASE -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    getDocs,
-    doc,
-    updateDoc,
-    deleteDoc
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+/* 🔥 FIREBASE IMPORT */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getAuth, 
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  // 🔑 Firebase config (SENİN PROJENDEN)
-  const firebaseConfig = {
-    apiKey: "AIzaSyDp3wJVF9w3MTf0B1o4Jcdc_H9nvlqSY8",
-    authDomain: "ilkeloto.firebaseapp.com",
-    projectId: "ilkeloto",
-    storageBucket: "ilkeloto.appspot.com",
-    messagingSenderId: "503658235063",
-    appId: "1:503658235063:web:e271d2bc989be290b97932"
-  };
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+/* 🔑 FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvlqSY8",
+  authDomain: "ilkeloto.firebaseapp.com",
+  projectId: "ilkeloto"
+};
 
-  const ilanlarDiv = document.getElementById("ilanlar");
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  async function ilanlariGetir() {
-    ilanlarDiv.innerHTML = "";
-    const snapshot = await getDocs(collection(db, "ilanlar"));
+/* 🔐 GİRİŞ KONTROL */
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "admin-login.html";
+  }
+});
 
-    if (snapshot.empty) {
-      ilanlarDiv.innerHTML = "Hiç ilan yok.";
-      return;
-    }
+/* 🔴 ÇIKIŞ */
+window.logout = async function () {
+  await signOut(auth);
+  window.location.href = "admin-login.html";
+};
 
-    snapshot.forEach(docSnap => {
-      const d = docSnap.data();
-      const id = docSnap.id;
+/* 📥 SADECE BEKLEMEDE OLAN İLANLARI ÇEK */
+const ilanlarDiv = document.getElementById("ilanlar");
 
-      const div = document.createElement("div");
-      div.className = "card";
+async function ilanlariGetir() {
+  ilanlarDiv.innerHTML = "";
 
-      div.innerHTML = `
-        <h3>${d.Marka} ${d.Model}</h3>
-        <p>Yıl: ${d.Yil}</p>
-        <p>KM: ${d.Km}</p>
-        <p>Fiyat: ${d.Fiyat} ₺</p>
-        <p>Telefon: ${d.Gsm}</p>
-        <p class="durum">Durum: ${d.Durum}</p>
-        <button class="onay">Onayla</button>
-        <button class="sil">Sil</button>
-      `;
+  const q = query(
+    collection(db, "ilanlar"),
+    where("Durum", "==", "beklemede")
+  );
 
-      // ✅ ONAYLA
-      div.querySelector(".onay").onclick = async () => {
-        await updateDoc(doc(db, "ilanlar", id), {
-          Durum: "onaylı"
-        });
-        alert("İlan ONAYLANDI");
-        ilanlariGetir();
-      };
+  const snapshot = await getDocs(q);
 
-      // ❌ SİL
-      div.querySelector(".sil").onclick = async () => {
-        if (confirm("İlan silinsin mi?")) {
-          await deleteDoc(doc(db, "ilanlar", id));
-          alert("İlan SİLİNDİ");
-          ilanlariGetir();
-        }
-      };
-
-      ilanlarDiv.appendChild(div);
-    });
+  if (snapshot.empty) {
+    ilanlarDiv.innerHTML = "Beklemede ilan yok.";
+    return;
   }
 
-  ilanlariGetir();
+  snapshot.forEach(docSnap => {
+    const d = docSnap.data();
+    const id = docSnap.id;
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <h3>${d.Marka} ${d.Model}</h3>
+      <p>Yıl: ${d.Yil}</p>
+      <p>KM: ${d.Km}</p>
+      <p>Fiyat: ${d.Fiyat} ₺</p>
+
+      <button class="onay">Onayla</button>
+      <button class="sil">Sil</button>
+    `;
+
+    /* ✅ ONAYLA */
+    div.querySelector(".onay").onclick = async () => {
+      await updateDoc(doc(db, "ilanlar", id), {
+        Durum: "onaylı"
+      });
+      ilanlariGetir();
+    };
+
+    /* ❌ SİL */
+    div.querySelector(".sil").onclick = async () => {
+      if (confirm("İlan silinsin mi?")) {
+        await deleteDoc(doc(db, "ilanlar", id));
+        ilanlariGetir();
+      }
+    };
+
+    ilanlarDiv.appendChild(div);
+  });
+}
+
+ilanlariGetir();
 </script>
 
 </body>
