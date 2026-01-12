@@ -14,35 +14,106 @@ if (localStorage.getItem("admin") !== "1") {
 </script>
 
 <div class="container">
-<h2>Admin Panel</h2>
+  <h2>Admin Panel</h2>
 
-<button class="btn-danger" onclick="hepsiniSil()">🗑 Tümünü Sil</button>
-<button class="btn" onclick="cikis()">Çıkış</button>
+  <button class="btn-danger" onclick="hepsiniSil()">🗑 Tümünü Sil</button>
+  <button class="btn" onclick="cikis()">Çıkış</button>
 
-<hr>
-<div id="liste"></div>
+  <hr>
+
+  <!-- DÜZENLEME FORMU -->
+  <div id="editBox" class="card" style="display:none">
+    <h3>İlan Düzenle</h3>
+
+    <input id="e_marka" placeholder="Marka">
+    <input id="e_model" placeholder="Model">
+    <input id="e_yil" placeholder="Yıl">
+    <input id="e_km" placeholder="Kilometre">
+    <input id="e_fiyat" placeholder="Fiyat">
+    <input id="e_tel" placeholder="Telefon">
+
+    <label>Yeni Fotoğraf (isteğe bağlı)</label>
+    <input type="file" id="e_foto" accept="image/*">
+
+    <br><br>
+    <button class="btn-success" onclick="kaydetDuzenleme()">Kaydet</button>
+    <button class="btn-danger" onclick="iptal()">İptal</button>
+  </div>
+
+  <hr>
+
+  <!-- İLAN LİSTESİ -->
+  <div id="liste"></div>
 </div>
 
 <script>
 let ilanlar = JSON.parse(localStorage.getItem("ilanlar") || "[]");
+let duzenlenenIndex = null;
 const alan = document.getElementById("liste");
 
 function ciz() {
   alan.innerHTML = "";
   ilanlar.forEach((i, index) => {
     alan.innerHTML += `
-    <div class="card">
-      <img src="${i.foto}" style="width:100%;height:150px;object-fit:cover">
-      <b>${i.marka} ${i.model}</b><br>
-      Yıl:${i.yil} KM:${i.km}<br>
-      Fiyat:${i.fiyat} ₺<br>
-      Tel:${i.tel}<br>
-      Durum:${i.durum}<br><br>
+      <div class="card">
+        <img src="${i.foto}" style="width:100%;height:150px;object-fit:cover">
+        <b>${i.marka} ${i.model}</b><br>
+        Yıl:${i.yil} KM:${i.km}<br>
+        Fiyat:${i.fiyat} ₺<br>
+        Tel:${i.tel}<br>
+        Durum:${i.durum}<br><br>
 
-      <button class="btn-success" onclick="onayla(${index})">Onayla</button>
-      <button class="btn-danger" onclick="sil(${index})">Sil</button>
-    </div>`;
+        <button class="btn" onclick="duzenle(${index})">Düzenle</button>
+        <button class="btn-success" onclick="onayla(${index})">Onayla</button>
+        <button class="btn-danger" onclick="sil(${index})">Sil</button>
+      </div>
+    `;
   });
+}
+
+function duzenle(index) {
+  duzenlenenIndex = index;
+  const i = ilanlar[index];
+
+  e_marka.value = i.marka;
+  e_model.value = i.model;
+  e_yil.value = i.yil;
+  e_km.value = i.km;
+  e_fiyat.value = i.fiyat;
+  e_tel.value = i.tel;
+
+  document.getElementById("editBox").style.display = "block";
+  window.scrollTo(0, 0);
+}
+
+function kaydetDuzenleme() {
+  if (duzenlenenIndex === null) return;
+
+  const i = ilanlar[duzenlenenIndex];
+
+  i.marka = e_marka.value;
+  i.model = e_model.value;
+  i.yil = e_yil.value;
+  i.km = e_km.value;
+  i.fiyat = e_fiyat.value;
+  i.tel = e_tel.value;
+
+  const file = document.getElementById("e_foto").files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      i.foto = e.target.result;
+      kaydet();
+    };
+    reader.readAsDataURL(file);
+  } else {
+    kaydet();
+  }
+}
+
+function iptal() {
+  duzenlenenIndex = null;
+  document.getElementById("editBox").style.display = "none";
 }
 
 function onayla(i) {
@@ -56,7 +127,7 @@ function sil(i) {
 }
 
 function hepsiniSil() {
-  if (confirm("Hepsi silinsin mi?")) {
+  if (confirm("Tüm ilanlar silinsin mi?")) {
     ilanlar = [];
     localStorage.removeItem("ilanlar");
     ciz();
@@ -65,6 +136,8 @@ function hepsiniSil() {
 
 function kaydet() {
   localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
+  document.getElementById("editBox").style.display = "none";
+  duzenlenenIndex = null;
   ciz();
 }
 
