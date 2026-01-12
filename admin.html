@@ -1,31 +1,82 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Panel - İlkel Oto</title>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<style>
+  body { font-family: Arial; }
+  .ilan {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+  button { margin-right: 5px; }
+</style>
 </head>
 <body>
 
 <h1>Admin Panel</h1>
 <p>Gelen ilanlar (onayla / sil)</p>
 
-<button onclick="tumunuSil()" style="margin-bottom:15px;">
-  🗑 TÜM İLANLARI SİL
-</button>
-
+<button onclick="tumunuSil()">🗑 TÜM İLANLARI SİL</button>
 <hr>
 
 <div id="ilanlar"></div>
 
 <script>
-let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
-let alan = document.getElementById("ilanlar");
+function listele() {
+  let alan = document.getElementById("ilanlar");
+  alan.innerHTML = "";
 
-if (ilanlar.length === 0) {
-  alan.innerHTML = "<p>Hiç ilan yok.</p>";
+  let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
+
+  if (ilanlar.length === 0) {
+    alan.innerHTML = "<p>Henüz ilan yok.</p>";
+    return;
+  }
+
+  ilanlar.forEach((i, index) => {
+    let div = document.createElement("div");
+    div.className = "ilan";
+
+    div.innerHTML = `
+      <strong>${i.marka} ${i.model}</strong><br>
+      Yıl: ${i.yil}<br>
+      KM: ${i.km}<br>
+      Fiyat: ${i.fiyat} ₺<br>
+      Telefon: ${i.telefon}<br>
+      Durum: ${i.onay ? "✅ Onaylandı" : "⏳ Bekliyor"}<br><br>
+      <button onclick="onayla(${index})">Onayla</button>
+      <button onclick="sil(${index})">Sil</button>
+    `;
+
+    alan.appendChild(div);
+  });
 }
 
-ilanlar.forEach((ilan, index) => {
-  alan.innerHTML += `
-    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px">
-      <strong>${ilan.marka} ${ilan.model}</strong><br>
+function onayla(index) {
+  let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
+  ilanlar[index].onay = true;
+  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
+  listele();
+}
+
+function sil(index) {
+  let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
+  ilanlar.splice(index, 1);
+  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
+  listele();
+}
+
+function tumunuSil() {
+  if (confirm("Tüm ilanlar silinsin mi?")) {
+    localStorage.removeItem("ilanlar");
+    listele();
+  }
+}
+
+listele();
+</script>
+
+</body>
+</html>
