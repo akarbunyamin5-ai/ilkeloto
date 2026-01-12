@@ -1,25 +1,62 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Admin Giriş</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Admin Giriş</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #222;
+      padding: 30px;
+      border-radius: 8px;
+      width: 300px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #0f62fe;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body style="background:#111;color:white">
+<body>
 
-<div class="container" style="max-width:400px">
-<h2>Admin Giriş</h2>
-<input id="sifre" type="password" placeholder="Şifre">
-<button class="btn" onclick="giris()">Giriş</button>
+<div class="box">
+  <h2>Admin Giriş</h2>
+  <input type="password" id="password" placeholder="Şifre">
+  <button onclick="login()">Giriş</button>
+  <p id="error" style="color:red;"></p>
 </div>
 
 <script>
-function giris(){
-  if(sifre.value==="1234"){
-    localStorage.setItem("admin","1");
-    location.href="admin.html";
-  } else alert("Hatalı şifre");
-}
+  const ADMIN_PASSWORD = "1234"; // 🔴 BURAYI DEĞİŞTİR
+
+  function login() {
+    const pw = document.getElementById("password").value;
+
+    if (pw === ADMIN_PASSWORD) {
+      localStorage.setItem("adminAuth", "true");
+      window.location.href = "admin.html";
+    } else {
+      document.getElementById("error").innerText = "Hatalı şifre!";
+    }
+  }
 </script>
 
 </body>
