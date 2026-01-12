@@ -8,27 +8,28 @@
 <body>
 
 <div class="container">
-  <h1>🚗 İlkel Oto</h1>
-  <p style="text-align:center">Onaylı ilanlar</p>
+<h1>🚗 İlkel Oto</h1>
+<p>Onaylı ilanlar</p>
 
-  <div id="ilanlar"></div>
+<div id="ilanlar"></div>
 
-  <div class="nav">
-    <a href="ilan-ver.html">➕ İlan Ver</a> |
-    <a href="admin-login.html">🔐 Admin</a>
-  </div>
+<div class="nav">
+  <a href="ilan-ver.html">➕ İlan Ver</a> |
+  <a href="admin-login.html">🔐 Admin</a>
+</div>
 </div>
 
 <script>
 const ilanlar = JSON.parse(localStorage.getItem("ilanlar") || "[]");
 const alan = document.getElementById("ilanlar");
 
-ilanlar.filter(i=>i.durum==="onayli").forEach(i=>{
-  alan.innerHTML+=`
+ilanlar.filter(i => i.durum === "onayli").forEach(i => {
+  alan.innerHTML += `
   <div class="card">
+    <img src="${i.foto}" style="width:100%;height:180px;object-fit:cover;border-radius:4px">
     <b>${i.marka} ${i.model}</b><br>
     Yıl: ${i.yil} | KM: ${i.km}<br>
-    Fiyat: <b>${i.fiyat} ₺</b><br>
+    <b>${i.fiyat} ₺</b><br>
     📞 ${i.tel}
   </div>`;
 });
