@@ -3,20 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin Panel</title>
+
+<style>
+.ilan {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.bekliyor { color: orange; font-weight: bold; }
+.onaylandi { color: green; font-weight: bold; }
+.reddedildi { color: red; font-weight: bold; }
+
+button {
+  margin-right: 5px;
+}
+</style>
 </head>
+
 <body>
 
-<script>
-const sifre = "1234";
-const girilen = prompt("Admin panel şifresi:");
-
-if (girilen !== sifre) {
-  alert("Hatalı şifre!");
-  window.location.href = "index.html";
-}
-</script>
-
 <h1>Admin Panel</h1>
+<p>Gelen ilanlar (onayla / reddet / sil)</p>
+
 <button onclick="tumunuSil()">🗑 TÜM İLANLARI SİL</button>
 <hr>
 
@@ -24,48 +33,71 @@ if (girilen !== sifre) {
 
 <script>
 let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
-const liste = document.getElementById("liste");
 
-function goster() {
+function render() {
+  const liste = document.getElementById("liste");
   liste.innerHTML = "";
+
   ilanlar.forEach((i, index) => {
-    const div = document.createElement("div");
-    div.innerHTML = `
-      <b>${i.marka} ${i.model}</b><br>
-      Yıl: ${i.yil}<br>
-      KM: ${i.km}<br>
-      Fiyat: ${i.fiyat} ₺<br>
-      Telefon: ${i.tel}<br>
-      Durum: ${i.durum}<br>
-      <button onclick="onayla(${index})">Onayla</button>
-      <button onclick="sil(${index})">Sil</button>
-      <hr>
+    let renk = "bekliyor";
+    let durumYazi = "⏳ Bekliyor";
+
+    if (i.durum === "onaylandi") {
+      renk = "onaylandi";
+      durumYazi = "✅ Onaylandı";
+    }
+    if (i.durum === "reddedildi") {
+      renk = "reddedildi";
+      durumYazi = "❌ Reddedildi";
+    }
+
+    liste.innerHTML += `
+      <div class="ilan">
+        <b>${i.marka} ${i.model}</b><br>
+        Yıl: ${i.yil}<br>
+        KM: ${i.km}<br>
+        Fiyat: ${i.fiyat} ₺<br>
+        Telefon: ${i.tel}<br>
+        Durum: <span class="${renk}">${durumYazi}</span><br><br>
+
+        <button onclick="onayla(${index})">Onayla</button>
+        <button onclick="reddet(${index})">Reddet</button>
+        <button onclick="sil(${index})">Sil</button>
+      </div>
     `;
-    liste.appendChild(div);
   });
 }
 
 function onayla(i) {
-  ilanlar[i].durum = "onayli";
-  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
-  goster();
+  ilanlar[i].durum = "onaylandi";
+  kaydet();
+}
+
+function reddet(i) {
+  ilanlar[i].durum = "reddedildi";
+  kaydet();
 }
 
 function sil(i) {
-  ilanlar.splice(i, 1);
-  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
-  goster();
-}
-
-function tumunuSil() {
-  if (confirm("Tüm ilanlar silinsin mi?")) {
-    localStorage.removeItem("ilanlar");
-    ilanlar = [];
-    goster();
+  if (confirm("İlan silinsin mi?")) {
+    ilanlar.splice(i, 1);
+    kaydet();
   }
 }
 
-goster();
+function tumunuSil() {
+  if (confirm("TÜM ilanlar silinsin mi?")) {
+    ilanlar = [];
+    kaydet();
+  }
+}
+
+function kaydet() {
+  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
+  render();
+}
+
+render();
 </script>
 
 </body>
