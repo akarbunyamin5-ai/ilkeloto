@@ -1,39 +1,60 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>İlan Ver - İlkel Oto</title>
+<meta charset="UTF-8">
+<title>İlan Ver</title>
 </head>
 <body>
 
 <h1>İlan Ver</h1>
 <p>Sadece ilk sahibinden otomobiller kabul edilir.</p>
 
-<form id="ilanForm">
-  <label>Marka</label><br>
-  <input type="text" id="marka" required><br><br>
+<form id="form">
+Marka<br><input id="marka" required><br><br>
+Model<br><input id="model" required><br><br>
+Yıl<br><input id="yil" required><br><br>
+Kilometre<br><input id="km" required><br><br>
+Fiyat<br><input id="fiyat" required><br><br>
+Telefon<br><input id="tel" required><br><br>
 
-  <label>Model</label><br>
-  <input type="text" id="model" required><br><br>
-
-  <label>Yıl</label><br>
-  <input type="number" id="yil" required><br><br>
-
-  <label>Kilometre</label><br>
-  <input type="number" id="km" required><br><br>
-
-  <label>Fiyat</label><br>
-  <input type="number" id="fiyat" required><br><br>
-
-  <label>Telefon</label><br>
-  <input type="text" id="telefon" required><br><br>
-
-  <button type="submit">İlanı Gönder</button>
+<button type="submit">İlanı Gönder</button>
 </form>
 
 <script>
-document.getElementById("ilanForm").addEventListener("submit", function(e) {
+document.getElementById("form").onsubmit = function(e) {
   e.preventDefault();
 
-  let ilan = {
-    marka: documen
+  const ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
+
+  // 🔒 TEKİL İLAN KONTROLÜ
+  const varMi = ilanlar.some(i =>
+    i.tel === tel.value &&
+    i.marka.toLowerCase() === marka.value.toLowerCase() &&
+    i.model.toLowerCase() === model.value.toLowerCase() &&
+    i.yil === yil.value
+  );
+
+  if (varMi) {
+    alert("❌ Bu araç zaten ilan verilmiş!");
+    return;
+  }
+
+  // ✅ YENİ İLAN
+  ilanlar.push({
+    marka: marka.value,
+    model: model.value,
+    yil: yil.value,
+    km: km.value,
+    fiyat: fiyat.value,
+    tel: tel.value,
+    durum: "bekliyor"
+  });
+
+  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
+  alert("✅ İlan kaydedildi! Admin onayı bekleniyor.");
+  this.reset();
+};
+</script>
+
+</body>
+</html>
