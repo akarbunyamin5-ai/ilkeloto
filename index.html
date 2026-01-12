@@ -2,33 +2,38 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>İlkel Oto</title>
+  <title>İLKEL OTO</title>
   <style>
     body {
-      font-family: Arial;
       margin: 0;
+      font-family: Arial, sans-serif;
       background: #f5f5f5;
     }
     header {
       background: #000;
       color: #fff;
-      padding: 30px;
+      padding: 30px 0;
       text-align: center;
     }
     .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
       padding: 20px;
+      border-radius: 6px;
     }
     .ilan {
-      background: #fff;
+      border: 1px solid #ddd;
       padding: 15px;
       margin-bottom: 15px;
-      border: 1px solid #ddd;
+      border-radius: 4px;
     }
     footer {
       background: #000;
       color: #fff;
       text-align: center;
-      padding: 10px;
+      padding: 15px;
+      margin-top: 40px;
     }
   </style>
 </head>
@@ -47,7 +52,7 @@
   © 2026 İlkel Oto
 </footer>
 
-<!-- 🔥 FIREBASE -->
+<!-- 🔥 FIREBASE KODU -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
@@ -58,8 +63,9 @@
     getDocs
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+  // 🔧 Firebase ayarların (SENİN PROJEN)
   const firebaseConfig = {
-    apiKey: "AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvIqSY8",
+    apiKey: "AIzaSyDp3wjVF9w3MTFt0B10J4dc_H9nvlqSY8",
     authDomain: "ilkeloto.firebaseapp.com",
     projectId: "ilkeloto",
     storageBucket: "ilkeloto.appspot.com",
@@ -73,29 +79,41 @@
   const ilanlarDiv = document.getElementById("ilanlar");
   ilanlarDiv.innerHTML = "";
 
-  const q = query(
-    collection(db, "ilanlar"),
-    where("Durum", "==", "onaylı")
-  );
+  async function ilanlariGetir() {
+    try {
+      const q = query(
+        collection(db, "ilanlar"),
+        where("Durum", "==", "onaylı")
+      );
 
-  const snapshot = await getDocs(q);
+      const querySnapshot = await getDocs(q);
 
-  if (snapshot.empty) {
-    ilanlarDiv.innerHTML = "Henüz onaylı ilan yok.";
-  } else {
-    snapshot.forEach(doc => {
-      const d = doc.data();
-      ilanlarDiv.innerHTML += `
-        <div class="ilan">
-          <strong>${d.Marka} ${d.Model}</strong><br>
-          Yıl: ${d.Yil}<br>
-          KM: ${d.Km}<br>
-          Fiyat: ${d.Fiyat} ₺<br>
-          Telefon: ${d.Gsm}
-        </div>
-      `;
-    });
+      if (querySnapshot.empty) {
+        ilanlarDiv.innerHTML = "Henüz onaylı ilan yok.";
+        return;
+      }
+
+      querySnapshot.forEach((doc) => {
+        const d = doc.data();
+
+        ilanlarDiv.innerHTML += `
+          <div class="ilan">
+            <h3>${d.Marka} ${d.Model}</h3>
+            <p><b>Yıl:</b> ${d.Yil}</p>
+            <p><b>KM:</b> ${d.Km}</p>
+            <p><b>Fiyat:</b> ${d.Fiyat} ₺</p>
+            <p><b>Telefon:</b> ${d.Gsm}</p>
+          </div>
+        `;
+      });
+
+    } catch (err) {
+      ilanlarDiv.innerHTML = "Hata oluştu.";
+      console.error(err);
+    }
   }
+
+  ilanlariGetir();
 </script>
 
 </body>
