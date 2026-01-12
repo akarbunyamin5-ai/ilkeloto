@@ -8,8 +8,8 @@
 <body>
 
 <script>
-if(localStorage.getItem("admin")!=="1"){
-  location.href="admin-login.html";
+if (localStorage.getItem("admin") !== "1") {
+  location.href = "admin-login.html";
 }
 </script>
 
@@ -24,41 +24,53 @@ if(localStorage.getItem("admin")!=="1"){
 </div>
 
 <script>
-let ilanlar=JSON.parse(localStorage.getItem("ilanlar")||"[]");
-const alan=document.getElementById("liste");
+let ilanlar = JSON.parse(localStorage.getItem("ilanlar") || "[]");
+const alan = document.getElementById("liste");
 
-function ciz(){
-  alan.innerHTML="";
-  ilanlar.forEach((i,index)=>{
-    alan.innerHTML+=`
+function ciz() {
+  alan.innerHTML = "";
+  ilanlar.forEach((i, index) => {
+    alan.innerHTML += `
     <div class="card">
+      <img src="${i.foto}" style="width:100%;height:150px;object-fit:cover">
       <b>${i.marka} ${i.model}</b><br>
       Yıl:${i.yil} KM:${i.km}<br>
       Fiyat:${i.fiyat} ₺<br>
       Tel:${i.tel}<br>
       Durum:${i.durum}<br><br>
+
       <button class="btn-success" onclick="onayla(${index})">Onayla</button>
       <button class="btn-danger" onclick="sil(${index})">Sil</button>
     </div>`;
   });
 }
 
-function onayla(i){ ilanlar[i].durum="onayli"; kaydet(); }
-function sil(i){ ilanlar.splice(i,1); kaydet(); }
-function hepsiniSil(){
-  if(confirm("Hepsi silinsin mi?")){
-    ilanlar=[];
+function onayla(i) {
+  ilanlar[i].durum = "onayli";
+  kaydet();
+}
+
+function sil(i) {
+  ilanlar.splice(i, 1);
+  kaydet();
+}
+
+function hepsiniSil() {
+  if (confirm("Hepsi silinsin mi?")) {
+    ilanlar = [];
     localStorage.removeItem("ilanlar");
     ciz();
   }
 }
-function kaydet(){
-  localStorage.setItem("ilanlar",JSON.stringify(ilanlar));
+
+function kaydet() {
+  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
   ciz();
 }
-function cikis(){
+
+function cikis() {
   localStorage.removeItem("admin");
-  location.href="admin-login.html";
+  location.href = "admin-login.html";
 }
 
 ciz();
