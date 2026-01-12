@@ -1,120 +1,54 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>İLKEL OTO</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-    }
-    header {
-      background: #000;
-      color: #fff;
-      padding: 30px 0;
-      text-align: center;
-    }
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 6px;
-    }
-    .ilan {
-      border: 1px solid #ddd;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 4px;
-    }
-    footer {
-      background: #000;
-      color: #fff;
-      text-align: center;
-      padding: 15px;
-      margin-top: 40px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>İLKEL OTO</title>
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#f5f5f5;
+}
+header{
+    background:#000;
+    color:#fff;
+    padding:30px;
+    text-align:center;
+}
+.ilan{
+    background:#fff;
+    margin:30px auto;
+    padding:20px;
+    width:80%;
+    border-radius:6px;
+}
+footer{
+    background:#000;
+    color:#fff;
+    text-align:center;
+    padding:15px;
+}
+</style>
 </head>
+
 <body>
 
 <header>
-  <h1>İLKEL OTO</h1>
-  <p>Onaylı Sahibinden İlanlar</p>
+    <h1>İLKEL OTO</h1>
+    <p>Onaylı Sahibinden İlanlar</p>
 </header>
 
-<div class="container" id="ilanlar">
-  Yükleniyor...
+<div class="ilan">
+    <b>Fiat Brava</b><br>
+    Yıl: 2001<br>
+    KM: 400000<br>
+    Fiyat: 250.000 ₺<br>
+    Telefon: 5554266927
 </div>
 
 <footer>
-  © 2026 İlkel Oto
+    © 2026 İlkel Oto
 </footer>
-
-<!-- 🔥 FIREBASE KODU -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    getDocs
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-  // 🔧 Firebase ayarların (SENİN PROJEN)
-  const firebaseConfig = {
-    apiKey: "AIzaSyDp3wjVF9w3MTFt0B10J4dc_H9nvlqSY8",
-    authDomain: "ilkeloto.firebaseapp.com",
-    projectId: "ilkeloto",
-    storageBucket: "ilkeloto.appspot.com",
-    messagingSenderId: "503658235063",
-    appId: "1:503658235063:web:e271d2bc989be290b97932"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  const ilanlarDiv = document.getElementById("ilanlar");
-  ilanlarDiv.innerHTML = "";
-
-  async function ilanlariGetir() {
-    try {
-      const q = query(
-        collection(db, "ilanlar"),
-        where("Durum", "==", "onaylı")
-      );
-
-      const querySnapshot = await getDocs(q);
-
-      if (querySnapshot.empty) {
-        ilanlarDiv.innerHTML = "Henüz onaylı ilan yok.";
-        return;
-      }
-
-      querySnapshot.forEach((doc) => {
-        const d = doc.data();
-
-        ilanlarDiv.innerHTML += `
-          <div class="ilan">
-            <h3>${d.Marka} ${d.Model}</h3>
-            <p><b>Yıl:</b> ${d.Yil}</p>
-            <p><b>KM:</b> ${d.Km}</p>
-            <p><b>Fiyat:</b> ${d.Fiyat} ₺</p>
-            <p><b>Telefon:</b> ${d.Gsm}</p>
-          </div>
-        `;
-      });
-
-    } catch (err) {
-      ilanlarDiv.innerHTML = "Hata oluştu.";
-      console.error(err);
-    }
-  }
-
-  ilanlariGetir();
-</script>
 
 </body>
 </html>
