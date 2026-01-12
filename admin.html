@@ -1,172 +1,48 @@
-<script>
-if(localStorage.getItem("admin") !== "true"){
-  window.location.href = "admin-login.html";
-}
-</script>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlkel Oto – Admin Panel</title>
-
+<title>Admin Panel</title>
 <style>
-body {
-  font-family: Arial;
-  background:#f5f5f5;
-  margin:0;
+body{
+    font-family:Arial;
+    background:#f5f5f5;
+    padding:20px;
 }
-header {
-  background:#000;
-  color:#fff;
-  padding:20px;
-  text-align:center;
+header{
+    background:black;
+    color:white;
+    padding:15px;
 }
-.container {
-  max-width:900px;
-  margin:20px auto;
-}
-.card {
-  background:#fff;
-  padding:15px;
-  margin-bottom:15px;
-  border-radius:6px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
-}
-button {
-  padding:8px 12px;
-  border:none;
-  border-radius:4px;
-  cursor:pointer;
-  margin-right:8px;
-}
-.onay {
-  background:green;
-  color:white;
-}
-.sil {
-  background:crimson;
-  color:white;
-}
-.cikis {
-  background:#444;
-  color:white;
-  margin:10px;
+button{
+    padding:8px 15px;
+    background:red;
+    color:white;
+    border:none;
+    cursor:pointer;
 }
 </style>
 </head>
-
 <body>
 
 <header>
-  <h1>ADMIN PANEL</h1>
-  <p>Sadece Beklemede Olan İlanlar</p>
-  <button class="cikis" onclick="logout()">Çıkış</button>
+    <h2>Admin Panel</h2>
 </header>
 
-<div class="container" id="ilanlar">
-  Yükleniyor...
-</div>
+<p>Hoş geldin Admin 👋</p>
 
-<script type="module">
-/* 🔥 FIREBASE IMPORT */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getAuth, 
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+<button onclick="logout()">Çıkış Yap</button>
 
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  updateDoc,
-  deleteDoc,
-  query,
-  where
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-/* 🔑 FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvlqSY8",
-  authDomain: "ilkeloto.firebaseapp.com",
-  projectId: "ilkeloto"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-/* 🔐 GİRİŞ KONTROL */
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
+<script>
+// KORUMA
+if(localStorage.getItem("admin") !== "true"){
     window.location.href = "admin-login.html";
-  }
-});
-
-/* 🔴 ÇIKIŞ */
-window.logout = async function () {
-  await signOut(auth);
-  window.location.href = "admin-login.html";
-};
-
-/* 📥 SADECE BEKLEMEDE OLAN İLANLARI ÇEK */
-const ilanlarDiv = document.getElementById("ilanlar");
-
-async function ilanlariGetir() {
-  ilanlarDiv.innerHTML = "";
-
-  const q = query(
-    collection(db, "ilanlar"),
-    where("Durum", "==", "beklemede")
-  );
-
-  const snapshot = await getDocs(q);
-
-  if (snapshot.empty) {
-    ilanlarDiv.innerHTML = "Beklemede ilan yok.";
-    return;
-  }
-
-  snapshot.forEach(docSnap => {
-    const d = docSnap.data();
-    const id = docSnap.id;
-
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
-      <h3>${d.Marka} ${d.Model}</h3>
-      <p>Yıl: ${d.Yil}</p>
-      <p>KM: ${d.Km}</p>
-      <p>Fiyat: ${d.Fiyat} ₺</p>
-
-      <button class="onay">Onayla</button>
-      <button class="sil">Sil</button>
-    `;
-
-    /* ✅ ONAYLA */
-    div.querySelector(".onay").onclick = async () => {
-      await updateDoc(doc(db, "ilanlar", id), {
-        Durum: "onaylı"
-      });
-      ilanlariGetir();
-    };
-
-    /* ❌ SİL */
-    div.querySelector(".sil").onclick = async () => {
-      if (confirm("İlan silinsin mi?")) {
-        await deleteDoc(doc(db, "ilanlar", id));
-        ilanlariGetir();
-      }
-    };
-
-    ilanlarDiv.appendChild(div);
-  });
 }
 
-ilanlariGetir();
+function logout(){
+    localStorage.removeItem("admin");
+    window.location.href = "admin-login.html";
+}
 </script>
 
 </body>
