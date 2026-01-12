@@ -5,33 +5,31 @@
 <title>Admin Giriş</title>
 <style>
 body{
-    margin:0;
-    height:100vh;
+    background:#111;
     display:flex;
     justify-content:center;
     align-items:center;
-    background:#111;
+    height:100vh;
     font-family:Arial;
 }
 .box{
     background:#222;
     padding:30px;
-    width:300px;
     border-radius:8px;
     text-align:center;
+    color:#fff;
 }
 input{
-    width:100%;
     padding:10px;
+    width:200px;
     margin-bottom:10px;
-    border:none;
 }
 button{
-    width:100%;
     padding:10px;
-    background:#0d6efd;
-    color:white;
+    width:220px;
+    background:#0a58ff;
     border:none;
+    color:#fff;
     cursor:pointer;
 }
 #error{
@@ -40,26 +38,25 @@ button{
 }
 </style>
 </head>
+
 <body>
 
 <div class="box">
-    <h2 style="color:white">Admin Giriş</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Şifre">
-    <button onclick="login()">Giriş</button>
+    <h2>Admin Giriş</h2>
+    <input type="password" id="sifre" placeholder="Şifre">
+    <br>
+    <button onclick="giris()">Giriş</button>
     <div id="error"></div>
 </div>
 
 <script>
-function login(){
-    const email = document.getElementById("email").value;
-    const pass  = document.getElementById("password").value;
-
-    if(email === "admin@ilkeloto.com" && pass === "123456"){
+function giris(){
+    const sifre = document.getElementById("sifre").value;
+    if(sifre === "1234"){
         localStorage.setItem("admin","true");
         window.location.href = "admin.html";
     }else{
-        document.getElementById("error").innerText = "Hatalı giriş!";
+        document.getElementById("error").innerText = "Hatalı şifre!";
     }
 }
 </script>
