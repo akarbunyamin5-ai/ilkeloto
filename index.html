@@ -1,13 +1,36 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>İlkel Oto</title>
   <style>
-    body { font-family: Arial; margin: 0; background:#f5f5f5; }
-    header, footer { background:#000; color:#fff; text-align:center; padding:20px; }
-    .container { padding:20px; }
-    .ilan { background:#fff; padding:15px; margin-bottom:15px; border-radius:6px; }
+    body {
+      font-family: Arial;
+      margin: 0;
+      background: #f5f5f5;
+    }
+    header {
+      background: #000;
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .container {
+      padding: 20px;
+    }
+    .ilan {
+      background: #fff;
+      margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    footer {
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+    }
   </style>
 </head>
 <body>
@@ -18,15 +41,17 @@
 </header>
 
 <div class="container" id="ilanlar">
-  Yükleniyor...
+  Henüz ilan yok.
 </div>
 
 <footer>
   © 2026 İlkel Oto
 </footer>
 
-<!-- Firebase -->
+<!-- 🔥 FIREBASE KODU -->
 <script type="module">
+  console.log("🔥 Firebase script çalıştı");
+
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
     getFirestore,
@@ -37,7 +62,7 @@
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyDp3wJVF9w3MTfOB1o4Jcdc_H9nvLqSY8",
+    apiKey: "AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvlqSY8",
     authDomain: "ilkeloto.firebaseapp.com",
     projectId: "ilkeloto",
     storageBucket: "ilkeloto.appspot.com",
@@ -48,37 +73,35 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  async function ilanlariGetir() {
-    const alan = document.getElementById("ilanlar");
-    alan.innerHTML = "";
+  const ilanlarDiv = document.getElementById("ilanlar");
+  ilanlarDiv.innerHTML = "";
 
-    const q = query(
-      collection(db, "ilanlar"),
-      where("Durum", "==", "onayli")
-    );
+  console.log("📡 Firestore sorgusu başlıyor");
 
-    const snapshot = await getDocs(q);
+  const q = query(
+    collection(db, "ilanlar"),
+    where("Durum", "==", "onayli")
+  );
 
-    if (snapshot.empty) {
-      alan.innerHTML = "Henüz ilan yok.";
-      return;
-    }
+  const snapshot = await getDocs(q);
+  console.log("📦 Gelen döküman sayısı:", snapshot.size);
 
+  if (snapshot.empty) {
+    ilanlarDiv.innerHTML = "Henüz onaylı ilan yok.";
+  } else {
     snapshot.forEach(doc => {
       const d = doc.data();
-      alan.innerHTML += `
+      ilanlarDiv.innerHTML += `
         <div class="ilan">
-          <h3>${d.Marka} ${d.Model}</h3>
-          <p>Yıl: ${d.Yil}</p>
-          <p>KM: ${d.Km}</p>
-          <p>Fiyat: ${d.Fiyat} ₺</p>
-          <p>Telefon: ${d.Gsm}</p>
+          <strong>${d.Marka} ${d.Model}</strong><br>
+          Yıl: ${d.Yil}<br>
+          KM: ${d.Km}<br>
+          Fiyat: ${d.Fiyat} ₺<br>
+          Telefon: ${d.Gsm}
         </div>
       `;
     });
   }
-
-  ilanlariGetir();
 </script>
 
 </body>
