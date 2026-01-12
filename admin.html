@@ -9,6 +9,12 @@
 <h1>Admin Panel</h1>
 <p>Gelen ilanlar (onayla / sil)</p>
 
+<button onclick="tumunuSil()" style="margin-bottom:15px;">
+  🗑 TÜM İLANLARI SİL
+</button>
+
+<hr>
+
 <div id="ilanlar"></div>
 
 <script>
@@ -23,30 +29,3 @@ ilanlar.forEach((ilan, index) => {
   alan.innerHTML += `
     <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px">
       <strong>${ilan.marka} ${ilan.model}</strong><br>
-      Yıl: ${ilan.yil}<br>
-      KM: ${ilan.km}<br>
-      Fiyat: ${ilan.fiyat} ₺<br>
-      Telefon: ${ilan.telefon}<br>
-      Durum: ${ilan.onay ? "✅ Onaylı" : "⏳ Bekliyor"}<br><br>
-
-      ${ilan.onay ? "" : `<button onclick="onayla(${index})">Onayla</button>`}
-      <button onclick="sil(${index})">Sil</button>
-    </div>
-  `;
-});
-
-function onayla(index) {
-  ilanlar[index].onay = true;
-  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
-  location.reload();
-}
-
-function sil(index) {
-  ilanlar.splice(index, 1);
-  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
-  location.reload();
-}
-</script>
-
-</body>
-</html>
