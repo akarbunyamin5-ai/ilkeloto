@@ -1,56 +1,19 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8">
-  <title>İlan Ver - İlkel Oto</title>
-</head>
-<body>
-
-<h1>İlan Ver</h1>
-<p>Sadece ilk sahibinden otomobiller kabul edilir.</p>
-
-<form onsubmit="return ilanGonder()">
-
-  <label>Marka:</label><br>
-  <input type="text" id="marka" required><br><br>
-
-  <label>Model:</label><br>
-  <input type="text" id="model" required><br><br>
-
-  <label>Yıl:</label><br>
-  <input type="number" id="yil" required><br><br>
-
-  <label>Kilometre:</label><br>
-  <input type="number" id="km" required><br><br>
-
-  <label>Fiyat (₺):</label><br>
-  <input type="number" id="fiyat" required><br><br>
-
-  <label>
-    <input type="checkbox" id="ilkSahip" required>
-    İlk sahibiyim
-  </label><br><br>
-
-  <label>Telefon:</label><br>
-  <input type="tel" id="telefon" required><br><br>
-
-  <button type="submit">İlanı Gönder</button>
-
-</form>
-
-<hr>
-
-<h3>Gönderilen İlan</h3>
-<pre id="sonuc"></pre>
-
 <script>
 function ilanGonder() {
-  const sonuc = `
-Marka: ${marka.value}
-Model: ${model.value}
-Yıl: ${yil.value}
-KM: ${km.value}
-Fiyat: ${fiyat.value} ₺
-İlk Sahip: EVET
-Telefon: ${telefon.value}
-  `
+  const ilan = {
+    marka: marka.value,
+    model: model.value,
+    yil: yil.value,
+    km: km.value,
+    fiyat: fiyat.value,
+    telefon: telefon.value
+  };
+
+  let ilanlar = JSON.parse(localStorage.getItem("ilanlar")) || [];
+  ilanlar.push(ilan);
+  localStorage.setItem("ilanlar", JSON.stringify(ilanlar));
+
+  alert("İlan kaydedildi! Ana sayfada görünecek.");
+  return false;
+}
+</script>
