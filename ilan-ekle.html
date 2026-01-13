@@ -6,54 +6,69 @@
 
 <style>
 body{
-  font-family: Arial, sans-serif;
+  font-family:Arial, sans-serif;
   background:#f2f2f2;
   margin:0;
   padding:20px;
 }
 .container{
-  max-width:700px;
+  max-width:900px;
   margin:auto;
   background:#fff;
-  padding:25px;
+  padding:20px;
   border-radius:6px;
 }
-h2{
-  border-bottom:2px solid #eee;
-  padding-bottom:10px;
+h2{margin-top:0}
+.section{margin-top:25px}
+.logos{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+  gap:15px;
 }
-.section{
-  margin-top:25px;
+.logo{
+  border:1px solid #ddd;
+  padding:10px;
+  text-align:center;
+  cursor:pointer;
+  border-radius:6px;
 }
-label{
-  display:block;
-  margin-top:12px;
-  font-weight:bold;
+.logo img{
+  max-width:60px;
+  height:auto;
 }
-input, textarea, select{
+.logo.active{
+  border:2px solid #000;
+}
+.models{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.model{
+  padding:8px 12px;
+  border:1px solid #ccc;
+  cursor:pointer;
+  border-radius:4px;
+}
+.model.active{
+  background:#000;
+  color:#fff;
+}
+input, textarea, select, button{
   width:100%;
   padding:10px;
-  margin-top:5px;
+  margin-top:10px;
   box-sizing:border-box;
 }
-textarea{
-  min-height:120px;
-  resize:vertical;
-}
+textarea{min-height:120px}
 button{
-  margin-top:25px;
-  padding:12px;
-  width:100%;
   background:#000;
   color:#fff;
   border:none;
   cursor:pointer;
-  font-size:16px;
 }
-#msg{
-  margin-top:15px;
-  font-weight:bold;
-}
+#msg{margin-top:15px;font-weight:bold}
+.hidden{display:none}
 </style>
 </head>
 <body>
@@ -61,25 +76,30 @@ button{
 <div class="container">
   <h2>İlan Ver</h2>
 
-  <!-- ARAÇ BİLGİLERİ -->
+  <!-- MARKA SEÇ -->
   <div class="section">
+    <h3>Marka Seç</h3>
+    <input id="markaAra" placeholder="Marka ara (Fiat, BMW...)">
+    <div class="logos" id="logoAlan"></div>
+  </div>
+
+  <!-- MODEL SEÇ -->
+  <div class="section hidden" id="modelBolum">
+    <h3>Model Seç</h3>
+    <div class="models" id="modelAlan"></div>
+  </div>
+
+  <!-- FORM -->
+  <div class="section hidden" id="formBolum">
     <h3>Araç Bilgileri</h3>
 
-    <label>Marka</label>
-    <input id="marka">
+    <input id="marka" placeholder="Marka" readonly>
+    <input id="model" placeholder="Model" readonly>
+    <input id="yil" type="number" placeholder="Yıl">
+    <input id="km" type="number" placeholder="Kilometre">
 
-    <label>Model</label>
-    <input id="model">
-
-    <label>Yıl</label>
-    <input id="yil" type="number">
-
-    <label>Kilometre</label>
-    <input id="km" type="number">
-
-    <label>Yakıt</label>
     <select id="yakit">
-      <option value="">Seçiniz</option>
+      <option value="">Yakıt</option>
       <option>Benzin</option>
       <option>Dizel</option>
       <option>LPG</option>
@@ -87,90 +107,97 @@ button{
       <option>Elektrik</option>
     </select>
 
-    <label>Vites</label>
     <select id="vites">
-      <option value="">Seçiniz</option>
+      <option value="">Vites</option>
       <option>Manuel</option>
       <option>Otomatik</option>
       <option>Yarı Otomatik</option>
     </select>
-  </div>
 
-  <!-- FİYAT -->
-  <div class="section">
-    <h3>Fiyat</h3>
+    <input id="fiyat" type="number" placeholder="Fiyat">
 
-    <label>Fiyat (₺)</label>
-    <input id="fiyat" type="number">
-  </div>
-
-  <!-- EKSPERTİZ -->
-  <div class="section">
-    <h3>Ekspertiz Bilgisi</h3>
-
-    <label>Ekspertiz Durumu</label>
     <select id="ekspertiz">
-      <option value="">Seçiniz</option>
-      <option>Ekspertiz Yok</option>
-      <option>Ekspertiz Var - Temiz</option>
-      <option>Ekspertiz Var - Boyalı Parça</option>
-      <option>Ekspertiz Var - Değişen Parça</option>
+      <option value="">Ekspertiz</option>
+      <option>Yok</option>
+      <option>Var - Temiz</option>
+      <option>Var - Boyalı</option>
+      <option>Var - Değişen</option>
     </select>
+
+    <textarea id="aciklama" placeholder="Açıklama"></textarea>
+
+    <button onclick="kaydet()">İlanı Gönder</button>
+    <div id="msg"></div>
   </div>
-
-  <!-- AÇIKLAMA -->
-  <div class="section">
-    <h3>Açıklama</h3>
-
-    <textarea id="aciklama" placeholder="Aracın durumu, bakımları, ekstra bilgileri..."></textarea>
-  </div>
-
-  <button onclick="kaydet()">İlanı Yayına Gönder</button>
-  <div id="msg"></div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvlqSY8",
-  authDomain: "ilkeloto.firebaseapp.com",
-  projectId: "ilkeloto"
+<script>
+/* 🔥 MARKA & MODEL VERİSİ (GENİŞLETİLEBİLİR) */
+const data = {
+  Fiat:["Egea","Linea","Brava","Doblo","Punto","Palio"],
+  Renault:["Clio","Megane","Symbol","Fluence","Talisman"],
+  Volkswagen:["Golf","Passat","Polo","Jetta","Tiguan"],
+  BMW:["1 Serisi","3 Serisi","5 Serisi","X3","X5"],
+  Mercedes:["A Serisi","C Serisi","E Serisi","CLA","GLC"],
+  Toyota:["Corolla","Yaris","Auris","C-HR"],
+  Ford:["Focus","Fiesta","Mondeo","Courier"],
+  Hyundai:["i20","i30","Accent","Tucson"],
+  Honda:["Civic","Jazz","CR-V"],
+  Opel:["Astra","Corsa","Insignia"]
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const logoAlan = document.getElementById("logoAlan");
+const modelAlan = document.getElementById("modelAlan");
+const modelBolum = document.getElementById("modelBolum");
+const formBolum = document.getElementById("formBolum");
 
-window.kaydet = async function(){
-
-  if(
-    !marka.value || !model.value || !yil.value ||
-    !km.value || !yakit.value || !vites.value ||
-    !fiyat.value || !ekspertiz.value || !aciklama.value
-  ){
-    msg.innerText = "Lütfen tüm alanları doldurun";
-    msg.style.color = "red";
-    return;
-  }
-
-  await addDoc(collection(db,"ilanlar"),{
-    marka: marka.value,
-    model: model.value,
-    yil: Number(yil.value),
-    km: Number(km.value),
-    yakit: yakit.value,
-    vites: vites.value,
-    fiyat: Number(fiyat.value),
-    ekspertiz: ekspertiz.value,
-    aciklama: aciklama.value,
-    durum: "beklemede",
-    tarih: new Date()
+/* LOGOLARI ÇİZ */
+function logolariCiz(filtre=""){
+  logoAlan.innerHTML="";
+  Object.keys(data).forEach(marka=>{
+    if(marka.toLowerCase().includes(filtre.toLowerCase())){
+      const div=document.createElement("div");
+      div.className="logo";
+      div.innerHTML=`<b>${marka}</b>`;
+      div.onclick=()=>markaSec(marka,div);
+      logoAlan.appendChild(div);
+    }
   });
+}
+logolariCiz();
 
-  msg.innerText = "İlan gönderildi, admin onayı bekleniyor";
-  msg.style.color = "green";
-};
+/* MARKA ARA */
+markaAra.oninput=()=>logolariCiz(markaAra.value);
+
+/* MARKA SEÇ */
+function markaSec(marka,el){
+  document.querySelectorAll(".logo").forEach(l=>l.classList.remove("active"));
+  el.classList.add("active");
+  modelAlan.innerHTML="";
+  data[marka].forEach(m=>{
+    const d=document.createElement("div");
+    d.className="model";
+    d.innerText=m;
+    d.onclick=()=>modelSec(marka,m,d);
+    modelAlan.appendChild(d);
+  });
+  modelBolum.classList.remove("hidden");
+}
+
+/* MODEL SEÇ */
+function modelSec(marka,model,el){
+  document.querySelectorAll(".model").forEach(m=>m.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("marka").value=marka;
+  document.getElementById("model").value=model;
+  formBolum.classList.remove("hidden");
+}
+
+/* ŞİMDİLİK SADE KAYIT (Firebase’e bağlı sürümü az önce yaptık) */
+function kaydet(){
+  msg.innerText="Bu sürüm demo. Firebase bağlantısını önceki kodla birleştireceğiz.";
+  msg.style.color="green";
+}
 </script>
 
 </body>
