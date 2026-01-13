@@ -1,97 +1,167 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>İlan Ver</title>
-
-<style>
-body {
-  font-family: Arial;
-  background: #f5f5f5;
-}
-
-.container {
-  max-width: 700px;
-  margin: 40px auto;
-  background: white;
-  padding: 20px;
-  border-radius: 6px;
-}
-
-select, input, textarea, button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-button {
-  background: black;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-</style>
+  <meta charset="UTF-8" />
+  <title>İlan Ver | İlkel Oto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      margin: 0;
+      padding: 0;
+    }
+    .box {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    select, input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 15px;
+    }
+    textarea {
+      min-height: 100px;
+    }
+    button {
+      background: black;
+      color: white;
+      border: none;
+      margin-top: 25px;
+      cursor: pointer;
+    }
+    .ok {
+      color: green;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .err {
+      color: red;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
-  <h2>İlan Ver</h2>
+<div class="box">
+  <h1>İlan Ver</h1>
 
   <label>Marka</label>
   <select id="marka">
-    <option value="">Marka seç</option>
+    <option value="">Seçiniz</option>
+    <option>Fiat</option>
+    <option>Renault</option>
+    <option>Ford</option>
+    <option>Toyota</option>
+    <option>Volkswagen</option>
+    <option>BMW</option>
+    <option>Mercedes-Benz</option>
+    <option>Audi</option>
+    <option>Hyundai</option>
+    <option>Honda</option>
+    <option>Nissan</option>
+    <option>Peugeot</option>
+    <option>Citroen</option>
+    <option>Opel</option>
+    <option>Skoda</option>
+    <option>Dacia</option>
+    <option>Volvo</option>
+    <option>Tesla</option>
+    <option>TOGG</option>
   </select>
 
   <label>Model</label>
-  <select id="model">
-    <option value="">Önce marka seç</option>
-  </select>
+  <input id="model" placeholder="Örn: Brava" />
 
   <label>Yıl</label>
-  <input type="number" placeholder="Örn: 2018">
+  <input id="yil" type="number" placeholder="2001" />
 
   <label>Kilometre</label>
-  <input type="number" placeholder="Örn: 120000">
+  <input id="km" type="number" placeholder="150000" />
 
-  <label>Fiyat</label>
-  <input type="number" placeholder="₺">
+  <label>Fiyat (₺)</label>
+  <input id="fiyat" type="number" placeholder="250000" />
 
   <label>Açıklama</label>
-  <textarea placeholder="Araç durumu, hasar, tramer..."></textarea>
+  <textarea id="aciklama" placeholder="Araç hakkında detaylı açıklama"></textarea>
 
-  <button>İlan Gönder (şimdilik pasif)</button>
+  <label>Ekspertiz</label>
+  <textarea id="ekspertiz" placeholder="Boyalı / Değişen / Hasar bilgisi"></textarea>
+
+  <label>Telefon</label>
+  <input id="telefon" placeholder="05xxxxxxxxx" />
+
+  <button onclick="ilanGonder()">İLANI GÖNDER</button>
+
+  <div id="sonuc"></div>
 </div>
 
-<script>
-let markaSelect = document.getElementById("marka");
-let modelSelect = document.getElementById("model");
-let tumMarkalar = {};
+<!-- 🔥 FIREBASE -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-fetch("data/markalar.json")
-  .then(res => res.json())
-  .then(data => {
-    tumMarkalar = data;
-    for (let marka in data) {
-      let opt = document.createElement("option");
-      opt.value = marka;
-      opt.textContent = marka;
-      markaSelect.appendChild(opt);
+  const firebaseConfig = {
+    apiKey: "API_KEYİN",
+    authDomain: "ilkeloto.firebaseapp.com",
+    projectId: "ilkeloto",
+    storageBucket: "ilkeloto.appspot.com",
+    messagingSenderId: "XXXX",
+    appId: "XXXX"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.ilanGonder = async function () {
+    const data = {
+      marka: document.getElementById("marka").value,
+      model: document.getElementById("model").value,
+      yil: Number(document.getElementById("yil").value),
+      km: Number(document.getElementById("km").value),
+      fiyat: Number(document.getElementById("fiyat").value),
+      aciklama: document.getElementById("aciklama").value,
+      ekspertiz: document.getElementById("ekspertiz").value,
+      telefon: document.getElementById("telefon").value,
+
+      // 🔑 KRİTİK NOKTA
+      durum: "beklemede",
+      createdAt: serverTimestamp()
+    };
+
+    if (!data.marka || !data.model || !data.fiyat) {
+      document.getElementById("sonuc").innerHTML =
+        "<div class='err'>Lütfen zorunlu alanları doldurun</div>";
+      return;
     }
-  });
 
-markaSelect.addEventListener("change", function () {
-  modelSelect.innerHTML = "<option value=''>Model seç</option>";
-  let secilen = this.value;
-  if (tumMarkalar[secilen]) {
-    tumMarkalar[secilen].forEach(model => {
-      let opt = document.createElement("option");
-      opt.value = model;
-      opt.textContent = model;
-      modelSelect.appendChild(opt);
-    });
-  }
-});
+    try {
+      await addDoc(collection(db, "ilanlar"), data);
+      document.getElementById("sonuc").innerHTML =
+        "<div class='ok'>İlan gönderildi. Admin onayı bekleniyor.</div>";
+    } catch (e) {
+      document.getElementById("sonuc").innerHTML =
+        "<div class='err'>Hata oluştu</div>";
+    }
+  };
 </script>
 
 </body>
