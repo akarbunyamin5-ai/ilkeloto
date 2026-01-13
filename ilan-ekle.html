@@ -7,57 +7,44 @@
 <style>
 body{
   margin:0;
-  padding:20px;
   font-family:Arial, sans-serif;
   background:#f2f2f2;
 }
 .container{
   max-width:1100px;
-  margin:auto;
+  margin:30px auto;
   background:#fff;
   padding:20px;
   border-radius:8px;
 }
 h2{margin-top:0}
 
-.markalar{
+.grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
-  gap:15px;
+  gap:12px;
 }
 
-.marka{
+.box{
   border:1px solid #ddd;
-  border-radius:8px;
   padding:12px;
   text-align:center;
+  border-radius:6px;
   cursor:pointer;
   background:#fff;
   transition:.2s;
 }
-
-.marka:hover{
+.box:hover{
   border-color:#000;
 }
-
-.marka.active{
+.box.active{
   border:2px solid #000;
-}
-
-.logo{
-  width:70px;
-  height:40px;
-  margin:auto;
-  margin-bottom:8px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
   font-weight:bold;
-  background:#eee;
-  border-radius:6px;
 }
 
-.secili{
+.hidden{display:none}
+
+.info{
   margin-top:15px;
   font-weight:bold;
 }
@@ -67,41 +54,81 @@ h2{margin-top:0}
 
 <div class="container">
   <h2>İlan Ver</h2>
-  <p>Marka Seç</p>
 
-  <div class="markalar" id="markalar"></div>
+  <h3>1️⃣ Marka Seç</h3>
+  <div class="grid" id="markalar"></div>
 
-  <div class="secili">
-    Seçilen Marka: <span id="secili">Yok</span>
+  <h3 class="hidden" id="modelBaslik">2️⃣ Model Seç</h3>
+  <div class="grid hidden" id="modeller"></div>
+
+  <div class="info">
+    Seçilen Marka: <span id="seciliMarka">-</span><br>
+    Seçilen Model: <span id="seciliModel">-</span>
   </div>
 </div>
 
 <script>
-const MARKALAR = [
-  "Fiat","Renault","Ford","Toyota","Volkswagen","BMW","Mercedes",
-  "Audi","Hyundai","Kia","Honda","Nissan","Peugeot","Citroen",
-  "Opel","Skoda","Seat","Dacia","Volvo","Jeep","Tesla","TOGG"
-];
+const DATA = {
+  Fiat:["Egea","Linea","Punto","Doblo","Fiorino"],
+  Renault:["Clio","Megane","Symbol","Talisman"],
+  Ford:["Focus","Fiesta","Courier","Connect"],
+  Toyota:["Corolla","Yaris","Auris","C-HR"],
+  Volkswagen:["Golf","Passat","Polo","Jetta"],
+  BMW:["3 Serisi","5 Serisi","X3","X5"],
+  Mercedes:["C Serisi","E Serisi","CLA","GLC"],
+  Audi:["A3","A4","A6","Q3"],
+  Hyundai:["i20","i30","Elantra","Tucson"],
+  Kia:["Rio","Ceed","Sportage"],
+  Honda:["Civic","City","CR-V"],
+  Nissan:["Qashqai","Micra","Juke"],
+  Peugeot:["208","301","3008"],
+  Opel:["Corsa","Astra","Insignia"],
+  Skoda:["Octavia","Superb","Fabia"],
+  Volvo:["S60","S90","XC60","XC90"],
+  Tesla:["Model 3","Model Y"],
+  TOGG:["T10X"]
+};
 
-const alan = document.getElementById("markalar");
-const secili = document.getElementById("secili");
+const markaAlan = document.getElementById("markalar");
+const modelAlan = document.getElementById("modeller");
+const modelBaslik = document.getElementById("modelBaslik");
 
-MARKALAR.forEach(ad=>{
-  const div = document.createElement("div");
-  div.className = "marka";
+const seciliMarka = document.getElementById("seciliMarka");
+const seciliModel = document.getElementById("seciliModel");
 
-  div.innerHTML = `
-    <div class="logo">${ad[0]}</div>
-    <div>${ad}</div>
-  `;
+// MARKALARI YÜKLE
+Object.keys(DATA).forEach(marka=>{
+  const div=document.createElement("div");
+  div.className="box";
+  div.innerText=marka;
 
-  div.onclick = ()=>{
-    document.querySelectorAll(".marka").forEach(x=>x.classList.remove("active"));
+  div.onclick=()=>{
+    document.querySelectorAll("#markalar .box").forEach(x=>x.classList.remove("active"));
     div.classList.add("active");
-    secili.innerText = ad;
+
+    seciliMarka.innerText=marka;
+    seciliModel.innerText="-";
+
+    modelAlan.innerHTML="";
+    modelBaslik.classList.remove("hidden");
+    modelAlan.classList.remove("hidden");
+
+    DATA[marka].forEach(model=>{
+      const m=document.createElement("div");
+      m.className="box";
+      m.innerText=model;
+
+      m.onclick=()=>{
+        document.querySelectorAll("#modeller .box").forEach(x=>x.classList.remove("active"));
+        m.classList.add("active");
+        seciliModel.innerText=model;
+      };
+
+      modelAlan.appendChild(m);
+    });
   };
 
-  alan.appendChild(div);
+  markaAlan.appendChild(div);
 });
 </script>
 
