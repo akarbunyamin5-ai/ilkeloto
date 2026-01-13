@@ -25,6 +25,13 @@ aside h3{margin:0 0 10px;font-size:16px}
 .models li{font-size:13px}
 
 .content{flex:1}
+.search{background:#fff;border-radius:6px;padding:12px;margin-bottom:15px}
+.search input{
+  width:100%;
+  padding:10px;
+  font-size:15px;
+}
+
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
 
 .card{background:#fff;border-radius:6px;padding:15px;box-shadow:0 2px 6px rgba(0,0,0,.12);cursor:pointer}
@@ -54,8 +61,15 @@ footer{background:#111;color:#ccc;text-align:center;padding:15px;margin-top:40px
   <ul id="modeller" class="list models"></ul>
 </aside>
 
-<!-- İLANLAR -->
+<!-- İÇERİK -->
 <div class="content">
+
+  <!-- ARAMA -->
+  <div class="search">
+    <input id="ara" placeholder="Marka, model, açıklama, fiyat ara...">
+  </div>
+
+  <!-- İLANLAR -->
   <div id="ilanlar" class="grid">Yükleniyor...</div>
 </div>
 
@@ -79,10 +93,12 @@ const db = getFirestore(app);
 const ilanAlan = document.getElementById("ilanlar");
 const markaAlan = document.getElementById("markalar");
 const modelAlan = document.getElementById("modeller");
+const araInput = document.getElementById("ara");
 
 let tumIlanlar = [];
 let aktifMarka = "";
 let aktifModel = "";
+let arama = "";
 
 async function yukle(){
   const q = query(collection(db,"ilanlar"), where("durum","==","onayli"));
@@ -116,6 +132,15 @@ function filtre(){
   if(aktifModel){
     liste = liste.filter(i=>i.model===aktifModel);
   }
+  if(arama){
+    const a = arama.toLowerCase();
+    liste = liste.filter(i =>
+      (i.marka||"").toLowerCase().includes(a) ||
+      (i.model||"").toLowerCase().includes(a) ||
+      (i.aciklama||"").toLowerCase().includes(a) ||
+      String(i.fiyat||"").includes(a)
+    );
+  }
 
   goster(liste);
 }
@@ -142,10 +167,9 @@ function goster(liste){
   });
 }
 
-/* MARKA TIK */
+/* MARKA */
 markaAlan.onclick = e=>{
   if(e.target.tagName!=="LI") return;
-
   document.querySelectorAll("#markalar li").forEach(li=>li.classList.remove("active"));
   e.target.classList.add("active");
 
@@ -153,33 +177,30 @@ markaAlan.onclick = e=>{
   aktifModel = "";
   modelAlan.innerHTML="";
 
-  if(!aktifMarka){
-    filtre();
-    return;
+  if(aktifMarka){
+    const modeller=[...new Set(tumIlanlar.filter(i=>i.marka===aktifMarka).map(i=>i.model))];
+    modeller.forEach(m=>{
+      const li=document.createElement("li");
+      li.textContent=m;
+      li.dataset.model=m;
+      modelAlan.appendChild(li);
+    });
   }
-
-  const modeller = [...new Set(
-    tumIlanlar.filter(i=>i.marka===aktifMarka).map(i=>i.model)
-  )];
-
-  modeller.forEach(m=>{
-    const li=document.createElement("li");
-    li.textContent=m;
-    li.dataset.model=m;
-    modelAlan.appendChild(li);
-  });
-
   filtre();
 };
 
-/* MODEL TIK */
+/* MODEL */
 modelAlan.onclick = e=>{
   if(e.target.tagName!=="LI") return;
-
   document.querySelectorAll("#modeller li").forEach(li=>li.classList.remove("active"));
   e.target.classList.add("active");
-
   aktifModel = e.target.dataset.model;
+  filtre();
+};
+
+/* ARAMA */
+araInput.oninput = e=>{
+  arama = e.target.value.trim();
   filtre();
 };
 
