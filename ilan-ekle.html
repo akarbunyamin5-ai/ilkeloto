@@ -1,177 +1,215 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>İlan Ver | İlkel Oto</title>
+<meta charset="UTF-8">
+<title>İlan Ver | İlkel Oto</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+body{
+  font-family:Arial, sans-serif;
+  background:#f5f5f5;
+  margin:0;
+}
+.container{
+  max-width:1000px;
+  margin:30px auto;
+  background:#fff;
+  padding:25px;
+  border-radius:8px;
+}
+h1,h3{margin-top:0}
 
-    .container {
-      max-width: 1000px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 8px;
-    }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:15px;
+}
 
-    h1 {
-      margin-bottom: 20px;
-    }
+.card{
+  border:1px solid #ddd;
+  border-radius:8px;
+  padding:10px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+}
+.card:hover{border-color:#000}
+.card.active{border:2px solid #000;background:#f0f0f0}
+.card img{
+  width:60px;
+  height:60px;
+  object-fit:contain;
+}
 
-    .brand-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 15px;
-    }
+select,input,textarea{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  box-sizing:border-box;
+}
 
-    .brand-card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.2s;
-      background: #fff;
-    }
+textarea{min-height:120px}
 
-    .brand-card:hover {
-      border-color: #000;
-    }
+button{
+  margin-top:15px;
+  padding:12px;
+  width:100%;
+  background:#000;
+  color:#fff;
+  border:none;
+  font-size:16px;
+  cursor:pointer;
+}
 
-    .brand-card img {
-      width: 60px;
-      height: 60px;
-      object-fit: contain;
-      margin-bottom: 8px;
-    }
+.hidden{display:none}
 
-    .brand-card.active {
-      border: 2px solid #000;
-      background: #f0f0f0;
-    }
-
-    .models {
-      margin-top: 30px;
-    }
-
-    select {
-      padding: 10px;
-      width: 100%;
-      font-size: 16px;
-    }
-
-    .result {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-  </style>
+.summary{
+  margin-top:20px;
+  background:#f2f2f2;
+  padding:15px;
+  border-radius:6px;
+}
+</style>
 </head>
-
 <body>
 
-  <div class="container">
-    <h1>İlan Ver</h1>
-    <h3>Marka Seç</h3>
+<div class="container">
+  <h1>İlan Ver</h1>
 
-    <div class="brand-grid" id="brands"></div>
+  <!-- MARKA -->
+  <h3>1️⃣ Marka Seç</h3>
+  <div class="grid" id="brandGrid"></div>
 
-    <div class="models" id="models" style="display:none;">
-      <h3>Model Seç</h3>
-      <select id="modelSelect"></select>
-    </div>
-
-    <div class="result" id="result"></div>
+  <!-- MODEL -->
+  <div id="modelArea" class="hidden">
+    <h3>2️⃣ Model Seç</h3>
+    <select id="modelSelect"></select>
   </div>
 
+  <!-- FORM -->
+  <div id="formArea" class="hidden">
+    <h3>3️⃣ İlan Detayları</h3>
+
+    <input id="yil" type="number" placeholder="Yıl">
+    <input id="km" type="number" placeholder="Kilometre">
+
+    <select id="yakit">
+      <option value="">Yakıt Türü</option>
+      <option>Benzin</option>
+      <option>Dizel</option>
+      <option>LPG</option>
+      <option>Hibrit</option>
+      <option>Elektrik</option>
+    </select>
+
+    <select id="vites">
+      <option value="">Vites</option>
+      <option>Manuel</option>
+      <option>Otomatik</option>
+      <option>Yarı Otomatik</option>
+    </select>
+
+    <input id="fiyat" type="number" placeholder="Fiyat (₺)">
+
+    <select id="ekspertiz">
+      <option value="">Ekspertiz</option>
+      <option>Yok</option>
+      <option>Var - Temiz</option>
+      <option>Var - Boyalı</option>
+      <option>Var - Değişen</option>
+    </select>
+
+    <textarea id="aciklama" placeholder="Açıklama"></textarea>
+
+    <button onclick="testGoster()">İlanı Test Et</button>
+  </div>
+
+  <!-- ÖZET -->
+  <div id="summary" class="summary hidden"></div>
+</div>
+
 <script>
-/* MARKALAR + LOGOLAR + MODELLER */
-const data = {
-  Fiat: {
-    logo: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Fiat_logo.svg",
-    models: ["Egea", "Linea", "Doblo", "Punto", "Brava"]
+/* MARKA + LOGO + MODEL */
+const DATA = {
+  Fiat:{
+    logo:"https://upload.wikimedia.org/wikipedia/commons/3/3e/Fiat_logo.svg",
+    models:["Egea","Linea","Doblo","Punto","Brava"]
   },
-  Renault: {
-    logo: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Renault_logo.svg",
-    models: ["Clio", "Megane", "Symbol", "Taliant"]
+  Renault:{
+    logo:"https://upload.wikimedia.org/wikipedia/commons/6/6e/Renault_logo.svg",
+    models:["Clio","Megane","Symbol","Taliant"]
   },
-  Ford: {
-    logo: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Ford_logo_flat.svg",
-    models: ["Focus", "Fiesta", "Courier", "Mondeo"]
+  Ford:{
+    logo:"https://upload.wikimedia.org/wikipedia/commons/3/3e/Ford_logo_flat.svg",
+    models:["Focus","Fiesta","Courier","Mondeo"]
   },
-  Volkswagen: {
-    logo: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Volkswagen_logo_2019.svg",
-    models: ["Golf", "Passat", "Polo", "Jetta"]
+  Toyota:{
+    logo:"https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_logo.svg",
+    models:["Corolla","Yaris","Auris"]
   },
-  BMW: {
-    logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg",
-    models: ["320", "520", "X5", "X3"]
-  },
-  Mercedes: {
-    logo: "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg",
-    models: ["C200", "E200", "CLA", "A180"]
-  },
-  Toyota: {
-    logo: "https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_logo.svg",
-    models: ["Corolla", "Yaris", "Auris"]
-  },
-  Honda: {
-    logo: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda-logo.svg",
-    models: ["Civic", "City", "Jazz"]
-  },
-  TOGG: {
-    logo: "https://upload.wikimedia.org/wikipedia/commons/7/7d/Togg_logo.svg",
-    models: ["T10X"]
+  Volkswagen:{
+    logo:"https://upload.wikimedia.org/wikipedia/commons/4/4d/Volkswagen_logo_2019.svg",
+    models:["Golf","Passat","Polo","Jetta"]
   }
 };
 
-const brandsDiv = document.getElementById("brands");
-const modelsDiv = document.getElementById("models");
-const modelSelect = document.getElementById("modelSelect");
-const resultDiv = document.getElementById("result");
+let seciliMarka="";
+let seciliModel="";
 
-let selectedBrand = "";
+const brandGrid=document.getElementById("brandGrid");
+const modelArea=document.getElementById("modelArea");
+const modelSelect=document.getElementById("modelSelect");
+const formArea=document.getElementById("formArea");
+const summary=document.getElementById("summary");
 
 /* MARKALARI BAS */
-for (const brand in data) {
-  const card = document.createElement("div");
-  card.className = "brand-card";
-  card.innerHTML = `
-    <img src="${data[brand].logo}">
-    <div>${brand}</div>
-  `;
+for(const marka in DATA){
+  const div=document.createElement("div");
+  div.className="card";
+  div.innerHTML=`<img src="${DATA[marka].logo}"><div>${marka}</div>`;
 
-  card.onclick = () => {
-    document.querySelectorAll(".brand-card").forEach(c => c.classList.remove("active"));
-    card.classList.add("active");
+  div.onclick=()=>{
+    document.querySelectorAll(".card").forEach(x=>x.classList.remove("active"));
+    div.classList.add("active");
 
-    selectedBrand = brand;
-    modelsDiv.style.display = "block";
-    modelSelect.innerHTML = "";
-
-    data[brand].models.forEach(model => {
-      const option = document.createElement("option");
-      option.value = model;
-      option.textContent = model;
-      modelSelect.appendChild(option);
+    seciliMarka=marka;
+    modelSelect.innerHTML="";
+    DATA[marka].models.forEach(m=>{
+      const o=document.createElement("option");
+      o.value=m; o.textContent=m;
+      modelSelect.appendChild(o);
     });
 
-    resultDiv.innerText = "";
+    modelArea.classList.remove("hidden");
+    formArea.classList.add("hidden");
+    summary.classList.add("hidden");
   };
 
-  brandsDiv.appendChild(card);
+  brandGrid.appendChild(div);
 }
 
-/* MODEL SEÇ */
-modelSelect.onchange = () => {
-  resultDiv.innerText =
-    "Seçilen Marka: " + selectedBrand + " | Model: " + modelSelect.value;
+/* MODEL SEÇİLDİ */
+modelSelect.onchange=()=>{
+  seciliModel=modelSelect.value;
+  formArea.classList.remove("hidden");
 };
+
+/* TEST ÖZET */
+function testGoster(){
+  summary.classList.remove("hidden");
+  summary.innerHTML=`
+    <b>TEST ÖZETİ</b><br><br>
+    Marka: ${seciliMarka}<br>
+    Model: ${seciliModel}<br>
+    Yıl: ${yil.value}<br>
+    KM: ${km.value}<br>
+    Yakıt: ${yakit.value}<br>
+    Vites: ${vites.value}<br>
+    Fiyat: ${fiyat.value} ₺<br>
+    Ekspertiz: ${ekspertiz.value}<br>
+    Açıklama: ${aciklama.value}
+  `;
+}
 </script>
 
 </body>
