@@ -1,43 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlkel Oto</title>
+<title>İlkel Oto | Onaylı İlanlar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-body{font-family:Arial;background:#f5f5f5}
-.container{max-width:900px;margin:30px auto}
-.card{background:#fff;padding:15px;margin-bottom:10px;border-radius:6px}
+body {
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f2f2f2;
+}
+header {
+  background:#111;
+  color:#fff;
+  padding:25px;
+  text-align:center;
+}
+.container {
+  max-width:1200px;
+  margin:30px auto;
+  padding:0 15px;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:20px;
+}
+.card {
+  background:#fff;
+  border-radius:6px;
+  padding:15px;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+.card h3 {
+  margin:0 0 10px;
+}
+.card p {
+  margin:4px 0;
+  font-size:14px;
+}
+.price {
+  color:green;
+  font-weight:bold;
+  font-size:18px;
+}
+footer {
+  background:#111;
+  color:#fff;
+  text-align:center;
+  padding:15px;
+  margin-top:40px;
+}
 </style>
 </head>
+
 <body>
 
+<header>
+  <h1>İLKEL OTO</h1>
+  <p>Onaylı Sahibinden İlanlar</p>
+</header>
+
 <div class="container">
-<h2>Onaylı İlanlar</h2>
-<div id="ilanlar"></div>
+  <div id="ilanlar" class="grid">
+    Yükleniyor...
+  </div>
 </div>
 
+<footer>
+  © 2026 İlkel Oto
+</footer>
+
+<!-- 🔥 FIREBASE -->
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import{getFirestore,collection,query,where,getDocs}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app=initializeApp({
- apiKey:"API_KEY",
- authDomain:"PROJECT.firebaseapp.com",
- projectId:"PROJECT"
-});
-const db=getFirestore(app);
+const firebaseConfig = {
+  apiKey: "API_KEYİN",
+  authDomain: "ilkeloto.firebaseapp.com",
+  projectId: "ilkeloto",
+  storageBucket: "ilkeloto.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
+};
 
-const q=query(collection(db,"ilanlar"),where("durum","==","onayli"));
-const snap=await getDocs(q);
-const alan=document.getElementById("ilanlar");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-snap.forEach(d=>{
- const x=d.data();
- const div=document.createElement("div");
- div.className="card";
- div.innerHTML=`<b>${x.marka} ${x.model}</b><br>${x.fiyat} ₺`;
- alan.appendChild(div);
-});
+const alan = document.getElementById("ilanlar");
+
+async function yukle() {
+  alan.innerHTML = "";
+
+  const q = query(
+    collection(db,"ilanlar"),
+    where("durum","==","onayli")
+  );
+
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    alan.innerHTML = "<p>Henüz onaylı ilan yok.</p>";
+    return;
+  }
+
+  snap.forEach(d => {
+    const i = d.data();
+    alan.innerHTML += `
+      <div class="card">
+        <h3>${i.marka} ${i.model}</h3>
+        <p>Yıl: ${i.yil}</p>
+        <p>KM: ${i.km}</p>
+        <p class="price">${i.fiyat} ₺</p>
+        <p><b>Telefon:</b> ${i.telefon}</p>
+      </div>
+    `;
+  });
+}
+
+yukle();
 </script>
 
 </body>
