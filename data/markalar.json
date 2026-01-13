@@ -1,7 +1,7 @@
 [
-  { "id": "fiat", "ad": "Fiat", "logo": "/logos/fiat.png" },
-  { "id": "renault", "ad": "Renault", "logo": "/logos/renault.png" },
-  { "id": "ford", "ad": "Ford", "logo": "/logos/ford.png" },
-  { "id": "toyota", "ad": "Toyota", "logo": "/logos/toyota.png" },
-  { "id": "volkswagen", "ad": "Volkswagen", "logo": "/logos/volkswagen.png" }
+  { "id": "fiat", "ad": "Fiat", "logo": "https://logo.clearbit.com/fiat.com" },
+  { "id": "renault", "ad": "Renault", "logo": "https://logo.clearbit.com/renault.com" },
+  { "id": "ford", "ad": "Ford", "logo": "https://logo.clearbit.com/ford.com" },
+  { "id": "toyota", "ad": "Toyota", "logo": "https://logo.clearbit.com/toyota.com" },
+  { "id": "volkswagen", "ad": "Volkswagen", "logo": "https://logo.clearbit.com/volkswagen.com" }
 ]
