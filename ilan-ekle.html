@@ -1,41 +1,45 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>İlan Ver | İlkel Oto</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-    }
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    .markalar {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 15px;
-    }
-    .marka {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
-      cursor: pointer;
-      border-radius: 6px;
-    }
-    .marka img {
-      width: 60px;
-      height: 60px;
-      object-fit: contain;
-    }
-    .marka:hover {
-      background: #eee;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>İlan Ver | İlkel Oto</title>
+
+<style>
+body{
+  font-family:Arial, sans-serif;
+  background:#f2f2f2;
+  margin:0;
+  padding:20px;
+}
+.container{
+  max-width:1000px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+}
+h2{margin-top:0}
+.markalar{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:15px;
+}
+.marka{
+  border:1px solid #ddd;
+  border-radius:6px;
+  padding:10px;
+  text-align:center;
+  cursor:pointer;
+}
+.marka img{
+  width:70px;
+  height:45px;
+  object-fit:contain;
+}
+.marka.active{
+  border:2px solid #000;
+}
+</style>
 </head>
 <body>
 
@@ -44,24 +48,61 @@
   <p>Marka Seç</p>
 
   <div class="markalar" id="markalar"></div>
+
+  <p><b>Seçilen Marka:</b> <span id="secili">Yok</span></p>
 </div>
 
 <script>
-fetch("/data/markalar.json")
-  .then(res => res.json())
-  .then(markalar => {
-    const alan = document.getElementById("markalar");
-    markalar.forEach(m => {
-      const div = document.createElement("div");
-      div.className = "marka";
-      div.innerHTML = `
-        <img src="${m.logo}">
-        <div>${m.ad}</div>
-      `;
-      div.onclick = () => alert("Seçilen marka: " + m.ad);
-      alan.appendChild(div);
-    });
-  });
+/* TÜRKİYE'DEKİ MARKALAR (LOGO URL + YEDEK) */
+const MARKALAR = [
+  { ad:"Fiat", logo:"https://logo.clearbit.com/fiat.com" },
+  { ad:"Renault", logo:"https://logo.clearbit.com/renault.com" },
+  { ad:"Ford", logo:"https://logo.clearbit.com/ford.com" },
+  { ad:"Toyota", logo:"https://logo.clearbit.com/toyota.com" },
+  { ad:"Volkswagen", logo:"https://logo.clearbit.com/volkswagen.com" },
+  { ad:"BMW", logo:"https://logo.clearbit.com/bmw.com" },
+  { ad:"Mercedes-Benz", logo:"https://logo.clearbit.com.mercedes-benz.com" },
+  { ad:"Audi", logo:"https://logo.clearbit.com/audi.com" },
+  { ad:"Hyundai", logo:"https://logo.clearbit.com/hyundai.com" },
+  { ad:"Kia", logo:"https://logo.clearbit.com/kia.com" },
+  { ad:"Honda", logo:"https://logo.clearbit.com/honda.com" },
+  { ad:"Nissan", logo:"https://logo.clearbit.com/nissan-global.com" },
+  { ad:"Peugeot", logo:"https://logo.clearbit.com/peugeot.com" },
+  { ad:"Citroen", logo:"https://logo.clearbit.com/citroen.com" },
+  { ad:"Opel", logo:"https://logo.clearbit.com/opel.com" },
+  { ad:"Skoda", logo:"https://logo.clearbit.com/skoda-auto.com" },
+  { ad:"Seat", logo:"https://logo.clearbit.com/seat.com" },
+  { ad:"Dacia", logo:"https://logo.clearbit.com/dacia.com" },
+  { ad:"Volvo", logo:"https://logo.clearbit.com/volvocars.com" },
+  { ad:"Jeep", logo:"https://logo.clearbit.com/jeep.com" },
+  { ad:"Tesla", logo:"https://logo.clearbit.com/tesla.com" },
+  { ad:"TOGG", logo:"https://logo.clearbit.com/togg.com.tr" }
+];
+
+const alan = document.getElementById("markalar");
+const seciliYazi = document.getElementById("secili");
+
+/* MARKALARI ÇİZ */
+MARKALAR.forEach(m=>{
+  const div = document.createElement("div");
+  div.className = "marka";
+
+  div.innerHTML = `
+    <img 
+      src="${m.logo}"
+      onerror="this.src='https://via.placeholder.com/70x45?text=${m.ad}'"
+    >
+    <div>${m.ad}</div>
+  `;
+
+  div.onclick = ()=>{
+    document.querySelectorAll(".marka").forEach(x=>x.classList.remove("active"));
+    div.classList.add("active");
+    seciliYazi.innerText = m.ad;
+  };
+
+  alan.appendChild(div);
+});
 </script>
 
 </body>
