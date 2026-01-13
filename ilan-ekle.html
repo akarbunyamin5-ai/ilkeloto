@@ -3,135 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <title>İlan Ver</title>
+
 <style>
-body{font-family:Arial;background:#f5f5f5;margin:0}
-.container{max-width:900px;margin:30px auto;background:#fff;padding:20px;border-radius:8px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-.box{border:1px solid #ccc;padding:10px;text-align:center;cursor:pointer;border-radius:6px}
-.box.active{border:2px solid #000}
-input,select,textarea,button{width:100%;padding:10px;margin-top:10px}
-textarea{min-height:100px}
-button{background:#000;color:#fff;border:none}
-.hidden{display:none}
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+}
+
+.container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+select, input, textarea, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+button {
+  background: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
 </style>
 </head>
+
 <body>
 
 <div class="container">
-<h2>İlan Ver</h2>
+  <h2>İlan Ver</h2>
 
-<h3>Marka</h3>
-<div class="grid" id="markalar"></div>
+  <label>Marka</label>
+  <select id="marka">
+    <option value="">Marka seç</option>
+  </select>
 
-<div id="modelAlan" class="hidden">
-<h3>Model</h3>
-<select id="model"></select>
-</div>
+  <label>Model</label>
+  <select id="model">
+    <option value="">Önce marka seç</option>
+  </select>
 
-<div id="formAlan" class="hidden">
-<input id="yil" placeholder="Yıl">
-<input id="km" placeholder="Kilometre">
-<input id="fiyat" placeholder="Fiyat">
+  <label>Yıl</label>
+  <input type="number" placeholder="Örn: 2018">
 
-<select id="yakit">
-<option>Benzin</option><option>Dizel</option><option>LPG</option><option>Elektrik</option>
-</select>
+  <label>Kilometre</label>
+  <input type="number" placeholder="Örn: 120000">
 
-<select id="vites">
-<option>Manuel</option><option>Otomatik</option>
-</select>
+  <label>Fiyat</label>
+  <input type="number" placeholder="₺">
 
-<select id="tramer">
-<option>Tramer Yok</option>
-<option>Tramer Var</option>
-</select>
+  <label>Açıklama</label>
+  <textarea placeholder="Araç durumu, hasar, tramer..."></textarea>
 
-<select id="ekspertiz">
-<option>Ekspertiz Yok</option>
-<option>Ekspertiz Var</option>
-</select>
-
-<textarea id="aciklama" placeholder="Açıklama"></textarea>
-<button onclick="kaydet()">İlanı Gönder</button>
-<div id="msg"></div>
-</div>
+  <button>İlan Gönder (şimdilik pasif)</button>
 </div>
 
 <script>
-const DATA={
-Fiat:["Egea","Linea","Doblo","Brava","Palio","Albea","Tipo"],
-Renault:["Clio","Megane","Symbol","Fluence","Taliant","Kadjar"],
-Ford:["Focus","Fiesta","Courier","Transit","Mondeo"],
-Volkswagen:["Golf","Passat","Polo","Jetta","Caddy","Tiguan"],
-Toyota:["Corolla","Yaris","Auris","C-HR","RAV4"],
-BMW:["1 Serisi","3 Serisi","5 Serisi","X1","X3","X5"],
-Mercedes:["A","C","E","S","CLA","GLC"],
-Audi:["A3","A4","A6","Q2","Q3","Q5"],
-Hyundai:["i10","i20","i30","Accent","Elantra","Tucson"],
-Honda:["Civic","City","Jazz","CR-V"],
-Peugeot:["208","301","308","3008","5008"],
-Opel:["Corsa","Astra","Insignia","Mokka"],
-Skoda:["Fabia","Octavia","Superb","Kodiaq"],
-Dacia:["Sandero","Logan","Duster"],
-Tesla:["Model 3","Model Y","Model S"],
-TOGG:["T10X"]
-};
+let markaSelect = document.getElementById("marka");
+let modelSelect = document.getElementById("model");
+let tumMarkalar = {};
 
-let seciliMarka="";
-const markaDiv=document.getElementById("markalar");
-const modelAlan=document.getElementById("modelAlan");
-const modelSelect=document.getElementById("model");
-const formAlan=document.getElementById("formAlan");
-
-Object.keys(DATA).forEach(m=>{
- const d=document.createElement("div");
- d.className="box";
- d.innerText=m;
- d.onclick=()=>{
-  document.querySelectorAll(".box").forEach(x=>x.classList.remove("active"));
-  d.classList.add("active");
-  seciliMarka=m;
-  modelSelect.innerHTML="";
-  DATA[m].forEach(md=>{
-   const o=document.createElement("option");
-   o.textContent=md;
-   modelSelect.appendChild(o);
+fetch("data/markalar.json")
+  .then(res => res.json())
+  .then(data => {
+    tumMarkalar = data;
+    for (let marka in data) {
+      let opt = document.createElement("option");
+      opt.value = marka;
+      opt.textContent = marka;
+      markaSelect.appendChild(opt);
+    }
   });
-  modelAlan.classList.remove("hidden");
- };
- markaDiv.appendChild(d);
+
+markaSelect.addEventListener("change", function () {
+  modelSelect.innerHTML = "<option value=''>Model seç</option>";
+  let secilen = this.value;
+  if (tumMarkalar[secilen]) {
+    tumMarkalar[secilen].forEach(model => {
+      let opt = document.createElement("option");
+      opt.value = model;
+      opt.textContent = model;
+      modelSelect.appendChild(opt);
+    });
+  }
 });
-
-modelSelect.onchange=()=>formAlan.classList.remove("hidden");
-</script>
-
-<script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import{getFirestore,addDoc,collection}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const app=initializeApp({
- apiKey:"API_KEY",
- authDomain:"PROJECT.firebaseapp.com",
- projectId:"PROJECT"
-});
-const db=getFirestore(app);
-
-window.kaydet=async()=>{
- await addDoc(collection(db,"ilanlar"),{
-  marka:seciliMarka,
-  model:model.value,
-  yil:yil.value,
-  km:km.value,
-  fiyat:fiyat.value,
-  yakit:yakit.value,
-  vites:vites.value,
-  tramer:tramer.value,
-  ekspertiz:ekspertiz.value,
-  aciklama:aciklama.value,
-  durum:"beklemede"
- });
- msg.innerText="İlan gönderildi (onay bekliyor)";
-};
 </script>
 
 </body>
