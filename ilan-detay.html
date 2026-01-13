@@ -2,26 +2,19 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlan Detayı | İlkel Oto</title>
+<title>İlan Detayı</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-body{margin:0;font-family:Arial;background:#f2f2f2}
+body{font-family:Arial;background:#f2f2f2;margin:0}
 .container{max-width:900px;margin:30px auto;background:#fff;padding:25px;border-radius:6px}
-h1{margin-top:0}
-.row{display:flex;flex-wrap:wrap;gap:15px}
-.box{flex:1;min-width:200px;background:#f7f7f7;padding:10px;border-radius:4px}
+.gallery{display:flex;gap:10px;flex-wrap:wrap}
+.gallery img{width:160px;height:120px;object-fit:cover;border-radius:4px}
 .price{color:green;font-size:22px;font-weight:bold}
-.back{margin-bottom:15px;display:inline-block;color:#000;text-decoration:none}
 </style>
 </head>
-
 <body>
 
-<div class="container">
-  <a href="/" class="back">← Geri Dön</a>
-  <div id="icerik">Yükleniyor...</div>
-</div>
+<div class="container" id="alan">Yükleniyor...</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -36,43 +29,29 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+const id=new URLSearchParams(location.search).get("id");
+const alan=document.getElementById("alan");
 
-const alan = document.getElementById("icerik");
+if(!id){alan.innerText="İlan yok";}
 
-if(!id){
-  alan.innerHTML = "İlan bulunamadı";
-} else {
-  const ref = doc(db,"ilanlar",id);
-  const snap = await getDoc(ref);
+const snap=await getDoc(doc(db,"ilanlar",id));
+if(!snap.exists()){alan.innerText="Bulunamadı";}
 
-  if(!snap.exists()){
-    alan.innerHTML = "İlan bulunamadı";
-  } else {
-    const i = snap.data();
+const i=snap.data();
 
-    alan.innerHTML = `
-      <h1>${i.marka} ${i.model}</h1>
-      <p class="price">${i.fiyat} ₺</p>
+alan.innerHTML=`
+<h1>${i.marka} ${i.model}</h1>
+<p class="price">${i.fiyat} ₺</p>
 
-      <div class="row">
-        <div class="box"><b>Yıl:</b> ${i.yil}</div>
-        <div class="box"><b>Kilometre:</b> ${i.km}</div>
-        <div class="box"><b>Vites:</b> ${i.vites || "-"}</div>
-        <div class="box"><b>Yakıt:</b> ${i.yakit || "-"}</div>
-        <div class="box"><b>Tramer:</b> ${i.tramer || "-"}</div>
-        <div class="box"><b>Ekspertiz:</b> ${i.ekspertiz || "-"}</div>
-      </div>
+<div class="gallery">
+${(i.fotolar||[]).map(u=>`<img src="${u}">`).join("")}
+</div>
 
-      <h3>Açıklama</h3>
-      <p>${i.aciklama || "-"}</p>
-
-      <h3>İletişim</h3>
-      <p><b>Telefon:</b> ${i.telefon}</p>
-    `;
-  }
-}
+<p><b>Yıl:</b> ${i.yil}</p>
+<p><b>KM:</b> ${i.km}</p>
+<p><b>Açıklama:</b><br>${i.aciklama}</p>
+<p><b>Telefon:</b> ${i.telefon}</p>
+`;
 </script>
 
 </body>
