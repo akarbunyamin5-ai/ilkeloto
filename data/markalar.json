@@ -1,0 +1,9 @@
+[
+  { "ad": "Fiat", "logo": "fiat.png" },
+  { "ad": "Renault", "logo": "renault.png" },
+  { "ad": "Volkswagen", "logo": "volkswagen.png" },
+  { "ad": "Toyota", "logo": "toyota.png" },
+  { "ad": "Ford", "logo": "ford.png" },
+  { "ad": "BMW", "logo": "bmw.png" },
+  { "ad": "Mercedes-Benz", "logo": "mercedes.png" }
+]
