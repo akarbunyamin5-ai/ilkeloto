@@ -3,58 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <title>İlan Ver | İlkel Oto</title>
-
 <style>
-body{
-  font-family:Arial, sans-serif;
-  background:#f2f2f2;
-  margin:0;
-  padding:20px;
-}
-.container{
-  max-width:900px;
-  margin:auto;
-  background:#fff;
-  padding:20px;
-  border-radius:6px;
-}
+body{font-family:Arial;background:#f2f2f2;margin:0;padding:20px}
+.container{max-width:1000px;margin:auto;background:#fff;padding:20px;border-radius:6px}
 .section{margin-top:25px}
-.logos{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
-  gap:15px;
-}
-.logo{
-  border:1px solid #ddd;
-  padding:10px;
-  text-align:center;
-  cursor:pointer;
-  border-radius:6px;
-}
+.logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:12px}
+.logo{border:1px solid #ddd;border-radius:6px;padding:10px;text-align:center;cursor:pointer}
+.logo img{max-width:60px;max-height:40px;object-fit:contain}
 .logo.active{border:2px solid #000}
-.models{display:flex;flex-wrap:wrap;gap:10px}
-.model{
-  padding:8px 12px;
-  border:1px solid #ccc;
-  cursor:pointer;
-  border-radius:4px;
-}
+.models{display:flex;flex-wrap:wrap;gap:8px}
+.model{border:1px solid #ccc;border-radius:4px;padding:8px 12px;cursor:pointer}
 .model.active{background:#000;color:#fff}
-input, textarea, select, button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  box-sizing:border-box;
-}
+input,select,textarea,button{width:100%;padding:10px;margin-top:10px;box-sizing:border-box}
 textarea{min-height:120px}
-button{
-  background:#000;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-}
 .hidden{display:none}
-#msg{margin-top:15px;font-weight:bold}
+button{background:#000;color:#fff;border:none;cursor:pointer}
+#msg{margin-top:10px;font-weight:bold}
 </style>
 </head>
 <body>
@@ -62,161 +26,92 @@ button{
 <div class="container">
   <h2>İlan Ver</h2>
 
-  <!-- MARKA -->
   <div class="section">
     <h3>Marka Seç</h3>
     <input id="markaAra" placeholder="Marka ara">
-    <div class="logos" id="logoAlan"></div>
+    <div id="logoAlan" class="logos"></div>
   </div>
 
-  <!-- MODEL -->
   <div class="section hidden" id="modelBolum">
     <h3>Model Seç</h3>
-    <div class="models" id="modelAlan"></div>
+    <div id="modelAlan" class="models"></div>
   </div>
 
-  <!-- FORM -->
   <div class="section hidden" id="formBolum">
     <h3>Araç Bilgileri</h3>
-
     <input id="marka" readonly>
     <input id="model" readonly>
-
     <input id="yil" type="number" placeholder="Yıl">
     <input id="km" type="number" placeholder="Kilometre">
-
-    <select id="yakit">
-      <option value="">Yakıt</option>
-      <option>Benzin</option>
-      <option>Dizel</option>
-      <option>LPG</option>
-      <option>Hibrit</option>
-      <option>Elektrik</option>
-    </select>
-
-    <select id="vites">
-      <option value="">Vites</option>
-      <option>Manuel</option>
-      <option>Otomatik</option>
-      <option>Yarı Otomatik</option>
-    </select>
-
+    <select id="yakit"><option value="">Yakıt</option><option>Benzin</option><option>Dizel</option><option>LPG</option><option>Hibrit</option><option>Elektrik</option></select>
+    <select id="vites"><option value="">Vites</option><option>Manuel</option><option>Otomatik</option><option>Yarı Otomatik</option></select>
     <input id="fiyat" type="number" placeholder="Fiyat">
-
-    <select id="ekspertiz">
-      <option value="">Ekspertiz</option>
-      <option>Yok</option>
-      <option>Var - Temiz</option>
-      <option>Var - Boyalı</option>
-      <option>Var - Değişen</option>
-    </select>
-
+    <select id="ekspertiz"><option value="">Ekspertiz</option><option>Yok</option><option>Var - Temiz</option><option>Var - Boyalı</option><option>Var - Değişen</option></select>
     <textarea id="aciklama" placeholder="Açıklama"></textarea>
-
     <button onclick="kaydet()">İlanı Gönder</button>
     <div id="msg"></div>
   </div>
 </div>
 
 <script>
-/* MARKA & MODEL */
-const data={
-  Fiat:["Egea","Linea","Brava","Doblo","Punto","Palio"],
-  Renault:["Clio","Megane","Symbol","Fluence","Talisman"],
-  Volkswagen:["Golf","Passat","Polo","Jetta","Tiguan"],
-  BMW:["1 Serisi","3 Serisi","5 Serisi","X3","X5"],
-  Mercedes:["A Serisi","C Serisi","E Serisi","CLA","GLC"],
-  Toyota:["Corolla","Yaris","Auris","C-HR"],
-  Ford:["Focus","Fiesta","Mondeo","Courier"],
-  Hyundai:["i20","i30","Accent","Tucson"],
-  Honda:["Civic","Jazz","CR-V"],
-  Opel:["Astra","Corsa","Insignia"]
-};
-
+let DATA={};
 const logoAlan=document.getElementById("logoAlan");
 const modelAlan=document.getElementById("modelAlan");
 const modelBolum=document.getElementById("modelBolum");
 const formBolum=document.getElementById("formBolum");
 
-function logolariCiz(f=""){
+fetch("/data/marka-model.json")
+  .then(r=>r.json())
+  .then(j=>{ DATA=j; ciz(); });
+
+function ciz(f=""){
   logoAlan.innerHTML="";
-  Object.keys(data).forEach(m=>{
+  Object.keys(DATA).forEach(m=>{
     if(m.toLowerCase().includes(f.toLowerCase())){
       const d=document.createElement("div");
       d.className="logo";
-      d.innerHTML=`<b>${m}</b>`;
-      d.onclick=()=>markaSec(m,d);
+      d.innerHTML=`<img src="/logos/${DATA[m].logo}" alt="${m}"><div>${m}</div>`;
+      d.onclick=()=>secMarka(m,d);
       logoAlan.appendChild(d);
     }
   });
 }
-logolariCiz();
-markaAra.oninput=()=>logolariCiz(markaAra.value);
+markaAra.oninput=()=>ciz(markaAra.value);
 
-function markaSec(marka,el){
-  document.querySelectorAll(".logo").forEach(l=>l.classList.remove("active"));
+function secMarka(m,el){
+  document.querySelectorAll(".logo").forEach(x=>x.classList.remove("active"));
   el.classList.add("active");
   modelAlan.innerHTML="";
-  data[marka].forEach(md=>{
+  DATA[m].models.forEach(md=>{
     const d=document.createElement("div");
     d.className="model";
-    d.innerText=md;
-    d.onclick=()=>modelSec(marka,md,d);
+    d.textContent=md;
+    d.onclick=()=>secModel(m,md,d);
     modelAlan.appendChild(d);
   });
   modelBolum.classList.remove("hidden");
 }
 
-function modelSec(marka,model,el){
-  document.querySelectorAll(".model").forEach(m=>m.classList.remove("active"));
+function secModel(m,md,el){
+  document.querySelectorAll(".model").forEach(x=>x.classList.remove("active"));
   el.classList.add("active");
-  document.getElementById("marka").value=marka;
-  document.getElementById("model").value=model;
+  marka.value=m; model.value=md;
   formBolum.classList.remove("hidden");
 }
 </script>
 
-<!-- 🔥 FIREBASE -->
+<!-- Firebase bağlama (önceden kullandığımız ayarlarla) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig={
-  apiKey:"AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvlqSY8",
-  authDomain:"ilkeloto.firebaseapp.com",
-  projectId:"ilkeloto"
-};
-
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
-
-window.kaydet=async function(){
-  if(
-    !marka.value||!model.value||!yil.value||!km.value||
-    !yakit.value||!vites.value||!fiyat.value||
-    !ekspertiz.value||!aciklama.value
-  ){
-    msg.innerText="Tüm alanları doldur";
-    msg.style.color="red";
-    return;
+const firebaseConfig={ apiKey:"AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvlqSY8", authDomain:"ilkeloto.firebaseapp.com", projectId:"ilkeloto" };
+const app=initializeApp(firebaseConfig); const db=getFirestore(app);
+window.kaydet=async()=>{
+  if(!marka.value||!model.value||!yil.value||!km.value||!yakit.value||!vites.value||!fiyat.value||!ekspertiz.value||!aciklama.value){
+    msg.textContent="Tüm alanları doldur"; msg.style.color="red"; return;
   }
-
-  await addDoc(collection(db,"ilanlar"),{
-    marka:marka.value,
-    model:model.value,
-    yil:Number(yil.value),
-    km:Number(km.value),
-    yakit:yakit.value,
-    vites:vites.value,
-    fiyat:Number(fiyat.value),
-    ekspertiz:ekspertiz.value,
-    aciklama:aciklama.value,
-    durum:"beklemede",
-    tarih:new Date()
-  });
-
-  msg.innerText="İlan gönderildi (admin onayı bekleniyor)";
-  msg.style.color="green";
+  await addDoc(collection(db,"ilanlar"),{ marka:marka.value, model:model.value, yil:+yil.value, km:+km.value, yakit:yakit.value, vites:vites.value, fiyat:+fiyat.value, ekspertiz:ekspertiz.value, aciklama:aciklama.value, durum:"beklemede", tarih:new Date() });
+  msg.textContent="İlan gönderildi (admin onayı bekleniyor)"; msg.style.color="green";
 };
 </script>
 
