@@ -2,116 +2,112 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlan Ver | İlkel Oto</title>
+<title>İlan Ver</title>
+
 <style>
-body{font-family:Arial;background:#f2f2f2;margin:0;padding:20px}
-.container{max-width:1000px;margin:auto;background:#fff;padding:20px;border-radius:6px}
-.section{margin-top:25px}
-.logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:12px}
-.logo{border:1px solid #ddd;border-radius:6px;padding:10px;text-align:center;cursor:pointer}
-.logo img{max-width:60px;max-height:40px;object-fit:contain}
-.logo.active{border:2px solid #000}
-.models{display:flex;flex-wrap:wrap;gap:8px}
-.model{border:1px solid #ccc;border-radius:4px;padding:8px 12px;cursor:pointer}
-.model.active{background:#000;color:#fff}
-input,select,textarea,button{width:100%;padding:10px;margin-top:10px;box-sizing:border-box}
-textarea{min-height:120px}
-.hidden{display:none}
-button{background:#000;color:#fff;border:none;cursor:pointer}
-#msg{margin-top:10px;font-weight:bold}
+body {
+  font-family: Arial, sans-serif;
+  background:#f5f5f5;
+  margin:0;
+}
+
+.container {
+  max-width:900px;
+  margin:40px auto;
+  background:#fff;
+  padding:30px;
+  border-radius:8px;
+}
+
+h1 {
+  margin-bottom:20px;
+}
+
+input {
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  margin-bottom:20px;
+}
+
+.markalar {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:15px;
+}
+
+.marka {
+  border:1px solid #ddd;
+  padding:10px;
+  text-align:center;
+  cursor:pointer;
+  border-radius:6px;
+  transition:0.2s;
+}
+
+.marka:hover {
+  border-color:#000;
+}
+
+.marka img {
+  max-width:70px;
+  height:50px;
+  object-fit:contain;
+}
+
+.secili {
+  border:2px solid green;
+}
 </style>
 </head>
+
 <body>
 
 <div class="container">
-  <h2>İlan Ver</h2>
+  <h1>İlan Ver</h1>
 
-  <div class="section">
-    <h3>Marka Seç</h3>
-    <input id="markaAra" placeholder="Marka ara">
-    <div id="logoAlan" class="logos"></div>
-  </div>
+  <input id="ara" placeholder="Marka ara...">
 
-  <div class="section hidden" id="modelBolum">
-    <h3>Model Seç</h3>
-    <div id="modelAlan" class="models"></div>
-  </div>
+  <div class="markalar" id="markalar"></div>
 
-  <div class="section hidden" id="formBolum">
-    <h3>Araç Bilgileri</h3>
-    <input id="marka" readonly>
-    <input id="model" readonly>
-    <input id="yil" type="number" placeholder="Yıl">
-    <input id="km" type="number" placeholder="Kilometre">
-    <select id="yakit"><option value="">Yakıt</option><option>Benzin</option><option>Dizel</option><option>LPG</option><option>Hibrit</option><option>Elektrik</option></select>
-    <select id="vites"><option value="">Vites</option><option>Manuel</option><option>Otomatik</option><option>Yarı Otomatik</option></select>
-    <input id="fiyat" type="number" placeholder="Fiyat">
-    <select id="ekspertiz"><option value="">Ekspertiz</option><option>Yok</option><option>Var - Temiz</option><option>Var - Boyalı</option><option>Var - Değişen</option></select>
-    <textarea id="aciklama" placeholder="Açıklama"></textarea>
-    <button onclick="kaydet()">İlanı Gönder</button>
-    <div id="msg"></div>
-  </div>
+  <p><b>Seçilen Marka:</b> <span id="secili">Yok</span></p>
 </div>
 
 <script>
-let DATA={};
-const logoAlan=document.getElementById("logoAlan");
-const modelAlan=document.getElementById("modelAlan");
-const modelBolum=document.getElementById("modelBolum");
-const formBolum=document.getElementById("formBolum");
+let tumMarkalar = [];
+const alan = document.getElementById("markalar");
+const seciliYazi = document.getElementById("secili");
 
-fetch("/data/marka-model.json")
-  .then(r=>r.json())
-  .then(j=>{ DATA=j; ciz(); });
+fetch("/data/markalar.json")
+  .then(r => r.json())
+  .then(d => {
+    tumMarkalar = d;
+    ciz(d);
+  });
 
-function ciz(f=""){
-  logoAlan.innerHTML="";
-  Object.keys(DATA).forEach(m=>{
-    if(m.toLowerCase().includes(f.toLowerCase())){
-      const d=document.createElement("div");
-      d.className="logo";
-      d.innerHTML=`<img src="/logos/${DATA[m].logo}" alt="${m}"><div>${m}</div>`;
-      d.onclick=()=>secMarka(m,d);
-      logoAlan.appendChild(d);
-    }
+function ciz(liste) {
+  alan.innerHTML = "";
+  liste.forEach(m => {
+    const div = document.createElement("div");
+    div.className = "marka";
+    div.innerHTML = `
+      <img src="/logos/${m.logo}">
+      <div>${m.ad}</div>
+    `;
+    div.onclick = () => sec(div, m.ad);
+    alan.appendChild(div);
   });
 }
-markaAra.oninput=()=>ciz(markaAra.value);
 
-function secMarka(m,el){
-  document.querySelectorAll(".logo").forEach(x=>x.classList.remove("active"));
-  el.classList.add("active");
-  modelAlan.innerHTML="";
-  DATA[m].models.forEach(md=>{
-    const d=document.createElement("div");
-    d.className="model";
-    d.textContent=md;
-    d.onclick=()=>secModel(m,md,d);
-    modelAlan.appendChild(d);
-  });
-  modelBolum.classList.remove("hidden");
+function sec(div, ad) {
+  document.querySelectorAll(".marka").forEach(x => x.classList.remove("secili"));
+  div.classList.add("secili");
+  seciliYazi.innerText = ad;
 }
 
-function secModel(m,md,el){
-  document.querySelectorAll(".model").forEach(x=>x.classList.remove("active"));
-  el.classList.add("active");
-  marka.value=m; model.value=md;
-  formBolum.classList.remove("hidden");
-}
-</script>
-
-<!-- Firebase bağlama (önceden kullandığımız ayarlarla) -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-const firebaseConfig={ apiKey:"AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvlqSY8", authDomain:"ilkeloto.firebaseapp.com", projectId:"ilkeloto" };
-const app=initializeApp(firebaseConfig); const db=getFirestore(app);
-window.kaydet=async()=>{
-  if(!marka.value||!model.value||!yil.value||!km.value||!yakit.value||!vites.value||!fiyat.value||!ekspertiz.value||!aciklama.value){
-    msg.textContent="Tüm alanları doldur"; msg.style.color="red"; return;
-  }
-  await addDoc(collection(db,"ilanlar"),{ marka:marka.value, model:model.value, yil:+yil.value, km:+km.value, yakit:yakit.value, vites:vites.value, fiyat:+fiyat.value, ekspertiz:ekspertiz.value, aciklama:aciklama.value, durum:"beklemede", tarih:new Date() });
-  msg.textContent="İlan gönderildi (admin onayı bekleniyor)"; msg.style.color="green";
+document.getElementById("ara").oninput = e => {
+  const q = e.target.value.toLowerCase();
+  ciz(tumMarkalar.filter(m => m.ad.toLowerCase().includes(q)));
 };
 </script>
 
