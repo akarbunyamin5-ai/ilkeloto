@@ -1,114 +1,67 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>İlan Ver</title>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background:#f5f5f5;
-  margin:0;
-}
-
-.container {
-  max-width:900px;
-  margin:40px auto;
-  background:#fff;
-  padding:30px;
-  border-radius:8px;
-}
-
-h1 {
-  margin-bottom:20px;
-}
-
-input {
-  width:100%;
-  padding:12px;
-  font-size:16px;
-  margin-bottom:20px;
-}
-
-.markalar {
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
-  gap:15px;
-}
-
-.marka {
-  border:1px solid #ddd;
-  padding:10px;
-  text-align:center;
-  cursor:pointer;
-  border-radius:6px;
-  transition:0.2s;
-}
-
-.marka:hover {
-  border-color:#000;
-}
-
-.marka img {
-  max-width:70px;
-  height:50px;
-  object-fit:contain;
-}
-
-.secili {
-  border:2px solid green;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>İlan Ver | İlkel Oto</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .markalar {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 15px;
+    }
+    .marka {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .marka img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+    .marka:hover {
+      background: #eee;
+    }
+  </style>
 </head>
-
 <body>
 
 <div class="container">
-  <h1>İlan Ver</h1>
-
-  <input id="ara" placeholder="Marka ara...">
+  <h2>İlan Ver</h2>
+  <p>Marka Seç</p>
 
   <div class="markalar" id="markalar"></div>
-
-  <p><b>Seçilen Marka:</b> <span id="secili">Yok</span></p>
 </div>
 
 <script>
-let tumMarkalar = [];
-const alan = document.getElementById("markalar");
-const seciliYazi = document.getElementById("secili");
-
 fetch("/data/markalar.json")
-  .then(r => r.json())
-  .then(d => {
-    tumMarkalar = d;
-    ciz(d);
+  .then(res => res.json())
+  .then(markalar => {
+    const alan = document.getElementById("markalar");
+    markalar.forEach(m => {
+      const div = document.createElement("div");
+      div.className = "marka";
+      div.innerHTML = `
+        <img src="${m.logo}">
+        <div>${m.ad}</div>
+      `;
+      div.onclick = () => alert("Seçilen marka: " + m.ad);
+      alan.appendChild(div);
+    });
   });
-
-function ciz(liste) {
-  alan.innerHTML = "";
-  liste.forEach(m => {
-    const div = document.createElement("div");
-    div.className = "marka";
-    div.innerHTML = `
-      <img src="/logos/${m.logo}">
-      <div>${m.ad}</div>
-    `;
-    div.onclick = () => sec(div, m.ad);
-    alan.appendChild(div);
-  });
-}
-
-function sec(div, ad) {
-  document.querySelectorAll(".marka").forEach(x => x.classList.remove("secili"));
-  div.classList.add("secili");
-  seciliYazi.innerText = ad;
-}
-
-document.getElementById("ara").oninput = e => {
-  const q = e.target.value.toLowerCase();
-  ciz(tumMarkalar.filter(m => m.ad.toLowerCase().includes(q)));
-};
 </script>
 
 </body>
