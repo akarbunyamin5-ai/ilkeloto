@@ -7,7 +7,7 @@
 body{font-family:Arial;background:#f5f5f5;margin:0}
 .container{max-width:900px;margin:30px auto;background:#fff;padding:20px;border-radius:8px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-.box{border:1px solid #ddd;padding:10px;text-align:center;cursor:pointer;border-radius:6px}
+.box{border:1px solid #ccc;padding:10px;text-align:center;cursor:pointer;border-radius:6px}
 .box.active{border:2px solid #000}
 input,select,textarea,button{width:100%;padding:10px;margin-top:10px}
 textarea{min-height:100px}
@@ -30,14 +30,27 @@ button{background:#000;color:#fff;border:none}
 
 <div id="formAlan" class="hidden">
 <input id="yil" placeholder="Yıl">
-<input id="km" placeholder="KM">
+<input id="km" placeholder="Kilometre">
 <input id="fiyat" placeholder="Fiyat">
+
 <select id="yakit">
 <option>Benzin</option><option>Dizel</option><option>LPG</option><option>Elektrik</option>
 </select>
+
 <select id="vites">
 <option>Manuel</option><option>Otomatik</option>
 </select>
+
+<select id="tramer">
+<option>Tramer Yok</option>
+<option>Tramer Var</option>
+</select>
+
+<select id="ekspertiz">
+<option>Ekspertiz Yok</option>
+<option>Ekspertiz Var</option>
+</select>
+
 <textarea id="aciklama" placeholder="Açıklama"></textarea>
 <button onclick="kaydet()">İlanı Gönder</button>
 <div id="msg"></div>
@@ -46,19 +59,21 @@ button{background:#000;color:#fff;border:none}
 
 <script>
 const DATA={
-Fiat:["Egea","Linea","Doblo","Brava","Palio","Albea"],
-Renault:["Clio","Megane","Symbol","Fluence","Taliant"],
-Ford:["Focus","Fiesta","Courier","Transit"],
-Volkswagen:["Golf","Passat","Polo","Caddy"],
-Toyota:["Corolla","Yaris","C-HR"],
-BMW:["3 Serisi","5 Serisi","X3","X5"],
-Mercedes:["C Serisi","E Serisi","CLA"],
-Hyundai:["i20","i30","Elantra"],
-Honda:["Civic","City"],
-Peugeot:["208","301","3008"],
-Opel:["Corsa","Astra"],
-Skoda:["Octavia","Superb"],
-Tesla:["Model 3","Model Y"],
+Fiat:["Egea","Linea","Doblo","Brava","Palio","Albea","Tipo"],
+Renault:["Clio","Megane","Symbol","Fluence","Taliant","Kadjar"],
+Ford:["Focus","Fiesta","Courier","Transit","Mondeo"],
+Volkswagen:["Golf","Passat","Polo","Jetta","Caddy","Tiguan"],
+Toyota:["Corolla","Yaris","Auris","C-HR","RAV4"],
+BMW:["1 Serisi","3 Serisi","5 Serisi","X1","X3","X5"],
+Mercedes:["A","C","E","S","CLA","GLC"],
+Audi:["A3","A4","A6","Q2","Q3","Q5"],
+Hyundai:["i10","i20","i30","Accent","Elantra","Tucson"],
+Honda:["Civic","City","Jazz","CR-V"],
+Peugeot:["208","301","308","3008","5008"],
+Opel:["Corsa","Astra","Insignia","Mokka"],
+Skoda:["Fabia","Octavia","Superb","Kodiaq"],
+Dacia:["Sandero","Logan","Duster"],
+Tesla:["Model 3","Model Y","Model S"],
 TOGG:["T10X"]
 };
 
@@ -110,6 +125,8 @@ window.kaydet=async()=>{
   fiyat:fiyat.value,
   yakit:yakit.value,
   vites:vites.value,
+  tramer:tramer.value,
+  ekspertiz:ekspertiz.value,
   aciklama:aciklama.value,
   durum:"beklemede"
  });
