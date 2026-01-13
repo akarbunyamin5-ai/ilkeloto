@@ -6,109 +6,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{
-  font-family:Arial, sans-serif;
-  background:#111;
-  color:#fff;
-  margin:0;
-}
-.center{
-  max-width:400px;
-  margin:120px auto;
-  background:#1e1e1e;
-  padding:30px;
-  border-radius:8px;
-  text-align:center;
-}
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  font-size:15px;
-}
-button{
-  background:#fff;
-  color:#000;
-  border:none;
-  cursor:pointer;
-}
+body{font-family:Arial;background:#111;color:#fff;margin:0}
+.center{max-width:400px;margin:120px auto;background:#1e1e1e;padding:30px;border-radius:8px;text-align:center}
+input,button{width:100%;padding:12px;margin-top:10px;font-size:15px}
+button{cursor:pointer;border:none}
+.login-btn{background:#fff;color:#000}
 .err{color:#ff6b6b;margin-top:10px}
-.container{
-  max-width:1100px;
-  margin:40px auto;
-  display:none;
-}
-.card{
-  background:#1e1e1e;
-  padding:20px;
-  margin-bottom:15px;
-  border-radius:6px;
-}
-.row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-}
+
+.container{max-width:1100px;margin:40px auto;display:none}
+.card{background:#1e1e1e;padding:20px;margin-bottom:15px;border-radius:6px}
+.row{display:flex;flex-wrap:wrap;gap:10px}
 .row div{flex:1;min-width:200px}
-.onay{background:green;color:white;border:none;padding:8px 14px;cursor:pointer}
-.sil{background:red;color:white;border:none;padding:8px 14px;cursor:pointer}
-.logout{
-  background:#333;
-  color:#fff;
-  border:none;
-  padding:8px 14px;
-  cursor:pointer;
-  float:right;
-}
+
+.onay{background:green;color:#fff;padding:8px 14px}
+.sil{background:red;color:#fff;padding:8px 14px}
+.foto{background:#444;color:#fff;padding:8px 14px;margin-left:5px}
+.logout{background:#333;color:#fff;padding:8px 14px;float:right}
 </style>
 </head>
 
 <body>
 
-<!-- 🔐 GİRİŞ -->
+<!-- GİRİŞ -->
 <div class="center" id="login">
   <h2>Admin Giriş</h2>
   <input type="password" id="sifre" placeholder="Şifre">
-  <button onclick="giris()">GİRİŞ</button>
+  <button class="login-btn" onclick="giris()">GİRİŞ</button>
   <div id="hata" class="err"></div>
 </div>
 
-<!-- 🔓 PANEL -->
+<!-- PANEL -->
 <div class="container" id="panel">
   <button class="logout" onclick="cikis()">Çıkış</button>
   <h1>Bekleyen İlanlar</h1>
   <div id="ilanlar">Yükleniyor...</div>
 </div>
 
-<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc
+  getFirestore, collection, query, where, getDocs,
+  updateDoc, deleteDoc, doc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* 🔑 ADMIN ŞİFRESİ (BURAYI DEĞİŞTİR) */
+/* 🔑 ADMIN ŞİFRESİ */
 const ADMIN_SIFRE = "ilkel123";
 
-/* GİRİŞ KONTROL */
-if(localStorage.getItem("admin")==="ok"){
-  acPanel();
-}
+/* GİRİŞ */
+if(localStorage.getItem("admin")==="ok"){ acPanel(); }
 
 window.giris = function(){
-  const girilen = document.getElementById("sifre").value;
-  if(girilen === ADMIN_SIFRE){
+  if(sifre.value === ADMIN_SIFRE){
     localStorage.setItem("admin","ok");
     acPanel();
   }else{
-    document.getElementById("hata").innerText="Şifre yanlış";
+    hata.innerText="Şifre yanlış";
   }
 };
 
@@ -118,12 +70,12 @@ window.cikis = function(){
 };
 
 function acPanel(){
-  document.getElementById("login").style.display="none";
-  document.getElementById("panel").style.display="block";
+  login.style.display="none";
+  panel.style.display="block";
   yukle();
 }
 
-/* 🔥 FIREBASE */
+/* FIREBASE */
 const firebaseConfig = {
   apiKey: "API_KEYİN",
   authDomain: "ilkeloto.firebaseapp.com",
@@ -155,24 +107,31 @@ async function yukle(){
           <div>KM: ${i.km}</div>
           <div>Fiyat: ${i.fiyat} ₺</div>
         </div>
+
         <p>${i.aciklama || ""}</p>
         <p><b>Tel:</b> ${i.telefon}</p>
+
         <button class="onay" onclick="onayla('${d.id}')">ONAYLA</button>
         <button class="sil" onclick="sil('${d.id}')">SİL</button>
+        <button class="foto" onclick="fotoEkle('${d.id}')">FOTO EKLE</button>
       </div>
     `;
   });
 }
 
-window.onayla = async function(id){
+window.onayla = async id=>{
   await updateDoc(doc(db,"ilanlar",id), {durum:"onayli"});
   yukle();
 };
 
-window.sil = async function(id){
+window.sil = async id=>{
   if(!confirm("Silinsin mi?")) return;
   await deleteDoc(doc(db,"ilanlar",id));
   yukle();
+};
+
+window.fotoEkle = id=>{
+  window.open("foto-ekle.html?id="+id,"_blank");
 };
 </script>
 
