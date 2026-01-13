@@ -12,21 +12,30 @@ body{
 }
 .box{
   background:#fff;
-  max-width:400px;
+  max-width:450px;
   margin:auto;
   padding:20px;
   border-radius:6px;
 }
-input, button{
+input, textarea, select, button{
   width:100%;
   padding:10px;
   margin-top:10px;
+  box-sizing:border-box;
+}
+textarea{
+  resize:vertical;
+  min-height:100px;
 }
 button{
   background:#000;
   color:#fff;
   border:none;
   cursor:pointer;
+}
+#msg{
+  margin-top:10px;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -35,19 +44,32 @@ button{
 <div class="box">
   <h2>İlan Ekle</h2>
 
-  <input id="marka" placeholder="Marka">
-  <input id="model" placeholder="Model">
-  <input id="yil" type="number" placeholder="Yıl">
-  <input id="fiyat" type="number" placeholder="Fiyat">
+  <input id="marka" placeholder="Marka (ör. Fiat)">
+  <input id="model" placeholder="Model (ör. Brava)">
+  <input id="yil" type="number" placeholder="Yıl (ör. 2001)">
+  <input id="fiyat" type="number" placeholder="Fiyat (₺)">
+
+  <!-- YENİ ALAN -->
+  <textarea id="aciklama" placeholder="Araç açıklaması"></textarea>
+
+  <!-- YENİ ALAN -->
+  <select id="ekspertiz">
+    <option value="">Ekspertiz Durumu Seç</option>
+    <option value="Yok">Ekspertiz Yok</option>
+    <option value="Var - Temiz">Ekspertiz Var (Temiz)</option>
+    <option value="Var - Boyalı">Ekspertiz Var (Boyalı Parça Var)</option>
+    <option value="Var - Değişen">Ekspertiz Var (Değişen Parça Var)</option>
+  </select>
 
   <button onclick="kaydet()">İlanı Gönder</button>
-  <p id="msg"></p>
+  <div id="msg"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* Firebase ayarları */
 const firebaseConfig = {
   apiKey: "AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvlqSY8",
   authDomain: "ilkeloto.firebaseapp.com",
@@ -58,21 +80,40 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.kaydet = async function(){
-  if(!marka.value || !model.value || !yil.value || !fiyat.value){
-    msg.innerText = "Tüm alanları doldur";
+
+  if(
+    !marka.value ||
+    !model.value ||
+    !yil.value ||
+    !fiyat.value ||
+    !aciklama.value ||
+    !ekspertiz.value
+  ){
+    msg.innerText = "Lütfen tüm alanları doldur";
+    msg.style.color = "red";
     return;
   }
 
   await addDoc(collection(db,"ilanlar"),{
-    marka: marka.value,
-    model: model.value,
+    marka: marka.value.trim(),
+    model: model.value.trim(),
     yil: Number(yil.value),
     fiyat: Number(fiyat.value),
-    durum: "beklemede"
+    aciklama: aciklama.value.trim(),
+    ekspertiz: ekspertiz.value,
+    durum: "beklemede",
+    tarih: new Date()
   });
 
-  msg.innerText = "İlan gönderildi (onay bekliyor)";
-  marka.value = model.value = yil.value = fiyat.value = "";
+  msg.innerText = "İlan gönderildi (admin onayı bekleniyor)";
+  msg.style.color = "green";
+
+  marka.value = "";
+  model.value = "";
+  yil.value = "";
+  fiyat.value = "";
+  aciklama.value = "";
+  ekspertiz.value = "";
 };
 </script>
 
