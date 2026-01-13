@@ -6,58 +6,77 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body {
-  font-family: Arial, sans-serif;
+body{
+  font-family:Arial, sans-serif;
   background:#111;
   color:#fff;
   margin:0;
 }
-.container {
+.center{
+  max-width:400px;
+  margin:120px auto;
+  background:#1e1e1e;
+  padding:30px;
+  border-radius:8px;
+  text-align:center;
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  font-size:15px;
+}
+button{
+  background:#fff;
+  color:#000;
+  border:none;
+  cursor:pointer;
+}
+.err{color:#ff6b6b;margin-top:10px}
+.container{
   max-width:1100px;
   margin:40px auto;
+  display:none;
 }
-h1 {
-  text-align:center;
-  margin-bottom:30px;
-}
-.card {
+.card{
   background:#1e1e1e;
   padding:20px;
   margin-bottom:15px;
   border-radius:6px;
 }
-.row {
+.row{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
 }
-.row div {
-  flex:1;
-  min-width:200px;
-}
-button {
-  padding:8px 14px;
+.row div{flex:1;min-width:200px}
+.onay{background:green;color:white;border:none;padding:8px 14px;cursor:pointer}
+.sil{background:red;color:white;border:none;padding:8px 14px;cursor:pointer}
+.logout{
+  background:#333;
+  color:#fff;
   border:none;
+  padding:8px 14px;
   cursor:pointer;
-  margin-right:5px;
-}
-.onay {
-  background:green;
-  color:white;
-}
-.sil {
-  background:red;
-  color:white;
-}
-small {
-  color:#aaa;
+  float:right;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
-  <h1>Admin Onay Paneli</h1>
+
+<!-- 🔐 GİRİŞ -->
+<div class="center" id="login">
+  <h2>Admin Giriş</h2>
+  <input type="password" id="sifre" placeholder="Şifre">
+  <button onclick="giris()">GİRİŞ</button>
+  <div id="hata" class="err"></div>
+</div>
+
+<!-- 🔓 PANEL -->
+<div class="container" id="panel">
+  <button class="logout" onclick="cikis()">Çıkış</button>
+  <h1>Bekleyen İlanlar</h1>
   <div id="ilanlar">Yükleniyor...</div>
 </div>
 
@@ -75,13 +94,40 @@ import {
   doc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* 🔑 ADMIN ŞİFRESİ (BURAYI DEĞİŞTİR) */
+const ADMIN_SIFRE = "ilkel123";
+
+/* GİRİŞ KONTROL */
+if(localStorage.getItem("admin")==="ok"){
+  acPanel();
+}
+
+window.giris = function(){
+  const girilen = document.getElementById("sifre").value;
+  if(girilen === ADMIN_SIFRE){
+    localStorage.setItem("admin","ok");
+    acPanel();
+  }else{
+    document.getElementById("hata").innerText="Şifre yanlış";
+  }
+};
+
+window.cikis = function(){
+  localStorage.removeItem("admin");
+  location.reload();
+};
+
+function acPanel(){
+  document.getElementById("login").style.display="none";
+  document.getElementById("panel").style.display="block";
+  yukle();
+}
+
+/* 🔥 FIREBASE */
 const firebaseConfig = {
   apiKey: "API_KEYİN",
   authDomain: "ilkeloto.firebaseapp.com",
-  projectId: "ilkeloto",
-  storageBucket: "ilkeloto.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+  projectId: "ilkeloto"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -89,21 +135,17 @@ const db = getFirestore(app);
 
 const alan = document.getElementById("ilanlar");
 
-async function yukle() {
-  alan.innerHTML = "";
-  const q = query(
-    collection(db, "ilanlar"),
-    where("durum", "==", "beklemede")
-  );
-
+async function yukle(){
+  alan.innerHTML="";
+  const q = query(collection(db,"ilanlar"), where("durum","==","beklemede"));
   const snap = await getDocs(q);
 
-  if (snap.empty) {
-    alan.innerHTML = "<p>Bekleyen ilan yok.</p>";
+  if(snap.empty){
+    alan.innerHTML="Bekleyen ilan yok.";
     return;
   }
 
-  snap.forEach(d => {
+  snap.forEach(d=>{
     const i = d.data();
     alan.innerHTML += `
       <div class="card">
@@ -113,10 +155,8 @@ async function yukle() {
           <div>KM: ${i.km}</div>
           <div>Fiyat: ${i.fiyat} ₺</div>
         </div>
-        <p><small>Açıklama:</small><br>${i.aciklama || "-"}</p>
-        <p><small>Ekspertiz:</small><br>${i.ekspertiz || "-"}</p>
-        <p><small>Telefon:</small> ${i.telefon}</p>
-
+        <p>${i.aciklama || ""}</p>
+        <p><b>Tel:</b> ${i.telefon}</p>
         <button class="onay" onclick="onayla('${d.id}')">ONAYLA</button>
         <button class="sil" onclick="sil('${d.id}')">SİL</button>
       </div>
@@ -124,18 +164,17 @@ async function yukle() {
   });
 }
 
-window.onayla = async function(id) {
-  await updateDoc(doc(db,"ilanlar",id), { durum:"onayli" });
+window.onayla = async function(id){
+  await updateDoc(doc(db,"ilanlar",id), {durum:"onayli"});
   yukle();
 };
 
-window.sil = async function(id) {
-  if (!confirm("Silmek istiyor musun?")) return;
+window.sil = async function(id){
+  if(!confirm("Silinsin mi?")) return;
   await deleteDoc(doc(db,"ilanlar",id));
   yukle();
 };
-
-yukle();
 </script>
+
 </body>
 </html>
