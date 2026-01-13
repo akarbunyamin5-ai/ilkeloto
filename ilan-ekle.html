@@ -2,214 +2,118 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlan Ver | İlkel Oto</title>
-
+<title>İlan Ver</title>
 <style>
-body{
-  font-family:Arial, sans-serif;
-  background:#f5f5f5;
-  margin:0;
-}
-.container{
-  max-width:1000px;
-  margin:30px auto;
-  background:#fff;
-  padding:25px;
-  border-radius:8px;
-}
-h1,h3{margin-top:0}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
-  gap:15px;
-}
-
-.card{
-  border:1px solid #ddd;
-  border-radius:8px;
-  padding:10px;
-  text-align:center;
-  cursor:pointer;
-}
-.card.active{border:2px solid #000;background:#f0f0f0}
-.card img{width:60px;height:60px;object-fit:contain}
-
-select,input,textarea{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  box-sizing:border-box;
-}
-
-textarea{min-height:120px}
-
-button{
-  margin-top:15px;
-  padding:12px;
-  width:100%;
-  background:#000;
-  color:#fff;
-  border:none;
-  font-size:16px;
-  cursor:pointer;
-}
-
+body{font-family:Arial;background:#f5f5f5;margin:0}
+.container{max-width:900px;margin:30px auto;background:#fff;padding:20px;border-radius:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.box{border:1px solid #ddd;padding:10px;text-align:center;cursor:pointer;border-radius:6px}
+.box.active{border:2px solid #000}
+input,select,textarea,button{width:100%;padding:10px;margin-top:10px}
+textarea{min-height:100px}
+button{background:#000;color:#fff;border:none}
 .hidden{display:none}
-
-#msg{
-  margin-top:15px;
-  font-weight:bold;
-}
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>İlan Ver</h1>
+<h2>İlan Ver</h2>
 
-  <!-- MARKA -->
-  <h3>1️⃣ Marka Seç</h3>
-  <div class="grid" id="brandGrid"></div>
+<h3>Marka</h3>
+<div class="grid" id="markalar"></div>
 
-  <!-- MODEL -->
-  <div id="modelArea" class="hidden">
-    <h3>2️⃣ Model Seç</h3>
-    <select id="modelSelect"></select>
-  </div>
+<div id="modelAlan" class="hidden">
+<h3>Model</h3>
+<select id="model"></select>
+</div>
 
-  <!-- FORM -->
-  <div id="formArea" class="hidden">
-    <h3>3️⃣ İlan Detayları</h3>
-
-    <input id="yil" type="number" placeholder="Yıl">
-    <input id="km" type="number" placeholder="Kilometre">
-
-    <select id="yakit">
-      <option value="">Yakıt Türü</option>
-      <option>Benzin</option>
-      <option>Dizel</option>
-      <option>LPG</option>
-      <option>Hibrit</option>
-      <option>Elektrik</option>
-    </select>
-
-    <select id="vites">
-      <option value="">Vites</option>
-      <option>Manuel</option>
-      <option>Otomatik</option>
-      <option>Yarı Otomatik</option>
-    </select>
-
-    <input id="fiyat" type="number" placeholder="Fiyat (₺)">
-
-    <select id="ekspertiz">
-      <option value="">Ekspertiz</option>
-      <option>Yok</option>
-      <option>Var - Temiz</option>
-      <option>Var - Boyalı</option>
-      <option>Var - Değişen</option>
-    </select>
-
-    <textarea id="aciklama" placeholder="Açıklama"></textarea>
-
-    <button onclick="kaydet()">İlanı Gönder</button>
-    <div id="msg"></div>
-  </div>
+<div id="formAlan" class="hidden">
+<input id="yil" placeholder="Yıl">
+<input id="km" placeholder="KM">
+<input id="fiyat" placeholder="Fiyat">
+<select id="yakit">
+<option>Benzin</option><option>Dizel</option><option>LPG</option><option>Elektrik</option>
+</select>
+<select id="vites">
+<option>Manuel</option><option>Otomatik</option>
+</select>
+<textarea id="aciklama" placeholder="Açıklama"></textarea>
+<button onclick="kaydet()">İlanı Gönder</button>
+<div id="msg"></div>
+</div>
 </div>
 
 <script>
-/* MARKA + MODEL */
-const DATA = {
-  Fiat:{ models:["Egea","Linea","Doblo","Punto","Brava"] },
-  Renault:{ models:["Clio","Megane","Symbol","Taliant"] },
-  Ford:{ models:["Focus","Fiesta","Courier","Mondeo"] },
-  Toyota:{ models:["Corolla","Yaris","Auris"] },
-  Volkswagen:{ models:["Golf","Passat","Polo","Jetta"] }
+const DATA={
+Fiat:["Egea","Linea","Doblo","Brava","Palio","Albea"],
+Renault:["Clio","Megane","Symbol","Fluence","Taliant"],
+Ford:["Focus","Fiesta","Courier","Transit"],
+Volkswagen:["Golf","Passat","Polo","Caddy"],
+Toyota:["Corolla","Yaris","C-HR"],
+BMW:["3 Serisi","5 Serisi","X3","X5"],
+Mercedes:["C Serisi","E Serisi","CLA"],
+Hyundai:["i20","i30","Elantra"],
+Honda:["Civic","City"],
+Peugeot:["208","301","3008"],
+Opel:["Corsa","Astra"],
+Skoda:["Octavia","Superb"],
+Tesla:["Model 3","Model Y"],
+TOGG:["T10X"]
 };
 
 let seciliMarka="";
-let seciliModel="";
+const markaDiv=document.getElementById("markalar");
+const modelAlan=document.getElementById("modelAlan");
+const modelSelect=document.getElementById("model");
+const formAlan=document.getElementById("formAlan");
 
-const brandGrid=document.getElementById("brandGrid");
-const modelArea=document.getElementById("modelArea");
-const modelSelect=document.getElementById("modelSelect");
-const formArea=document.getElementById("formArea");
-const msg=document.getElementById("msg");
+Object.keys(DATA).forEach(m=>{
+ const d=document.createElement("div");
+ d.className="box";
+ d.innerText=m;
+ d.onclick=()=>{
+  document.querySelectorAll(".box").forEach(x=>x.classList.remove("active"));
+  d.classList.add("active");
+  seciliMarka=m;
+  modelSelect.innerHTML="";
+  DATA[m].forEach(md=>{
+   const o=document.createElement("option");
+   o.textContent=md;
+   modelSelect.appendChild(o);
+  });
+  modelAlan.classList.remove("hidden");
+ };
+ markaDiv.appendChild(d);
+});
 
-/* MARKALARI BAS */
-for(const marka in DATA){
-  const div=document.createElement("div");
-  div.className="card";
-  div.innerText=marka;
-
-  div.onclick=()=>{
-    document.querySelectorAll(".card").forEach(x=>x.classList.remove("active"));
-    div.classList.add("active");
-
-    seciliMarka=marka;
-    modelSelect.innerHTML="";
-    DATA[marka].models.forEach(m=>{
-      const o=document.createElement("option");
-      o.value=m; o.textContent=m;
-      modelSelect.appendChild(o);
-    });
-
-    modelArea.classList.remove("hidden");
-    formArea.classList.add("hidden");
-  };
-
-  brandGrid.appendChild(div);
-}
-
-/* MODEL SEÇ */
-modelSelect.onchange=()=>{
-  seciliModel=modelSelect.value;
-  formArea.classList.remove("hidden");
-};
+modelSelect.onchange=()=>formAlan.classList.remove("hidden");
 </script>
 
-<!-- 🔥 FIREBASE -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, addDoc, collection, serverTimestamp } 
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import{getFirestore,addDoc,collection}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* 🔴 KENDİ FIREBASE BİLGİLERİN */
-const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "PROJECT_ID.firebaseapp.com",
-  projectId: "PROJECT_ID"
-};
+const app=initializeApp({
+ apiKey:"API_KEY",
+ authDomain:"PROJECT.firebaseapp.com",
+ projectId:"PROJECT"
+});
+const db=getFirestore(app);
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-/* KAYDET */
-window.kaydet = async () => {
-  if(!seciliMarka || !seciliModel || !yil.value || !km.value || !yakit.value ||
-     !vites.value || !fiyat.value || !ekspertiz.value || !aciklama.value){
-    msg.style.color="red";
-    msg.innerText="Tüm alanları doldur";
-    return;
-  }
-
-  await addDoc(collection(db,"ilanlar"),{
-    marka: seciliMarka,
-    model: seciliModel,
-    yil: Number(yil.value),
-    km: Number(km.value),
-    yakit: yakit.value,
-    vites: vites.value,
-    fiyat: Number(fiyat.value),
-    ekspertiz: ekspertiz.value,
-    aciklama: aciklama.value,
-    durum: "beklemede",
-    tarih: serverTimestamp()
-  });
-
-  msg.style.color="green";
-  msg.innerText="İlan gönderildi (admin onayı bekleniyor)";
+window.kaydet=async()=>{
+ await addDoc(collection(db,"ilanlar"),{
+  marka:seciliMarka,
+  model:model.value,
+  yil:yil.value,
+  km:km.value,
+  fiyat:fiyat.value,
+  yakit:yakit.value,
+  vites:vites.value,
+  aciklama:aciklama.value,
+  durum:"beklemede"
+ });
+ msg.innerText="İlan gönderildi (onay bekliyor)";
 };
 </script>
 
