@@ -1,9 +1,7 @@
 [
-  { "ad": "Fiat", "logo": "fiat.png" },
-  { "ad": "Renault", "logo": "renault.png" },
-  { "ad": "Volkswagen", "logo": "volkswagen.png" },
-  { "ad": "Toyota", "logo": "toyota.png" },
-  { "ad": "Ford", "logo": "ford.png" },
-  { "ad": "BMW", "logo": "bmw.png" },
-  { "ad": "Mercedes-Benz", "logo": "mercedes.png" }
+  { "id": "fiat", "ad": "Fiat", "logo": "/logos/fiat.png" },
+  { "id": "renault", "ad": "Renault", "logo": "/logos/renault.png" },
+  { "id": "ford", "ad": "Ford", "logo": "/logos/ford.png" },
+  { "id": "toyota", "ad": "Toyota", "logo": "/logos/toyota.png" },
+  { "id": "volkswagen", "ad": "Volkswagen", "logo": "/logos/volkswagen.png" }
 ]
