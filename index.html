@@ -12,25 +12,28 @@ header{background:#111;color:#fff;padding:20px}
 header h1{margin:0;font-size:26px}
 header p{margin:5px 0 0;color:#ccc;font-size:14px}
 
-.main{max-width:1300px;margin:20px auto;display:flex;gap:20px;padding:0 15px}
+.main{max-width:1350px;margin:20px auto;display:flex;gap:20px;padding:0 15px}
 
-aside{width:260px;background:#fff;border-radius:6px;padding:15px}
-aside h3{margin:0 0 10px;font-size:16px}
+aside{width:280px;background:#fff;border-radius:6px;padding:15px}
+aside h3{margin:15px 0 10px;font-size:16px}
 .list{list-style:none;padding:0;margin:0}
 .list li{padding:7px 10px;cursor:pointer;border-radius:4px;font-size:14px}
 .list li:hover{background:#eee}
 .list li.active{background:#111;color:#fff}
 
-.models{margin-top:10px;padding-left:10px;border-left:2px solid #eee}
-.models li{font-size:13px}
+.models{margin-left:10px;border-left:2px solid #eee}
+
+.filter-box{margin-bottom:15px}
+.filter-box input{
+  width:100%;
+  padding:8px;
+  margin-top:5px;
+  font-size:14px;
+}
 
 .content{flex:1}
 .search{background:#fff;border-radius:6px;padding:12px;margin-bottom:15px}
-.search input{
-  width:100%;
-  padding:10px;
-  font-size:15px;
-}
+.search input{width:100%;padding:10px;font-size:15px}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
 
@@ -51,26 +54,45 @@ footer{background:#111;color:#ccc;text-align:center;padding:15px;margin-top:40px
 
 <div class="main">
 
-<!-- SOL FİLTRE -->
+<!-- SOL FİLTRELER -->
 <aside>
+
   <h3>Markalar</h3>
   <ul id="markalar" class="list">
     <li class="active" data-marka="">Tümü</li>
   </ul>
 
   <ul id="modeller" class="list models"></ul>
+
+  <h3>Fiyat (₺)</h3>
+  <div class="filter-box">
+    <input id="fMin" type="number" placeholder="Min">
+    <input id="fMax" type="number" placeholder="Max">
+  </div>
+
+  <h3>Yıl</h3>
+  <div class="filter-box">
+    <input id="yMin" type="number" placeholder="Min">
+    <input id="yMax" type="number" placeholder="Max">
+  </div>
+
+  <h3>Kilometre</h3>
+  <div class="filter-box">
+    <input id="kMin" type="number" placeholder="Min">
+    <input id="kMax" type="number" placeholder="Max">
+  </div>
+
 </aside>
 
 <!-- İÇERİK -->
 <div class="content">
 
-  <!-- ARAMA -->
   <div class="search">
     <input id="ara" placeholder="Marka, model, açıklama, fiyat ara...">
   </div>
 
-  <!-- İLANLAR -->
   <div id="ilanlar" class="grid">Yükleniyor...</div>
+
 </div>
 
 </div>
@@ -95,6 +117,13 @@ const markaAlan = document.getElementById("markalar");
 const modelAlan = document.getElementById("modeller");
 const araInput = document.getElementById("ara");
 
+const fMin = document.getElementById("fMin");
+const fMax = document.getElementById("fMax");
+const yMin = document.getElementById("yMin");
+const yMax = document.getElementById("yMax");
+const kMin = document.getElementById("kMin");
+const kMax = document.getElementById("kMax");
+
 let tumIlanlar = [];
 let aktifMarka = "";
 let aktifModel = "";
@@ -104,8 +133,8 @@ async function yukle(){
   const q = query(collection(db,"ilanlar"), where("durum","==","onayli"));
   const snap = await getDocs(q);
 
-  tumIlanlar = [];
   const markalar = new Set();
+  tumIlanlar = [];
 
   snap.forEach(d=>{
     const i = { id:d.id, ...d.data() };
@@ -126,21 +155,25 @@ async function yukle(){
 function filtre(){
   let liste = tumIlanlar;
 
-  if(aktifMarka){
-    liste = liste.filter(i=>i.marka===aktifMarka);
-  }
-  if(aktifModel){
-    liste = liste.filter(i=>i.model===aktifModel);
-  }
+  if(aktifMarka) liste = liste.filter(i=>i.marka===aktifMarka);
+  if(aktifModel) liste = liste.filter(i=>i.model===aktifModel);
+
   if(arama){
-    const a = arama.toLowerCase();
-    liste = liste.filter(i =>
+    const a=arama.toLowerCase();
+    liste=liste.filter(i =>
       (i.marka||"").toLowerCase().includes(a) ||
       (i.model||"").toLowerCase().includes(a) ||
       (i.aciklama||"").toLowerCase().includes(a) ||
       String(i.fiyat||"").includes(a)
     );
   }
+
+  if(fMin.value) liste = liste.filter(i=>i.fiyat>=Number(fMin.value));
+  if(fMax.value) liste = liste.filter(i=>i.fiyat<=Number(fMax.value));
+  if(yMin.value) liste = liste.filter(i=>i.yil>=Number(yMin.value));
+  if(yMax.value) liste = liste.filter(i=>i.yil<=Number(yMax.value));
+  if(kMin.value) liste = liste.filter(i=>i.km>=Number(kMin.value));
+  if(kMax.value) liste = liste.filter(i=>i.km<=Number(kMax.value));
 
   goster(liste);
 }
@@ -167,14 +200,13 @@ function goster(liste){
   });
 }
 
-/* MARKA */
-markaAlan.onclick = e=>{
+/* EVENTS */
+markaAlan.onclick=e=>{
   if(e.target.tagName!=="LI") return;
   document.querySelectorAll("#markalar li").forEach(li=>li.classList.remove("active"));
   e.target.classList.add("active");
-
-  aktifMarka = e.target.dataset.marka;
-  aktifModel = "";
+  aktifMarka=e.target.dataset.marka;
+  aktifModel="";
   modelAlan.innerHTML="";
 
   if(aktifMarka){
@@ -189,20 +221,16 @@ markaAlan.onclick = e=>{
   filtre();
 };
 
-/* MODEL */
-modelAlan.onclick = e=>{
+modelAlan.onclick=e=>{
   if(e.target.tagName!=="LI") return;
   document.querySelectorAll("#modeller li").forEach(li=>li.classList.remove("active"));
   e.target.classList.add("active");
-  aktifModel = e.target.dataset.model;
+  aktifModel=e.target.dataset.model;
   filtre();
 };
 
-/* ARAMA */
-araInput.oninput = e=>{
-  arama = e.target.value.trim();
-  filtre();
-};
+araInput.oninput=()=>{arama=araInput.value.trim();filtre()};
+[fMin,fMax,yMin,yMax,kMin,kMax].forEach(i=>i.oninput=filtre);
 
 yukle();
 </script>
