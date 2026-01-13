@@ -6,10 +6,10 @@
 
 <style>
 body{
-  font-family:Arial, sans-serif;
-  background:#f2f2f2;
   margin:0;
   padding:20px;
+  font-family:Arial, sans-serif;
+  background:#f2f2f2;
 }
 .container{
   max-width:1100px;
@@ -29,11 +29,11 @@ h2{margin-top:0}
 .marka{
   border:1px solid #ddd;
   border-radius:8px;
-  padding:10px;
+  padding:12px;
   text-align:center;
   cursor:pointer;
-  transition:0.2s;
   background:#fff;
+  transition:.2s;
 }
 
 .marka:hover{
@@ -44,11 +44,17 @@ h2{margin-top:0}
   border:2px solid #000;
 }
 
-.marka img{
+.logo{
   width:70px;
-  height:45px;
-  object-fit:contain;
+  height:40px;
+  margin:auto;
   margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  background:#eee;
+  border-radius:6px;
 }
 
 .secili{
@@ -71,54 +77,28 @@ h2{margin-top:0}
 </div>
 
 <script>
-/*
-  LOGOLAR:
-  - CDN kullanıyoruz
-  - PNG eklemen GEREKMİYOR
-  - Logo yüklenmezse otomatik yazılı yedek gelir
-*/
 const MARKALAR = [
-  { ad:"Fiat", logo:"https://logo.clearbit.com/fiat.com" },
-  { ad:"Renault", logo:"https://logo.clearbit.com/renault.com" },
-  { ad:"Ford", logo:"https://logo.clearbit.com/ford.com" },
-  { ad:"Toyota", logo:"https://logo.clearbit.com/toyota.com" },
-  { ad:"Volkswagen", logo:"https://logo.clearbit.com/volkswagen.com" },
-  { ad:"BMW", logo:"https://logo.clearbit.com/bmw.com" },
-  { ad:"Mercedes-Benz", logo:"https://logo.clearbit.com/mercedes-benz.com" },
-  { ad:"Audi", logo:"https://logo.clearbit.com/audi.com" },
-  { ad:"Hyundai", logo:"https://logo.clearbit.com/hyundai.com" },
-  { ad:"Kia", logo:"https://logo.clearbit.com/kia.com" },
-  { ad:"Honda", logo:"https://logo.clearbit.com/honda.com" },
-  { ad:"Nissan", logo:"https://logo.clearbit.com/nissan-global.com" },
-  { ad:"Peugeot", logo:"https://logo.clearbit.com/peugeot.com" },
-  { ad:"Citroen", logo:"https://logo.clearbit.com/citroen.com" },
-  { ad:"Opel", logo:"https://logo.clearbit.com/opel.com" },
-  { ad:"Skoda", logo:"https://logo.clearbit.com/skoda-auto.com" },
-  { ad:"Seat", logo:"https://logo.clearbit.com/seat.com" },
-  { ad:"Dacia", logo:"https://logo.clearbit.com/dacia.com" },
-  { ad:"Volvo", logo:"https://logo.clearbit.com/volvocars.com" },
-  { ad:"Jeep", logo:"https://logo.clearbit.com/jeep.com" },
-  { ad:"Tesla", logo:"https://logo.clearbit.com/tesla.com" },
-  { ad:"TOGG", logo:"https://logo.clearbit.com/togg.com.tr" }
+  "Fiat","Renault","Ford","Toyota","Volkswagen","BMW","Mercedes",
+  "Audi","Hyundai","Kia","Honda","Nissan","Peugeot","Citroen",
+  "Opel","Skoda","Seat","Dacia","Volvo","Jeep","Tesla","TOGG"
 ];
 
 const alan = document.getElementById("markalar");
-const seciliYazi = document.getElementById("secili");
+const secili = document.getElementById("secili");
 
-MARKALAR.forEach(m=>{
+MARKALAR.forEach(ad=>{
   const div = document.createElement("div");
   div.className = "marka";
 
   div.innerHTML = `
-    <img src="${m.logo}"
-         onerror="this.src='https://via.placeholder.com/70x45?text=${m.ad}'">
-    <div>${m.ad}</div>
+    <div class="logo">${ad[0]}</div>
+    <div>${ad}</div>
   `;
 
   div.onclick = ()=>{
     document.querySelectorAll(".marka").forEach(x=>x.classList.remove("active"));
     div.classList.add("active");
-    seciliYazi.innerText = m.ad;
+    secili.innerText = ad;
   };
 
   alan.appendChild(div);
