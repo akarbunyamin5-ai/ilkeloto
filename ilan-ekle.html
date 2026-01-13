@@ -12,32 +12,48 @@ body{
   padding:20px;
 }
 .container{
-  max-width:1000px;
+  max-width:1100px;
   margin:auto;
   background:#fff;
   padding:20px;
   border-radius:8px;
 }
 h2{margin-top:0}
+
 .markalar{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
   gap:15px;
 }
+
 .marka{
   border:1px solid #ddd;
-  border-radius:6px;
+  border-radius:8px;
   padding:10px;
   text-align:center;
   cursor:pointer;
+  transition:0.2s;
+  background:#fff;
 }
+
+.marka:hover{
+  border-color:#000;
+}
+
+.marka.active{
+  border:2px solid #000;
+}
+
 .marka img{
   width:70px;
   height:45px;
   object-fit:contain;
+  margin-bottom:8px;
 }
-.marka.active{
-  border:2px solid #000;
+
+.secili{
+  margin-top:15px;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -49,11 +65,18 @@ h2{margin-top:0}
 
   <div class="markalar" id="markalar"></div>
 
-  <p><b>Seçilen Marka:</b> <span id="secili">Yok</span></p>
+  <div class="secili">
+    Seçilen Marka: <span id="secili">Yok</span>
+  </div>
 </div>
 
 <script>
-/* TÜRKİYE'DEKİ MARKALAR (LOGO URL + YEDEK) */
+/*
+  LOGOLAR:
+  - CDN kullanıyoruz
+  - PNG eklemen GEREKMİYOR
+  - Logo yüklenmezse otomatik yazılı yedek gelir
+*/
 const MARKALAR = [
   { ad:"Fiat", logo:"https://logo.clearbit.com/fiat.com" },
   { ad:"Renault", logo:"https://logo.clearbit.com/renault.com" },
@@ -61,7 +84,7 @@ const MARKALAR = [
   { ad:"Toyota", logo:"https://logo.clearbit.com/toyota.com" },
   { ad:"Volkswagen", logo:"https://logo.clearbit.com/volkswagen.com" },
   { ad:"BMW", logo:"https://logo.clearbit.com/bmw.com" },
-  { ad:"Mercedes-Benz", logo:"https://logo.clearbit.com.mercedes-benz.com" },
+  { ad:"Mercedes-Benz", logo:"https://logo.clearbit.com/mercedes-benz.com" },
   { ad:"Audi", logo:"https://logo.clearbit.com/audi.com" },
   { ad:"Hyundai", logo:"https://logo.clearbit.com/hyundai.com" },
   { ad:"Kia", logo:"https://logo.clearbit.com/kia.com" },
@@ -82,16 +105,13 @@ const MARKALAR = [
 const alan = document.getElementById("markalar");
 const seciliYazi = document.getElementById("secili");
 
-/* MARKALARI ÇİZ */
 MARKALAR.forEach(m=>{
   const div = document.createElement("div");
   div.className = "marka";
 
   div.innerHTML = `
-    <img 
-      src="${m.logo}"
-      onerror="this.src='https://via.placeholder.com/70x45?text=${m.ad}'"
-    >
+    <img src="${m.logo}"
+         onerror="this.src='https://via.placeholder.com/70x45?text=${m.ad}'">
     <div>${m.ad}</div>
   `;
 
