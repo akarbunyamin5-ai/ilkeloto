@@ -7,7 +7,6 @@
 body{font-family:Arial;background:#eee}
 .container{max-width:900px;margin:30px auto;background:#fff;padding:20px}
 .card{border:1px solid #ccc;padding:10px;margin-bottom:10px}
-button{margin-right:10px}
 </style>
 </head>
 <body>
@@ -33,12 +32,12 @@ const snap=await getDocs(q);
 const alan=document.getElementById("liste");
 
 snap.forEach(d=>{
- const data=d.data();
+ const x=d.data();
  const div=document.createElement("div");
  div.className="card";
  div.innerHTML=`
- <b>${data.marka} ${data.model}</b><br>
- ${data.fiyat} ₺<br>
+ <b>${x.marka} ${x.model}</b><br>
+ ${x.fiyat} ₺<br>
  <button>Onayla</button>
  `;
  div.querySelector("button").onclick=async()=>{
