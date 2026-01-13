@@ -1,167 +1,116 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>İlan Ver | İlkel Oto</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f3f3;
-      margin: 0;
-      padding: 0;
-    }
-    .box {
-      max-width: 700px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 8px;
-    }
-    h1 {
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    select, input, textarea, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      font-size: 15px;
-    }
-    textarea {
-      min-height: 100px;
-    }
-    button {
-      background: black;
-      color: white;
-      border: none;
-      margin-top: 25px;
-      cursor: pointer;
-    }
-    .ok {
-      color: green;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    .err {
-      color: red;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>İlan Ver | İlkel Oto</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#f3f3f3;margin:0}
+.box{max-width:700px;margin:40px auto;background:#fff;padding:30px;border-radius:8px}
+label{display:block;margin-top:15px;font-weight:bold}
+input,select,textarea,button{width:100%;padding:10px;margin-top:5px}
+textarea{min-height:90px}
+button{background:#000;color:#fff;border:none;margin-top:25px;cursor:pointer}
+.msg{margin-top:15px;font-weight:bold}
+.preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.preview img{width:100px;height:80px;object-fit:cover;border-radius:4px}
+</style>
 </head>
 <body>
 
 <div class="box">
-  <h1>İlan Ver</h1>
+<h1>İlan Ver</h1>
 
-  <label>Marka</label>
-  <select id="marka">
-    <option value="">Seçiniz</option>
-    <option>Fiat</option>
-    <option>Renault</option>
-    <option>Ford</option>
-    <option>Toyota</option>
-    <option>Volkswagen</option>
-    <option>BMW</option>
-    <option>Mercedes-Benz</option>
-    <option>Audi</option>
-    <option>Hyundai</option>
-    <option>Honda</option>
-    <option>Nissan</option>
-    <option>Peugeot</option>
-    <option>Citroen</option>
-    <option>Opel</option>
-    <option>Skoda</option>
-    <option>Dacia</option>
-    <option>Volvo</option>
-    <option>Tesla</option>
-    <option>TOGG</option>
-  </select>
+<label>Marka</label>
+<input id="marka">
 
-  <label>Model</label>
-  <input id="model" placeholder="Örn: Brava" />
+<label>Model</label>
+<input id="model">
 
-  <label>Yıl</label>
-  <input id="yil" type="number" placeholder="2001" />
+<label>Yıl</label>
+<input id="yil" type="number">
 
-  <label>Kilometre</label>
-  <input id="km" type="number" placeholder="150000" />
+<label>Kilometre</label>
+<input id="km" type="number">
 
-  <label>Fiyat (₺)</label>
-  <input id="fiyat" type="number" placeholder="250000" />
+<label>Fiyat (₺)</label>
+<input id="fiyat" type="number">
 
-  <label>Açıklama</label>
-  <textarea id="aciklama" placeholder="Araç hakkında detaylı açıklama"></textarea>
+<label>Açıklama</label>
+<textarea id="aciklama"></textarea>
 
-  <label>Ekspertiz</label>
-  <textarea id="ekspertiz" placeholder="Boyalı / Değişen / Hasar bilgisi"></textarea>
+<label>Telefon</label>
+<input id="telefon">
 
-  <label>Telefon</label>
-  <input id="telefon" placeholder="05xxxxxxxxx" />
+<label>Fotoğraflar (en fazla 5)</label>
+<input type="file" id="foto" multiple accept="image/*">
+<div class="preview" id="preview"></div>
 
-  <button onclick="ilanGonder()">İLANI GÖNDER</button>
-
-  <div id="sonuc"></div>
+<button onclick="gonder()">İLANI GÖNDER</button>
+<div class="msg" id="msg"></div>
 </div>
 
-<!-- 🔥 FIREBASE -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-  const firebaseConfig = {
-    apiKey: "API_KEYİN",
-    authDomain: "ilkeloto.firebaseapp.com",
-    projectId: "ilkeloto",
-    storageBucket: "ilkeloto.appspot.com",
-    messagingSenderId: "XXXX",
-    appId: "XXXX"
-  };
+const firebaseConfig = {
+  apiKey: "API_KEYİN",
+  authDomain: "ilkeloto.firebaseapp.com",
+  projectId: "ilkeloto",
+  storageBucket: "ilkeloto.appspot.com"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-  window.ilanGonder = async function () {
-    const data = {
-      marka: document.getElementById("marka").value,
-      model: document.getElementById("model").value,
-      yil: Number(document.getElementById("yil").value),
-      km: Number(document.getElementById("km").value),
-      fiyat: Number(document.getElementById("fiyat").value),
-      aciklama: document.getElementById("aciklama").value,
-      ekspertiz: document.getElementById("ekspertiz").value,
-      telefon: document.getElementById("telefon").value,
+const fotoInput = document.getElementById("foto");
+const preview = document.getElementById("preview");
 
-      // 🔑 KRİTİK NOKTA
-      durum: "beklemede",
-      createdAt: serverTimestamp()
-    };
+fotoInput.onchange = () => {
+  preview.innerHTML = "";
+  [...fotoInput.files].slice(0,5).forEach(f=>{
+    const img=document.createElement("img");
+    img.src=URL.createObjectURL(f);
+    preview.appendChild(img);
+  });
+};
 
-    if (!data.marka || !data.model || !data.fiyat) {
-      document.getElementById("sonuc").innerHTML =
-        "<div class='err'>Lütfen zorunlu alanları doldurun</div>";
-      return;
-    }
+window.gonder = async ()=>{
+  const msg=document.getElementById("msg");
+  msg.innerText="Yükleniyor...";
 
-    try {
-      await addDoc(collection(db, "ilanlar"), data);
-      document.getElementById("sonuc").innerHTML =
-        "<div class='ok'>İlan gönderildi. Admin onayı bekleniyor.</div>";
-    } catch (e) {
-      document.getElementById("sonuc").innerHTML =
-        "<div class='err'>Hata oluştu</div>";
-    }
-  };
+  const files=[...fotoInput.files].slice(0,5);
+  const fotoURL=[];
+
+  for(const file of files){
+    const r=ref(storage,"ilanlar/"+Date.now()+"_"+file.name);
+    await uploadBytes(r,file);
+    const url=await getDownloadURL(r);
+    fotoURL.push(url);
+  }
+
+  await addDoc(collection(db,"ilanlar"),{
+    marka:marka.value,
+    model:model.value,
+    yil:Number(yil.value),
+    km:Number(km.value),
+    fiyat:Number(fiyat.value),
+    aciklama:aciklama.value,
+    telefon:telefon.value,
+    fotolar:fotoURL,
+    durum:"beklemede",
+    createdAt:serverTimestamp()
+  });
+
+  msg.innerText="İlan gönderildi. Admin onayı bekleniyor.";
+};
 </script>
 
 </body>
