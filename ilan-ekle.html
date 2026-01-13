@@ -2,66 +2,130 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlan Ekle</title>
+<title>İlan Ver | İlkel Oto</title>
+
 <style>
 body{
-  font-family: Arial;
-  background:#f5f5f5;
+  font-family: Arial, sans-serif;
+  background:#f2f2f2;
   margin:0;
-  padding:30px;
-}
-.box{
-  background:#fff;
-  max-width:450px;
-  margin:auto;
   padding:20px;
+}
+.container{
+  max-width:700px;
+  margin:auto;
+  background:#fff;
+  padding:25px;
   border-radius:6px;
 }
-input, textarea, select, button{
+h2{
+  border-bottom:2px solid #eee;
+  padding-bottom:10px;
+}
+.section{
+  margin-top:25px;
+}
+label{
+  display:block;
+  margin-top:12px;
+  font-weight:bold;
+}
+input, textarea, select{
   width:100%;
   padding:10px;
-  margin-top:10px;
+  margin-top:5px;
   box-sizing:border-box;
 }
 textarea{
+  min-height:120px;
   resize:vertical;
-  min-height:100px;
 }
 button{
+  margin-top:25px;
+  padding:12px;
+  width:100%;
   background:#000;
   color:#fff;
   border:none;
   cursor:pointer;
+  font-size:16px;
 }
 #msg{
-  margin-top:10px;
+  margin-top:15px;
   font-weight:bold;
 }
 </style>
 </head>
 <body>
 
-<div class="box">
-  <h2>İlan Ekle</h2>
+<div class="container">
+  <h2>İlan Ver</h2>
 
-  <input id="marka" placeholder="Marka (ör. Fiat)">
-  <input id="model" placeholder="Model (ör. Brava)">
-  <input id="yil" type="number" placeholder="Yıl (ör. 2001)">
-  <input id="fiyat" type="number" placeholder="Fiyat (₺)">
+  <!-- ARAÇ BİLGİLERİ -->
+  <div class="section">
+    <h3>Araç Bilgileri</h3>
 
-  <!-- YENİ ALAN -->
-  <textarea id="aciklama" placeholder="Araç açıklaması"></textarea>
+    <label>Marka</label>
+    <input id="marka">
 
-  <!-- YENİ ALAN -->
-  <select id="ekspertiz">
-    <option value="">Ekspertiz Durumu Seç</option>
-    <option value="Yok">Ekspertiz Yok</option>
-    <option value="Var - Temiz">Ekspertiz Var (Temiz)</option>
-    <option value="Var - Boyalı">Ekspertiz Var (Boyalı Parça Var)</option>
-    <option value="Var - Değişen">Ekspertiz Var (Değişen Parça Var)</option>
-  </select>
+    <label>Model</label>
+    <input id="model">
 
-  <button onclick="kaydet()">İlanı Gönder</button>
+    <label>Yıl</label>
+    <input id="yil" type="number">
+
+    <label>Kilometre</label>
+    <input id="km" type="number">
+
+    <label>Yakıt</label>
+    <select id="yakit">
+      <option value="">Seçiniz</option>
+      <option>Benzin</option>
+      <option>Dizel</option>
+      <option>LPG</option>
+      <option>Hibrit</option>
+      <option>Elektrik</option>
+    </select>
+
+    <label>Vites</label>
+    <select id="vites">
+      <option value="">Seçiniz</option>
+      <option>Manuel</option>
+      <option>Otomatik</option>
+      <option>Yarı Otomatik</option>
+    </select>
+  </div>
+
+  <!-- FİYAT -->
+  <div class="section">
+    <h3>Fiyat</h3>
+
+    <label>Fiyat (₺)</label>
+    <input id="fiyat" type="number">
+  </div>
+
+  <!-- EKSPERTİZ -->
+  <div class="section">
+    <h3>Ekspertiz Bilgisi</h3>
+
+    <label>Ekspertiz Durumu</label>
+    <select id="ekspertiz">
+      <option value="">Seçiniz</option>
+      <option>Ekspertiz Yok</option>
+      <option>Ekspertiz Var - Temiz</option>
+      <option>Ekspertiz Var - Boyalı Parça</option>
+      <option>Ekspertiz Var - Değişen Parça</option>
+    </select>
+  </div>
+
+  <!-- AÇIKLAMA -->
+  <div class="section">
+    <h3>Açıklama</h3>
+
+    <textarea id="aciklama" placeholder="Aracın durumu, bakımları, ekstra bilgileri..."></textarea>
+  </div>
+
+  <button onclick="kaydet()">İlanı Yayına Gönder</button>
   <div id="msg"></div>
 </div>
 
@@ -69,7 +133,6 @@ button{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* Firebase ayarları */
 const firebaseConfig = {
   apiKey: "AIzaSyDp3wjVF9w3MTFt0B1o4Jcdc_H9nvlqSY8",
   authDomain: "ilkeloto.firebaseapp.com",
@@ -82,38 +145,31 @@ const db = getFirestore(app);
 window.kaydet = async function(){
 
   if(
-    !marka.value ||
-    !model.value ||
-    !yil.value ||
-    !fiyat.value ||
-    !aciklama.value ||
-    !ekspertiz.value
+    !marka.value || !model.value || !yil.value ||
+    !km.value || !yakit.value || !vites.value ||
+    !fiyat.value || !ekspertiz.value || !aciklama.value
   ){
-    msg.innerText = "Lütfen tüm alanları doldur";
+    msg.innerText = "Lütfen tüm alanları doldurun";
     msg.style.color = "red";
     return;
   }
 
   await addDoc(collection(db,"ilanlar"),{
-    marka: marka.value.trim(),
-    model: model.value.trim(),
+    marka: marka.value,
+    model: model.value,
     yil: Number(yil.value),
+    km: Number(km.value),
+    yakit: yakit.value,
+    vites: vites.value,
     fiyat: Number(fiyat.value),
-    aciklama: aciklama.value.trim(),
     ekspertiz: ekspertiz.value,
+    aciklama: aciklama.value,
     durum: "beklemede",
     tarih: new Date()
   });
 
-  msg.innerText = "İlan gönderildi (admin onayı bekleniyor)";
+  msg.innerText = "İlan gönderildi, admin onayı bekleniyor";
   msg.style.color = "green";
-
-  marka.value = "";
-  model.value = "";
-  yil.value = "";
-  fiyat.value = "";
-  aciklama.value = "";
-  ekspertiz.value = "";
 };
 </script>
 
