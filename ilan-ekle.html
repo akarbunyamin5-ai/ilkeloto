@@ -31,15 +31,9 @@ h1,h3{margin-top:0}
   padding:10px;
   text-align:center;
   cursor:pointer;
-  transition:.2s;
 }
-.card:hover{border-color:#000}
 .card.active{border:2px solid #000;background:#f0f0f0}
-.card img{
-  width:60px;
-  height:60px;
-  object-fit:contain;
-}
+.card img{width:60px;height:60px;object-fit:contain}
 
 select,input,textarea{
   width:100%;
@@ -63,11 +57,9 @@ button{
 
 .hidden{display:none}
 
-.summary{
-  margin-top:20px;
-  background:#f2f2f2;
-  padding:15px;
-  border-radius:6px;
+#msg{
+  margin-top:15px;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -121,36 +113,19 @@ button{
 
     <textarea id="aciklama" placeholder="Açıklama"></textarea>
 
-    <button onclick="testGoster()">İlanı Test Et</button>
+    <button onclick="kaydet()">İlanı Gönder</button>
+    <div id="msg"></div>
   </div>
-
-  <!-- ÖZET -->
-  <div id="summary" class="summary hidden"></div>
 </div>
 
 <script>
-/* MARKA + LOGO + MODEL */
+/* MARKA + MODEL */
 const DATA = {
-  Fiat:{
-    logo:"https://upload.wikimedia.org/wikipedia/commons/3/3e/Fiat_logo.svg",
-    models:["Egea","Linea","Doblo","Punto","Brava"]
-  },
-  Renault:{
-    logo:"https://upload.wikimedia.org/wikipedia/commons/6/6e/Renault_logo.svg",
-    models:["Clio","Megane","Symbol","Taliant"]
-  },
-  Ford:{
-    logo:"https://upload.wikimedia.org/wikipedia/commons/3/3e/Ford_logo_flat.svg",
-    models:["Focus","Fiesta","Courier","Mondeo"]
-  },
-  Toyota:{
-    logo:"https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_logo.svg",
-    models:["Corolla","Yaris","Auris"]
-  },
-  Volkswagen:{
-    logo:"https://upload.wikimedia.org/wikipedia/commons/4/4d/Volkswagen_logo_2019.svg",
-    models:["Golf","Passat","Polo","Jetta"]
-  }
+  Fiat:{ models:["Egea","Linea","Doblo","Punto","Brava"] },
+  Renault:{ models:["Clio","Megane","Symbol","Taliant"] },
+  Ford:{ models:["Focus","Fiesta","Courier","Mondeo"] },
+  Toyota:{ models:["Corolla","Yaris","Auris"] },
+  Volkswagen:{ models:["Golf","Passat","Polo","Jetta"] }
 };
 
 let seciliMarka="";
@@ -160,13 +135,13 @@ const brandGrid=document.getElementById("brandGrid");
 const modelArea=document.getElementById("modelArea");
 const modelSelect=document.getElementById("modelSelect");
 const formArea=document.getElementById("formArea");
-const summary=document.getElementById("summary");
+const msg=document.getElementById("msg");
 
 /* MARKALARI BAS */
 for(const marka in DATA){
   const div=document.createElement("div");
   div.className="card";
-  div.innerHTML=`<img src="${DATA[marka].logo}"><div>${marka}</div>`;
+  div.innerText=marka;
 
   div.onclick=()=>{
     document.querySelectorAll(".card").forEach(x=>x.classList.remove("active"));
@@ -182,34 +157,60 @@ for(const marka in DATA){
 
     modelArea.classList.remove("hidden");
     formArea.classList.add("hidden");
-    summary.classList.add("hidden");
   };
 
   brandGrid.appendChild(div);
 }
 
-/* MODEL SEÇİLDİ */
+/* MODEL SEÇ */
 modelSelect.onchange=()=>{
   seciliModel=modelSelect.value;
   formArea.classList.remove("hidden");
 };
+</script>
 
-/* TEST ÖZET */
-function testGoster(){
-  summary.classList.remove("hidden");
-  summary.innerHTML=`
-    <b>TEST ÖZETİ</b><br><br>
-    Marka: ${seciliMarka}<br>
-    Model: ${seciliModel}<br>
-    Yıl: ${yil.value}<br>
-    KM: ${km.value}<br>
-    Yakıt: ${yakit.value}<br>
-    Vites: ${vites.value}<br>
-    Fiyat: ${fiyat.value} ₺<br>
-    Ekspertiz: ${ekspertiz.value}<br>
-    Açıklama: ${aciklama.value}
-  `;
-}
+<!-- 🔥 FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, addDoc, collection, serverTimestamp } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* 🔴 KENDİ FIREBASE BİLGİLERİN */
+const firebaseConfig = {
+  apiKey: "API_KEY",
+  authDomain: "PROJECT_ID.firebaseapp.com",
+  projectId: "PROJECT_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* KAYDET */
+window.kaydet = async () => {
+  if(!seciliMarka || !seciliModel || !yil.value || !km.value || !yakit.value ||
+     !vites.value || !fiyat.value || !ekspertiz.value || !aciklama.value){
+    msg.style.color="red";
+    msg.innerText="Tüm alanları doldur";
+    return;
+  }
+
+  await addDoc(collection(db,"ilanlar"),{
+    marka: seciliMarka,
+    model: seciliModel,
+    yil: Number(yil.value),
+    km: Number(km.value),
+    yakit: yakit.value,
+    vites: vites.value,
+    fiyat: Number(fiyat.value),
+    ekspertiz: ekspertiz.value,
+    aciklama: aciklama.value,
+    durum: "beklemede",
+    tarih: serverTimestamp()
+  });
+
+  msg.style.color="green";
+  msg.innerText="İlan gönderildi (admin onayı bekleniyor)";
+};
 </script>
 
 </body>
