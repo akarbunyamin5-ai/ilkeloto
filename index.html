@@ -2,268 +2,114 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İLKEL OTO | Onaylı Sahibinden İlanlar</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İLKEL OTO</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f3f3f3;
-}
-
-/* HEADER */
-header {
-  background: #000;
-  color: #fff;
-  padding: 20px;
-}
-
-header h1 {
-  margin: 0;
-}
-
-header p {
-  margin: 5px 0 0;
-  color: #ccc;
-}
-
-/* LAYOUT */
-.container {
-  display: flex;
-  padding: 20px;
-}
-
-/* SOL PANEL */
-.sidebar {
-  width: 220px;
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.sidebar h3 {
-  margin-top: 0;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar li {
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.sidebar li:hover {
-  background: #eee;
-}
-
-.sidebar .active {
-  background: #000;
-  color: #fff;
-}
-
-/* ANA ALAN */
-.main {
-  flex: 1;
-  margin-left: 20px;
-}
-
-/* ARAMA */
-.search-box {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
-/* KART GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
-  gap: 20px;
-}
-
-/* KART */
-.card {
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.15);
-}
-
-.price {
-  color: green;
-  font-weight: bold;
-  font-size: 18px;
-}
-
-/* FOOTER */
-footer {
-  background: #000;
-  color: #ccc;
-  text-align: center;
-  padding: 15px;
-  margin-top: 40px;
-}
+body {font-family:Arial;margin:0;background:#f2f2f2}
+header{background:#000;color:#fff;padding:15px}
+.container{display:flex;padding:15px}
+.sidebar{width:240px;background:#fff;padding:15px;border-radius:6px}
+.content{flex:1;margin-left:15px}
+select,input{width:100%;padding:8px;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
+.card{background:#fff;padding:15px;border-radius:6px}
+.price{color:green;font-weight:bold}
 </style>
-</head>
 
+</head>
 <body>
 
 <header>
-<h1>İLKEL OTO</h1>
+<h2>İLKEL OTO</h2>
 <p>Onaylı Sahibinden İlanlar</p>
 </header>
 
 <div class="container">
 
-<!-- SOL MARKALAR -->
 <div class="sidebar">
-<h3>Markalar</h3>
-<ul id="markaList">
-<li class="active" onclick="filterBrand('all')">Tümü</li>
-</ul>
-</div>
 
-<!-- ANA -->
-<div class="main">
+<select id="brand">
+<option value="">Marka Seç</option>
+</select>
 
-<input
-type="text"
-id="searchInput"
-class="search-box"
-placeholder="Ara: marka, model, fiyat..."
-onkeyup="searchCars()"
->
+<select id="model">
+<option value="">Model Seç</option>
+</select>
 
-<div id="carGrid" class="grid"></div>
+<input type="number" id="minPrice" placeholder="Min Fiyat">
+<input type="number" id="maxPrice" placeholder="Max Fiyat">
+
+<button onclick="filter()">Filtrele</button>
 
 </div>
+
+<div class="content">
+<div id="listings" class="grid"></div>
 </div>
 
-<footer>
-© 2026 İlkel Oto | Tüm Hakları Saklıdır
-</footer>
+</div>
 
 <script>
 
-/* ----------------------
-ÖRNEK VERİ (Firebase yoksa buradan çeker)
----------------------- */
-
-let cars = [
- { marka:"Fiat", model:"Brava", yil:2001, km:150000, fiyat:250000 },
- { marka:"Fiat", model:"Linea", yil:2012, km:90000, fiyat:420000 },
- { marka:"Renault", model:"Megane", yil:2018, km:60000, fiyat:690000 }
+const data = [
+{brand:"Fiat",model:"Brava",year:2001,km:150000,price:250000},
+{brand:"Fiat",model:"Linea",year:2012,km:90000,price:420000},
+{brand:"Renault",model:"Megane",year:2018,km:60000,price:690000},
+{brand:"Renault",model:"Clio",year:2016,km:80000,price:390000}
 ];
 
-let activeBrand = "all";
+const brandSelect = document.getElementById("brand");
+const modelSelect = document.getElementById("model");
+const listings = document.getElementById("listings");
 
-/* ----------------------
-KARTLARI BAS
----------------------- */
+const brands = [...new Set(data.map(i=>i.brand))];
 
-function renderCars(data) {
- const grid = document.getElementById("carGrid");
- grid.innerHTML = "";
+brands.forEach(b=>{
+let o=document.createElement("option");
+o.value=b;
+o.text=b;
+brandSelect.add(o);
+});
 
- data.forEach(car => {
+brandSelect.onchange = ()=>{
+modelSelect.innerHTML="<option value=''>Model Seç</option>";
+const models = data.filter(i=>i.brand==brandSelect.value)
+.map(i=>i.model);
+[...new Set(models)].forEach(m=>{
+let o=document.createElement("option");
+o.value=m;
+o.text=m;
+modelSelect.add(o);
+});
+};
 
-  const card = document.createElement("div");
-  card.className = "card";
-
-  card.innerHTML = `
-    <h3>${car.marka} ${car.model}</h3>
-    <p>Yıl: ${car.yil}</p>
-    <p>KM: ${car.km.toLocaleString()}</p>
-    <div class="price">${car.fiyat.toLocaleString()} ₺</div>
-  `;
-
-  grid.appendChild(card);
- });
+function show(list){
+listings.innerHTML="";
+list.forEach(i=>{
+listings.innerHTML+=`
+<div class="card">
+<b>${i.brand} ${i.model}</b><br>
+Yıl: ${i.year}<br>
+KM: ${i.km}<br>
+<div class="price">${i.price} ₺</div>
+</div>`;
+});
 }
 
-/* ----------------------
-MARKALARI OTOMATİK ÜRET
----------------------- */
+function filter(){
+let min=+minPrice.value||0;
+let max=+maxPrice.value||99999999;
 
-function renderBrands(data) {
+let result = data.filter(i=>
+(!brand.value||i.brand==brand.value)&&
+(!model.value||i.model==model.value)&&
+(i.price>=min&&i.price<=max)
+);
 
- const markaList = document.getElementById("markaList");
-
- const brands = [...new Set(data.map(item => item.marka))];
-
- brands.forEach(brand => {
-
-  const li = document.createElement("li");
-  li.innerText = brand;
-
-  li.onclick = () => filterBrand(brand);
-
-  markaList.appendChild(li);
-
- });
+show(result);
 }
 
-/* ----------------------
-MARKA FİLTRE
----------------------- */
-
-function filterBrand(brand) {
-
- activeBrand = brand;
-
- document.querySelectorAll("#markaList li").forEach(li=>{
-  li.classList.remove("active");
- });
-
- event.target.classList.add("active");
-
- applyFilters();
-}
-
-/* ----------------------
-ARAMA
----------------------- */
-
-function searchCars() {
- applyFilters();
-}
-
-/* ----------------------
-ORTAK FİLTRE
----------------------- */
-
-function applyFilters() {
-
- const search = document.getElementById("searchInput").value.toLowerCase();
-
- let filtered = cars.filter(car => {
-
-  const matchBrand =
-   activeBrand === "all" || car.marka === activeBrand;
-
-  const matchSearch =
-   car.marka.toLowerCase().includes(search) ||
-   car.model.toLowerCase().includes(search) ||
-   car.fiyat.toString().includes(search);
-
-  return matchBrand && matchSearch;
- });
-
- renderCars(filtered);
-}
-
-/* ----------------------
-İLK YÜKLEME
----------------------- */
-
-renderCars(cars);
-renderBrands(cars);
+show(data);
 
 </script>
 
