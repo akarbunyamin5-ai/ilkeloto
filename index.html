@@ -53,7 +53,11 @@ height:160px;
 object-fit:cover
 }
 
-.price{color:green;font-weight:bold;font-size:18px}
+.price{
+color:green;
+font-weight:bold;
+font-size:18px
+}
 
 .fav{
 position:absolute;
@@ -108,8 +112,12 @@ color:#999
 
 <script>
 
-let data=JSON.parse(localStorage.getItem("cars"))||[];
-let favs=JSON.parse(localStorage.getItem("favs"))||[];
+// SÜREKLİ GÜNCEL OKU
+function getData(){
+return JSON.parse(localStorage.getItem("cars")) || [];
+}
+
+let favs = JSON.parse(localStorage.getItem("favs")) || [];
 
 const list=document.getElementById("list");
 
@@ -118,6 +126,7 @@ return favs.includes(id);
 }
 
 function toggleFav(id,e){
+
 e.stopPropagation();
 
 if(isFav(id)){
@@ -127,10 +136,10 @@ favs.push(id);
 }
 
 localStorage.setItem("favs",JSON.stringify(favs));
-show(data);
+render(getData());
 }
 
-function show(arr){
+function render(arr){
 
 list.innerHTML="";
 
@@ -168,16 +177,24 @@ function filter(){
 let key=keyword.value.toLowerCase();
 let city=cityFilter.value;
 
+let data=getData();
+
 let result=data.filter(i=>
 (i.brand.toLowerCase().includes(key)||
  i.model.toLowerCase().includes(key)) &&
 (!city || i.city==city)
 );
 
-show(result);
+render(result);
 }
 
-show(data);
+// OTOMATİK SENKRON (3 SANİYEDE BİR)
+setInterval(()=>{
+render(getData());
+},3000);
+
+// İLK YÜKLEME
+render(getData());
 
 </script>
 
