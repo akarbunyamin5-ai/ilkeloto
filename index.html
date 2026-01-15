@@ -2,58 +2,121 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İLKEL OTO - Onaylı Sahibinden İlanlar</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="İlkel Oto - Onaylı Sahibinden Araç İlanları">
+<title>İLKEL OTO | Onaylı Sahibinden İlanlar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-
-body{margin:0;font-family:Arial;background:#f2f2f2}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f3f3;
+}
 
 /* HEADER */
-header{background:#000;color:#fff;padding:15px 25px;display:flex;align-items:center;gap:15px}
-header img{height:45px}
-header h1{margin:0;font-size:26px}
-header span{color:#ccc;font-size:14px}
+header {
+  background: #000;
+  color: #fff;
+  padding: 20px;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header p {
+  margin: 5px 0 0;
+  color: #ccc;
+}
 
 /* LAYOUT */
-.container{display:flex;padding:20px;gap:20px}
+.container {
+  display: flex;
+  padding: 20px;
+}
 
-/* SIDEBAR */
-.sidebar{width:240px;background:#fff;padding:15px;border-radius:6px}
-.sidebar h3{margin-top:0}
-.sidebar ul{padding:0;margin:0;list-style:none}
-.sidebar li{padding:8px;border-bottom:1px solid #eee;cursor:pointer}
-.sidebar li.active{background:#000;color:#fff}
+/* SOL PANEL */
+.sidebar {
+  width: 220px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+}
 
-/* CONTENT */
-.content{flex:1}
+.sidebar h3 {
+  margin-top: 0;
+}
 
-/* SEARCH */
-.search input{width:100%;padding:10px;font-size:16px;margin-bottom:15px}
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
 
-/* GRID */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+.sidebar li {
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 5px;
+}
 
-/* CARD */
-.card{background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-.price{color:green;font-weight:bold;font-size:18px;margin-top:5px}
+.sidebar li:hover {
+  background: #eee;
+}
+
+.sidebar .active {
+  background: #000;
+  color: #fff;
+}
+
+/* ANA ALAN */
+.main {
+  flex: 1;
+  margin-left: 20px;
+}
+
+/* ARAMA */
+.search-box {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* KART GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+  gap: 20px;
+}
+
+/* KART */
+.card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
+.price {
+  color: green;
+  font-weight: bold;
+  font-size: 18px;
+}
 
 /* FOOTER */
-footer{background:#111;color:#ccc;text-align:center;padding:15px;margin-top:30px;font-size:13px}
-
+footer {
+  background: #000;
+  color: #ccc;
+  text-align: center;
+  padding: 15px;
+  margin-top: 40px;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<img src="logo.png" onerror="this.style.display='none'">
-<div>
 <h1>İLKEL OTO</h1>
-<span>Onaylı Sahibinden İlanlar</span>
-</div>
+<p>Onaylı Sahibinden İlanlar</p>
 </header>
 
 <div class="container">
@@ -61,17 +124,23 @@ footer{background:#111;color:#ccc;text-align:center;padding:15px;margin-top:30px
 <!-- SOL MARKALAR -->
 <div class="sidebar">
 <h3>Markalar</h3>
-<ul id="markaList"></ul>
+<ul id="markaList">
+<li class="active" onclick="filterBrand('all')">Tümü</li>
+</ul>
 </div>
 
-<!-- SAĞ -->
-<div class="content">
+<!-- ANA -->
+<div class="main">
 
-<div class="search">
-<input id="arama" placeholder="Ara: marka, model, fiyat..." onkeyup="filtrele()">
-</div>
+<input
+type="text"
+id="searchInput"
+class="search-box"
+placeholder="Ara: marka, model, fiyat..."
+onkeyup="searchCars()"
+>
 
-<div class="grid" id="ilanlar"></div>
+<div id="carGrid" class="grid"></div>
 
 </div>
 </div>
@@ -82,90 +151,119 @@ footer{background:#111;color:#ccc;text-align:center;padding:15px;margin-top:30px
 
 <script>
 
-const data = [
-{ marka:"Fiat", model:"Brava", yil:2001, km:150000, fiyat:250000 },
-{ marka:"Fiat", model:"Linea", yil:2012, km:90000, fiyat:420000 },
-{ marka:"Renault", model:"Megane", yil:2018, km:60000, fiyat:690000 }
+/* ----------------------
+ÖRNEK VERİ (Firebase yoksa buradan çeker)
+---------------------- */
+
+let cars = [
+ { marka:"Fiat", model:"Brava", yil:2001, km:150000, fiyat:250000 },
+ { marka:"Fiat", model:"Linea", yil:2012, km:90000, fiyat:420000 },
+ { marka:"Renault", model:"Megane", yil:2018, km:60000, fiyat:690000 }
 ];
 
-let aktifMarka="Tümü";
+let activeBrand = "all";
 
-const ilanAlan=document.getElementById("ilanlar");
-const markaAlan=document.getElementById("markaList");
+/* ----------------------
+KARTLARI BAS
+---------------------- */
 
-function markaOlustur(){
+function renderCars(data) {
+ const grid = document.getElementById("carGrid");
+ grid.innerHTML = "";
 
-let markalar=["Tümü"];
+ data.forEach(car => {
 
-data.forEach(i=>{
-if(!markalar.includes(i.marka)){
-markalar.push(i.marka);
-}
-});
+  const card = document.createElement("div");
+  card.className = "card";
 
-markaAlan.innerHTML="";
+  card.innerHTML = `
+    <h3>${car.marka} ${car.model}</h3>
+    <p>Yıl: ${car.yil}</p>
+    <p>KM: ${car.km.toLocaleString()}</p>
+    <div class="price">${car.fiyat.toLocaleString()} ₺</div>
+  `;
 
-markalar.forEach(m=>{
-
-let li=document.createElement("li");
-li.textContent=m;
-
-if(m=="Tümü") li.classList.add("active");
-
-li.onclick=()=>{
-document.querySelectorAll(".sidebar li").forEach(x=>x.classList.remove("active"));
-li.classList.add("active");
-aktifMarka=m;
-filtrele();
+  grid.appendChild(card);
+ });
 }
 
-markaAlan.appendChild(li);
+/* ----------------------
+MARKALARI OTOMATİK ÜRET
+---------------------- */
 
-});
+function renderBrands(data) {
 
+ const markaList = document.getElementById("markaList");
+
+ const brands = [...new Set(data.map(item => item.marka))];
+
+ brands.forEach(brand => {
+
+  const li = document.createElement("li");
+  li.innerText = brand;
+
+  li.onclick = () => filterBrand(brand);
+
+  markaList.appendChild(li);
+
+ });
 }
 
-function listele(liste){
+/* ----------------------
+MARKA FİLTRE
+---------------------- */
 
-ilanAlan.innerHTML="";
+function filterBrand(brand) {
 
-liste.forEach(i=>{
+ activeBrand = brand;
 
-ilanAlan.innerHTML+=`
+ document.querySelectorAll("#markaList li").forEach(li=>{
+  li.classList.remove("active");
+ });
 
-<div class="card">
-<h3>${i.marka} ${i.model}</h3>
-<p>Yıl: ${i.yil}</p>
-<p>KM: ${i.km.toLocaleString()}</p>
-<div class="price">${i.fiyat.toLocaleString()} ₺</div>
-</div>
+ event.target.classList.add("active");
 
-`;
-
-});
-
+ applyFilters();
 }
 
-function filtrele(){
+/* ----------------------
+ARAMA
+---------------------- */
 
-let arama=document.getElementById("arama").value.toLowerCase();
-
-let sonuc=data.filter(i=>{
-
-let text=(i.marka+i.model+i.fiyat).toLowerCase();
-
-let markaOK = aktifMarka=="Tümü" || i.marka==aktifMarka;
-
-return text.includes(arama) && markaOK;
-
-});
-
-listele(sonuc);
-
+function searchCars() {
+ applyFilters();
 }
 
-markaOlustur();
-listele(data);
+/* ----------------------
+ORTAK FİLTRE
+---------------------- */
+
+function applyFilters() {
+
+ const search = document.getElementById("searchInput").value.toLowerCase();
+
+ let filtered = cars.filter(car => {
+
+  const matchBrand =
+   activeBrand === "all" || car.marka === activeBrand;
+
+  const matchSearch =
+   car.marka.toLowerCase().includes(search) ||
+   car.model.toLowerCase().includes(search) ||
+   car.fiyat.toString().includes(search);
+
+  return matchBrand && matchSearch;
+ });
+
+ renderCars(filtered);
+}
+
+/* ----------------------
+İLK YÜKLEME
+---------------------- */
+
+renderCars(cars);
+renderBrands(cars);
 
 </script>
 
