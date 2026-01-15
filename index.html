@@ -2,66 +2,56 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İLKEL OTO</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İLKEL OTO | Araç İlan Platformu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-
-body{margin:0;font-family:Arial;background:#f3f3f3}
+body{margin:0;font-family:Arial;background:#f2f2f2}
 
 /* HEADER */
-header{
-background:#000;
-color:#fff;
-padding:15px 20px
-}
+header{background:#ffde00;padding:12px}
+header h2{margin:0}
+
+/* SEARCH BAR */
+.top-search{padding:10px;background:#fff}
+.top-search input{width:100%;padding:10px}
 
 /* LAYOUT */
-.container{
-display:flex;
-padding:15px;
-gap:15px
-}
+.container{display:flex;padding:10px}
 
-/* FILTER PANEL */
+/* FILTER */
 .filter{
 width:260px;
 background:#fff;
-padding:15px;
+padding:10px;
 border-radius:6px
 }
-
-.filter select,
-.filter input{
+.filter select,.filter input{
 width:100%;
 padding:8px;
-margin-bottom:10px
+margin-bottom:8px
 }
 
-/* CONTENT */
-.content{
-flex:1
-}
-
-/* GRID */
+/* LIST */
+.content{flex:1;margin-left:10px}
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
-gap:15px
+grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+gap:10px
 }
 
 /* CARD */
 .card{
 background:#fff;
-padding:15px;
-border-radius:6px
+padding:10px;
+border-radius:6px;
+border:1px solid #ddd
 }
-
 .price{
-color:green;
-font-weight:bold
+color:#2e7d32;
+font-weight:bold;
+font-size:18px
 }
-
 </style>
 </head>
 
@@ -69,19 +59,16 @@ font-weight:bold
 
 <header>
 <h2>İLKEL OTO</h2>
-<p>Onaylı Sahibinden İlanlar</p>
 </header>
+
+<div class="top-search">
+<input id="keyword" placeholder="Kelime ile ara (marka, model...)">
+</div>
 
 <div class="container">
 
 <!-- SOL FİLTRE -->
 <div class="filter">
-
-<select id="category">
-<option value="">Kategori</option>
-<option value="Otomobil">Otomobil</option>
-<option value="Ticari">Ticari</option>
-</select>
 
 <select id="brand">
 <option value="">Marka</option>
@@ -91,10 +78,10 @@ font-weight:bold
 <option value="">Model</option>
 </select>
 
-<input type="number" id="minPrice" placeholder="Min Fiyat">
-<input type="number" id="maxPrice" placeholder="Max Fiyat">
+<input id="minPrice" placeholder="Min Fiyat">
+<input id="maxPrice" placeholder="Max Fiyat">
 
-<button onclick="filter()">Filtrele</button>
+<button onclick="filter()">Ara</button>
 
 </div>
 
@@ -107,18 +94,14 @@ font-weight:bold
 
 <script>
 
-/* ÖRNEK VERİ (GERÇEK VERİ SONRA BAĞLANACAK) */
-const data = [
-{cat:"Otomobil",brand:"Fiat",model:"Egea",price:650000},
-{cat:"Otomobil",brand:"Renault",model:"Clio",price:600000},
-{cat:"Ticari",brand:"Ford",model:"Courier",price:700000}
-];
+// VERİYİ ADMİNDEN OKU
+let data = JSON.parse(localStorage.getItem("cars")) || [];
 
+// MARKA DOLDUR
 const brandSel=document.getElementById("brand");
 const modelSel=document.getElementById("model");
 const list=document.getElementById("list");
 
-/* MARKA DOLDUR */
 function loadBrands(){
 let brands=[...new Set(data.map(i=>i.brand))];
 brands.forEach(b=>{
@@ -129,7 +112,7 @@ brandSel.add(o);
 });
 }
 
-/* MODEL DOLDUR */
+// MODEL DOLDUR
 brandSel.onchange=()=>{
 modelSel.innerHTML="<option value=''>Model</option>";
 let models=data.filter(i=>i.brand==brandSel.value)
@@ -142,35 +125,39 @@ modelSel.add(o);
 });
 };
 
-/* LİSTELE */
+// LİSTELE
 function show(arr){
 list.innerHTML="";
 arr.forEach(i=>{
 list.innerHTML+=`
 <div class="card">
 <b>${i.brand} ${i.model}</b><br>
+${i.year} | ${i.km} KM<br>
 <div class="price">${i.price} ₺</div>
-</div>`;
+</div>
+`;
 });
 }
 
-/* FİLTRE */
+// FİLTRE
 function filter(){
 
+let key=keyword.value.toLowerCase();
 let min=+minPrice.value||0;
-let max=+maxPrice.value||99999999;
+let max=+maxPrice.value||999999999;
 
 let result=data.filter(i=>
-(!category.value||i.cat==category.value)&&
 (!brand.value||i.brand==brand.value)&&
 (!model.value||i.model==model.value)&&
-(i.price>=min&&i.price<=max)
+(i.price>=min&&i.price<=max)&&
+(i.brand.toLowerCase().includes(key)||
+ i.model.toLowerCase().includes(key))
 );
 
 show(result);
 }
 
-/* İLK YÜKLEME */
+// BAŞLANGIÇ
 loadBrands();
 show(data);
 
