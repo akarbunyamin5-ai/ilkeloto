@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-
+<meta charset="UTF-8">
 <title>İLKEL OTO | Onaylı Sahibinden İlanlar</title>
 
-<meta charset="UTF-8">
-<meta name="description" content="İlkel Oto - Türkiye'nin onaylı sahibinden oto ilan platformu">
+<meta name="description" content="İLKEL OTO - Türkiye'nin Onaylı Sahibinden Araç İlan Platformu">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- FAVICON -->
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
-<meta name="theme-color" content="#000000">
 
 <style>
 
@@ -20,112 +19,153 @@ font-family:Arial,Helvetica,sans-serif;
 background:#f2f2f2;
 }
 
+/* HEADER */
+
 header{
-background:#000;
+background:black;
 color:white;
-padding:12px 20px;
+padding:15px 25px;
 display:flex;
 align-items:center;
 gap:15px;
 }
 
 header img{
-height:45px;
+height:50px;
 }
+
+header h1{
+margin:0;
+font-size:26px;
+}
+
+header p{
+margin:3px 0 0;
+font-size:13px;
+color:#ccc;
+}
+
+/* SEARCH */
+
+.search-box{
+padding:15px;
+background:white;
+}
+
+.search-box input{
+width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+/* MAIN */
 
 .main{
 display:flex;
-padding:20px;
-gap:20px;
+padding:15px;
+gap:15px;
 }
 
+/* FILTER */
+
 aside{
-width:220px;
+width:230px;
 background:white;
 padding:15px;
 border-radius:8px;
 }
 
-.content{
-flex:1;
+aside input{
+width:100%;
+padding:8px;
+margin-bottom:8px;
+border:1px solid #ccc;
+border-radius:4px;
 }
 
-.search{
-width:100%;
-padding:12px;
-margin-bottom:15px;
-border-radius:6px;
-border:1px solid #ccc;
-}
+/* LIST */
 
 .grid{
+flex:1;
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-gap:20px;
+gap:15px;
 }
+
+/* CARD */
 
 .card{
 background:white;
 border-radius:8px;
 padding:15px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
+box-shadow:0 2px 6px rgba(0,0,0,0.15);
+}
+
+.card h3{
+margin-top:0;
 }
 
 .price{
 color:green;
 font-weight:bold;
 font-size:18px;
-margin-top:5px;
+margin-top:8px;
 }
 
+/* FOOTER */
+
 footer{
-margin-top:40px;
-background:#000;
+background:black;
 color:#ccc;
 text-align:center;
 padding:15px;
+margin-top:30px;
 font-size:13px;
-}
-
-@media(max-width:800px){
-
-.main{
-flex-direction:column;
-}
-
-aside{
-width:100%;
-}
-
 }
 
 </style>
 
 </head>
-
 <body>
 
+<!-- HEADER -->
+
 <header>
+
 <img src="logo.png" alt="İlkel Oto Logo">
+
 <div>
 <h1>İLKEL OTO</h1>
 <p>Onaylı Sahibinden İlanlar</p>
 </div>
+
 </header>
+
+<!-- SEARCH -->
+
+<div class="search-box">
+<input type="text" placeholder="Ara: marka, model, fiyat...">
+</div>
+
+<!-- CONTENT -->
 
 <div class="main">
 
+<!-- FILTER -->
+
 <aside>
+
 <h3>Filtre</h3>
+
 <input placeholder="Marka">
 <input placeholder="Model">
 <input placeholder="Min Fiyat">
 <input placeholder="Max Fiyat">
+
 </aside>
 
-<div class="content">
-
-<input class="search" placeholder="Ara: marka, model, fiyat...">
+<!-- LIST -->
 
 <div class="grid">
 
@@ -154,7 +194,7 @@ width:100%;
 
 </div>
 
-</div>
+<!-- FOOTER -->
 
 <footer>
 © 2026 İlkel Oto | Tüm Hakları Saklıdır
