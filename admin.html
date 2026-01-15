@@ -5,43 +5,22 @@
 <title>İLKEL OTO Admin</title>
 
 <style>
-body{
-font-family:Arial;
-background:#f2f2f2;
-padding:20px
-}
-
-.box{
-background:#fff;
-padding:20px;
-border-radius:8px;
-max-width:420px;
-margin:auto
-}
-
-input,button{
-width:100%;
-padding:10px;
-margin-bottom:10px
-}
-
-button{
-background:#ffde00;
-border:none;
-font-weight:bold;
-cursor:pointer
-}
+body{font-family:Arial;background:#f2f2f2;padding:20px}
+.box{background:#fff;padding:20px;border-radius:8px;max-width:420px;margin:auto}
+select,input,button{width:100%;padding:10px;margin-bottom:10px}
+button{background:#ffde00;border:none;font-weight:bold;cursor:pointer}
 </style>
-
 </head>
+
 <body>
 
 <div class="box">
 
 <h3>İlan Ekle</h3>
 
-<input id="brand" placeholder="Marka">
-<input id="model" placeholder="Model">
+<select id="brand"></select>
+<select id="model"></select>
+
 <input id="year" placeholder="Yıl">
 <input id="km" placeholder="KM">
 <input id="price" placeholder="Fiyat">
@@ -56,47 +35,75 @@ cursor:pointer
 
 <script>
 
+// TÜRKİYE MARKA MODEL HAVUZU
+const brandData = {
+
+Fiat:["Egea","Linea","Doblo","Fiorino","500","Panda"],
+Renault:["Clio","Megane","Symbol","Taliant","Kangoo","Express"],
+Volkswagen:["Golf","Passat","Polo","Tiguan","Transporter","Caddy"],
+Toyota:["Corolla","Yaris","Auris","Hilux","C-HR"],
+Ford:["Focus","Fiesta","Courier","Transit","Ranger"],
+Hyundai:["i20","i30","Tucson","Bayon","Accent"],
+Peugeot:["301","308","3008","Partner","Rifter"],
+Opel:["Astra","Corsa","Insignia","Combo","Mokka"],
+BMW:["320i","520i","X1","X3"],
+Mercedes:["C180","E200","GLA","Vito"],
+Audi:["A3","A4","Q3","Q5"],
+Tesla:["Model 3","Model Y"],
+TOGG:["T10X"]
+};
+
+const brandSel=document.getElementById("brand");
+const modelSel=document.getElementById("model");
+
+// MARKALARI YÜKLE
+brandSel.innerHTML="<option>Marka Seç</option>";
+
+for(let b in brandData){
+brandSel.innerHTML+=`<option>${b}</option>`;
+}
+
+// MODEL YÜKLE
+brandSel.onchange=()=>{
+modelSel.innerHTML="<option>Model Seç</option>";
+brandData[brandSel.value].forEach(m=>{
+modelSel.innerHTML+=`<option>${m}</option>`;
+});
+};
+
+// KAYDET
 function save(){
 
 let cars = JSON.parse(localStorage.getItem("cars")) || [];
 
 let file = photo.files[0];
+if(!file){ alert("Foto seç"); return; }
 
-if(!file){
-alert("Lütfen fotoğraf seç");
-return;
-}
+let reader=new FileReader();
 
-let reader = new FileReader();
+reader.onload=function(){
 
-reader.onload = function(){
-
-let car = {
-brand: brand.value,
-model: model.value,
-year: year.value,
-km: km.value,
-price: price.value,
-image: reader.result
+let car={
+brand:brandSel.value,
+model:modelSel.value,
+year:year.value,
+km:km.value,
+price:price.value,
+image:reader.result
 };
 
 cars.push(car);
+localStorage.setItem("cars",JSON.stringify(cars));
 
-localStorage.setItem("cars", JSON.stringify(cars));
+msg.innerHTML="✅ İlan Kaydedildi";
 
-msg.innerHTML = "✅ İlan Kaydedildi";
-
-brand.value="";
-model.value="";
 year.value="";
 km.value="";
 price.value="";
 photo.value="";
-
 };
 
 reader.readAsDataURL(file);
-
 }
 
 </script>
