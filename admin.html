@@ -6,9 +6,24 @@
 
 <style>
 body{font-family:Arial;background:#f2f2f2;padding:20px}
-.box{background:#fff;padding:20px;border-radius:8px;max-width:400px;margin:auto}
-input,select,button{width:100%;padding:10px;margin-bottom:10px}
-button{background:#000;color:#fff;border:none;cursor:pointer}
+.box{
+background:#fff;
+padding:20px;
+border-radius:8px;
+max-width:400px;
+margin:auto
+}
+input,button{
+width:100%;
+padding:10px;
+margin-bottom:10px
+}
+button{
+background:#ffde00;
+border:none;
+font-weight:bold;
+cursor:pointer
+}
 </style>
 
 </head>
@@ -16,18 +31,13 @@ button{background:#000;color:#fff;border:none;cursor:pointer}
 
 <div class="box">
 
-<h2>İlkel Oto - İlan Ekle</h2>
-
-<select id="cat">
-<option value="Otomobil">Otomobil</option>
-<option value="Ticari">Ticari</option>
-</select>
+<h3>İlan Ekle</h3>
 
 <input id="brand" placeholder="Marka">
 <input id="model" placeholder="Model">
-<input id="price" placeholder="Fiyat">
-<input id="km" placeholder="KM">
 <input id="year" placeholder="Yıl">
+<input id="km" placeholder="KM">
+<input id="price" placeholder="Fiyat">
 
 <button onclick="save()">Kaydet</button>
 
@@ -39,28 +49,27 @@ button{background:#000;color:#fff;border:none;cursor:pointer}
 
 function save(){
 
-let data = JSON.parse(localStorage.getItem("cars")) || [];
+let cars = JSON.parse(localStorage.getItem("cars")) || [];
 
-let car = {
-cat:cat.value,
+let car={
 brand:brand.value,
 model:model.value,
-price:Number(price.value),
-km:Number(km.value),
-year:Number(year.value)
+year:year.value,
+km:km.value,
+price:price.value
 };
 
-data.push(car);
+cars.push(car);
 
-localStorage.setItem("cars",JSON.stringify(data));
+localStorage.setItem("cars",JSON.stringify(cars));
 
 msg.innerHTML="✅ İlan Kaydedildi";
 
 brand.value="";
 model.value="";
-price.value="";
-km.value="";
 year.value="";
+km.value="";
+price.value="";
 }
 
 </script>
