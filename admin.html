@@ -2,13 +2,64 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İLKEL OTO Admin</title>
+<title>İLKEL OTO Admin Panel</title>
 
 <style>
-body{font-family:Arial;background:#f2f2f2;padding:20px}
-.box{background:#fff;padding:20px;border-radius:8px;max-width:460px;margin:auto}
-select,input,button{width:100%;padding:10px;margin-bottom:10px}
-button{background:#ffde00;border:none;font-weight:bold;cursor:pointer}
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:20px
+}
+
+.box{
+background:#fff;
+padding:20px;
+border-radius:8px;
+max-width:500px;
+margin:auto
+}
+
+input,select,button{
+width:100%;
+padding:10px;
+margin-bottom:10px
+}
+
+button{
+background:#ffde00;
+border:none;
+font-weight:bold;
+cursor:pointer
+}
+
+.list{
+margin-top:30px
+}
+
+.item{
+background:#fff;
+padding:10px;
+border-radius:6px;
+margin-bottom:10px;
+border:1px solid #ddd
+}
+
+.actions button{
+width:48%;
+margin-top:5px
+}
+
+.del{
+background:#f44336;
+color:white
+}
+
+.edit{
+background:#2196f3;
+color:white
+}
+
 </style>
 </head>
 
@@ -16,7 +67,7 @@ button{background:#ffde00;border:none;font-weight:bold;cursor:pointer}
 
 <div class="box">
 
-<h3>İlan Ekle</h3>
+<h2>İLAN EKLE</h2>
 
 <select id="brand"></select>
 <select id="model"></select>
@@ -40,18 +91,21 @@ button{background:#ffde00;border:none;font-weight:bold;cursor:pointer}
 </select>
 
 <input id="phone" placeholder="Telefon">
-<input id="whatsapp" placeholder="WhatsApp (905xxxxxxxxx)">
+<input id="whatsapp" placeholder="WhatsApp">
 
 <input type="file" id="photos" multiple>
 
-<button onclick="save()">Kaydet</button>
+<button onclick="save()">➕ İlan Ekle</button>
 
 <p id="msg"></p>
 
 </div>
 
+<div class="list" id="list"></div>
+
 <script>
 
+// MARKA MODEL
 const brandData={
 Fiat:["Egea","Linea","Doblo"],
 Renault:["Clio","Megane","Symbol"],
@@ -69,6 +123,7 @@ const brandSel=document.getElementById("brand");
 const modelSel=document.getElementById("model");
 
 brandSel.innerHTML="<option>Marka Seç</option>";
+
 for(let b in brandData){
 brandSel.innerHTML+=`<option>${b}</option>`;
 }
@@ -80,11 +135,14 @@ modelSel.innerHTML+=`<option>${m}</option>`;
 });
 };
 
+// VERİ
+let cars=JSON.parse(localStorage.getItem("cars"))||[];
+const list=document.getElementById("list");
+
+// EKLE
 function save(){
 
-let cars=JSON.parse(localStorage.getItem("cars"))||[];
 let files=photos.files;
-
 if(files.length==0){alert("Foto seç");return;}
 
 let images=[];
@@ -117,7 +175,7 @@ images:images
 cars.push(car);
 localStorage.setItem("cars",JSON.stringify(cars));
 
-msg.innerHTML="✅ İlan Kaydedildi";
+msg.innerHTML="✅ İlan Eklendi";
 
 year.value="";
 km.value="";
@@ -125,6 +183,9 @@ price.value="";
 phone.value="";
 whatsapp.value="";
 photos.value="";
+
+render();
+
 }
 
 };
@@ -133,6 +194,69 @@ reader.readAsDataURL(files[i]);
 }
 
 }
+
+// LİSTELE
+function render(){
+
+list.innerHTML="<h2>İLANLAR</h2>";
+
+cars.forEach(c=>{
+
+list.innerHTML+=`
+
+<div class="item">
+
+<b>${c.brand} ${c.model}</b><br>
+${c.city} | ${c.year} | ${c.km} KM<br>
+<b>${c.price} ₺</b>
+
+<div class="actions">
+<button class="edit" onclick="edit(${c.id})">✏️ Düzenle</button>
+<button class="del" onclick="remove(${c.id})">🗑 Sil</button>
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+// SİL
+function remove(id){
+
+if(!confirm("İlan silinsin mi?")) return;
+
+cars=cars.filter(x=>x.id!=id);
+localStorage.setItem("cars",JSON.stringify(cars));
+
+render();
+}
+
+// DÜZENLE
+function edit(id){
+
+let car=cars.find(x=>x.id==id);
+
+let newPrice=prompt("Yeni fiyat",car.price);
+let newKm=prompt("Yeni KM",car.km);
+let newYear=prompt("Yeni yıl",car.year);
+let newCity=prompt("Yeni şehir",car.city);
+let newPhone=prompt("Yeni telefon",car.phone);
+
+car.price=newPrice;
+car.km=newKm;
+car.year=newYear;
+car.city=newCity;
+car.phone=newPhone;
+
+localStorage.setItem("cars",JSON.stringify(cars));
+
+render();
+}
+
+render();
 
 </script>
 
