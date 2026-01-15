@@ -6,18 +6,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+
 body{margin:0;font-family:Arial;background:#f2f2f2}
 
 /* HEADER */
-header{background:#ffde00;padding:12px}
-header h2{margin:0}
+header{
+background:#ffde00;
+padding:12px
+}
 
-/* SEARCH BAR */
-.top-search{padding:10px;background:#fff}
-.top-search input{width:100%;padding:10px}
+/* SEARCH */
+.top-search{
+background:#fff;
+padding:10px
+}
+.top-search input{
+width:100%;
+padding:10px
+}
 
 /* LAYOUT */
-.container{display:flex;padding:10px}
+.container{
+display:flex;
+padding:10px
+}
 
 /* FILTER */
 .filter{
@@ -32,8 +44,13 @@ padding:8px;
 margin-bottom:8px
 }
 
-/* LIST */
-.content{flex:1;margin-left:10px}
+/* CONTENT */
+.content{
+flex:1;
+margin-left:10px
+}
+
+/* GRID */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
@@ -43,15 +60,24 @@ gap:10px
 /* CARD */
 .card{
 background:#fff;
-padding:10px;
+border:1px solid #ddd;
 border-radius:6px;
-border:1px solid #ddd
+padding:10px
 }
+
+.card img{
+width:100%;
+height:160px;
+object-fit:cover;
+border-radius:4px
+}
+
 .price{
 color:#2e7d32;
 font-weight:bold;
 font-size:18px
 }
+
 </style>
 </head>
 
@@ -85,7 +111,7 @@ font-size:18px
 
 </div>
 
-<!-- SAĞ LİSTE -->
+<!-- LİSTE -->
 <div class="content">
 <div id="list" class="grid"></div>
 </div>
@@ -94,52 +120,67 @@ font-size:18px
 
 <script>
 
-// VERİYİ ADMİNDEN OKU
 let data = JSON.parse(localStorage.getItem("cars")) || [];
 
-// MARKA DOLDUR
 const brandSel=document.getElementById("brand");
 const modelSel=document.getElementById("model");
 const list=document.getElementById("list");
 
 function loadBrands(){
+
 let brands=[...new Set(data.map(i=>i.brand))];
+
 brands.forEach(b=>{
 let o=document.createElement("option");
 o.value=b;
 o.text=b;
 brandSel.add(o);
 });
+
 }
 
-// MODEL DOLDUR
 brandSel.onchange=()=>{
+
 modelSel.innerHTML="<option value=''>Model</option>";
+
 let models=data.filter(i=>i.brand==brandSel.value)
 .map(i=>i.model);
+
 [...new Set(models)].forEach(m=>{
 let o=document.createElement("option");
 o.value=m;
 o.text=m;
 modelSel.add(o);
 });
+
 };
 
-// LİSTELE
 function show(arr){
+
 list.innerHTML="";
+
 arr.forEach(i=>{
+
 list.innerHTML+=`
+
 <div class="card">
+
+<img src="${i.image}">
+
 <b>${i.brand} ${i.model}</b><br>
+
 ${i.year} | ${i.km} KM<br>
+
 <div class="price">${i.price} ₺</div>
+
 </div>
+
 `;
+
 });
+
 }
 
-// FİLTRE
 function filter(){
 
 let key=keyword.value.toLowerCase();
@@ -155,9 +196,9 @@ let result=data.filter(i=>
 );
 
 show(result);
+
 }
 
-// BAŞLANGIÇ
 loadBrands();
 show(data);
 
