@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>İlan Detay</title>
+
+<style>
+body{font-family:Arial;background:#f2f2f2;padding:10px}
+.box{background:#fff;padding:15px;border-radius:8px;max-width:800px;margin:auto}
+.gallery img{width:100%;max-height:350px;object-fit:cover;margin-bottom:5px}
+.thumb img{width:70px;height:60px;object-fit:cover;margin:3px;cursor:pointer;border:1px solid #ccc}
+.price{color:green;font-size:22px;font-weight:bold}
+.btn{display:block;text-align:center;padding:12px;margin-top:10px;color:#fff;text-decoration:none;border-radius:6px}
+.call{background:#2196f3}
+.wp{background:#25d366}
+</style>
+
+</head>
+<body>
+
+<div class="box">
+
+<div class="gallery" id="gallery"></div>
+<div class="thumb" id="thumbs"></div>
+
+<h2 id="title"></h2>
+<div class="price" id="price"></div>
+
+<p id="info"></p>
+
+<a id="callBtn" class="btn call">📞 Ara</a>
+<a id="wpBtn" class="btn wp">💬 WhatsApp</a>
+
+</div>
+
+<script>
+
+let params=new URLSearchParams(window.location.search);
+let id=params.get("id");
+
+let cars=JSON.parse(localStorage.getItem("cars")) || [];
+let car=cars.find(x=>x.id==id);
+
+title.innerHTML=car.brand+" "+car.model;
+price.innerHTML=car.price+" ₺";
+info.innerHTML="Yıl: "+car.year+" | KM: "+car.km;
+
+callBtn.href="tel:"+car.phone;
+wpBtn.href="https://wa.me/"+car.whatsapp;
+
+gallery.innerHTML=`<img src="${car.images[0]}">`;
+
+car.images.forEach(img=>{
+thumbs.innerHTML+=`<img src="${img}" onclick="gallery.innerHTML='<img src=${img}>'">`;
+});
+
+</script>
+
+</body>
+</html>
