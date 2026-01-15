@@ -2,62 +2,41 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İLKEL OTO | Araç İlan Platformu</title>
+<title>İLKEL OTO</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
 body{margin:0;font-family:Arial;background:#f2f2f2}
 
-/* HEADER */
-header{
-background:#ffde00;
-padding:12px
-}
+header{background:#ffde00;padding:12px}
 
-/* SEARCH */
-.top-search{
-background:#fff;
-padding:10px
-}
-.top-search input{
-width:100%;
-padding:10px
-}
+.top-search{background:#fff;padding:10px}
+.top-search input{width:100%;padding:10px}
 
-/* LAYOUT */
-.container{
-display:flex;
-padding:10px
-}
+.container{display:flex;padding:10px}
 
-/* FILTER */
 .filter{
 width:260px;
 background:#fff;
 padding:10px;
 border-radius:6px
 }
+
 .filter select,.filter input{
 width:100%;
 padding:8px;
 margin-bottom:8px
 }
 
-/* CONTENT */
-.content{
-flex:1;
-margin-left:10px
-}
+.content{flex:1;margin-left:10px}
 
-/* GRID */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
 gap:10px
 }
 
-/* CARD */
 .card{
 background:#fff;
 border:1px solid #ddd;
@@ -68,8 +47,7 @@ padding:10px
 .card img{
 width:100%;
 height:160px;
-object-fit:cover;
-border-radius:4px
+object-fit:cover
 }
 
 .price{
@@ -88,21 +66,15 @@ font-size:18px
 </header>
 
 <div class="top-search">
-<input id="keyword" placeholder="Kelime ile ara (marka, model...)">
+<input id="keyword" placeholder="Kelime ile ara">
 </div>
 
 <div class="container">
 
-<!-- SOL FİLTRE -->
 <div class="filter">
 
-<select id="brand">
-<option value="">Marka</option>
-</select>
-
-<select id="model">
-<option value="">Model</option>
-</select>
+<select id="brand"><option value="">Marka</option></select>
+<select id="model"><option value="">Model</option></select>
 
 <input id="minPrice" placeholder="Min Fiyat">
 <input id="maxPrice" placeholder="Max Fiyat">
@@ -111,7 +83,6 @@ font-size:18px
 
 </div>
 
-<!-- LİSTE -->
 <div class="content">
 <div id="list" class="grid"></div>
 </div>
@@ -126,61 +97,37 @@ const brandSel=document.getElementById("brand");
 const modelSel=document.getElementById("model");
 const list=document.getElementById("list");
 
-function loadBrands(){
-
+// MARKA DOLDUR
 let brands=[...new Set(data.map(i=>i.brand))];
-
 brands.forEach(b=>{
-let o=document.createElement("option");
-o.value=b;
-o.text=b;
-brandSel.add(o);
+brandSel.innerHTML+=`<option>${b}</option>`;
 });
 
-}
-
+// MODEL DOLDUR
 brandSel.onchange=()=>{
-
 modelSel.innerHTML="<option value=''>Model</option>";
-
-let models=data.filter(i=>i.brand==brandSel.value)
-.map(i=>i.model);
-
+let models=data.filter(i=>i.brand==brandSel.value).map(i=>i.model);
 [...new Set(models)].forEach(m=>{
-let o=document.createElement("option");
-o.value=m;
-o.text=m;
-modelSel.add(o);
+modelSel.innerHTML+=`<option>${m}</option>`;
 });
-
 };
 
+// GÖSTER
 function show(arr){
-
 list.innerHTML="";
-
 arr.forEach(i=>{
-
 list.innerHTML+=`
-
 <div class="card">
-
 <img src="${i.image}">
-
 <b>${i.brand} ${i.model}</b><br>
-
 ${i.year} | ${i.km} KM<br>
-
 <div class="price">${i.price} ₺</div>
-
 </div>
-
 `;
-
 });
-
 }
 
+// FİLTRE
 function filter(){
 
 let key=keyword.value.toLowerCase();
@@ -196,10 +143,8 @@ let result=data.filter(i=>
 );
 
 show(result);
-
 }
 
-loadBrands();
 show(data);
 
 </script>
