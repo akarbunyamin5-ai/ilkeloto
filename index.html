@@ -7,15 +7,47 @@
 
 <style>
 body{margin:0;font-family:Arial;background:#f2f2f2}
-header{background:#ffde00;padding:12px}
+header{background:#ffde00;padding:12px;display:flex;justify-content:space-between;align-items:center}
+header a{text-decoration:none;color:black;font-weight:bold}
+
 .container{display:flex;padding:10px}
 .filter{width:260px;background:#fff;padding:10px;border-radius:6px}
-.filter select,.filter input{width:100%;padding:8px;margin-bottom:8px}
+.filter input{width:100%;padding:8px;margin-bottom:8px}
+
 .content{flex:1;margin-left:10px}
+
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
-.card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:10px;cursor:pointer}
-.card img{width:100%;height:160px;object-fit:cover}
+
+.card{
+background:#fff;
+border:1px solid #ddd;
+border-radius:6px;
+padding:10px;
+position:relative;
+cursor:pointer
+}
+
+.card img{
+width:100%;
+height:160px;
+object-fit:cover
+}
+
 .price{color:green;font-weight:bold;font-size:18px}
+
+/* FAVORI */
+.fav{
+position:absolute;
+top:10px;
+right:10px;
+font-size:22px;
+cursor:pointer;
+color:#999
+}
+
+.fav.active{
+color:red
+}
 </style>
 </head>
 
@@ -23,6 +55,7 @@ header{background:#ffde00;padding:12px}
 
 <header>
 <h2>İLKEL OTO</h2>
+<a href="favoriler.html">❤️ Favoriler</a>
 </header>
 
 <div class="container">
@@ -41,20 +74,56 @@ header{background:#ffde00;padding:12px}
 <script>
 
 let data = JSON.parse(localStorage.getItem("cars")) || [];
+let favs = JSON.parse(localStorage.getItem("favs")) || [];
+
 const list=document.getElementById("list");
 
+function isFav(id){
+return favs.includes(id);
+}
+
+function toggleFav(id,event){
+
+event.stopPropagation();
+
+if(favs.includes(id)){
+favs=favs.filter(x=>x!=id);
+}else{
+favs.push(id);
+}
+
+localStorage.setItem("favs",JSON.stringify(favs));
+show(data);
+}
+
 function show(arr){
+
 list.innerHTML="";
+
 arr.forEach(i=>{
+
+let favClass = isFav(i.id) ? "fav active" : "fav";
+
 list.innerHTML+=`
+
 <div class="card" onclick="goDetail(${i.id})">
+
+<div class="${favClass}" onclick="toggleFav(${i.id},event)">❤</div>
+
 <img src="${i.images[0]}">
+
 <b>${i.brand} ${i.model}</b><br>
+
 ${i.year} | ${i.km} KM<br>
+
 <div class="price">${i.price} ₺</div>
+
 </div>
+
 `;
+
 });
+
 }
 
 function goDetail(id){
