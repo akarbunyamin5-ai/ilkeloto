@@ -1,244 +1,164 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+
+<title>İLKEL OTO | Onaylı Sahibinden İlanlar</title>
+
 <meta charset="UTF-8">
-<title>İlkel Oto | Onaylı İlanlar</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#f4f4f4}
-header{background:#111;color:#fff;padding:20px}
-header h1{margin:0;font-size:26px}
-header p{margin:5px 0 0;color:#ccc;font-size:14px}
-
-.main{max-width:1350px;margin:20px auto;display:flex;gap:20px;padding:0 15px}
-
-aside{width:280px;background:#fff;border-radius:6px;padding:15px}
-aside h3{margin:15px 0 10px;font-size:16px}
-.list{list-style:none;padding:0;margin:0}
-.list li{padding:7px 10px;cursor:pointer;border-radius:4px;font-size:14px}
-.list li:hover{background:#eee}
-.list li.active{background:#111;color:#fff}
-
-.models{margin-left:10px;border-left:2px solid #eee}
-
-.filter-box{margin-bottom:15px}
-.filter-box input{
-  width:100%;
-  padding:8px;
-  margin-top:5px;
-  font-size:14px;
-}
-
-.content{flex:1}
-.search{background:#fff;border-radius:6px;padding:12px;margin-bottom:15px}
-.search input{width:100%;padding:10px;font-size:15px}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
-
-.card{background:#fff;border-radius:6px;padding:15px;box-shadow:0 2px 6px rgba(0,0,0,.12);cursor:pointer}
-.card:hover{transform:translateY(-2px)}
-.price{color:#1a7f37;font-weight:bold;font-size:18px;margin-top:8px}
-
-footer{background:#111;color:#ccc;text-align:center;padding:15px;margin-top:40px;font-size:13px}
-</style>
-</head>
-  <title>ILKELOTO Resmi Site</title>
-<meta charset="UTF-8">
-<meta name="description" content="ILKELOTO Resmi Site - Türkiye'nin Oto Platformu">
+<meta name="description" content="İlkel Oto - Türkiye'nin onaylı sahibinden oto ilan platformu">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="theme-color" content="#000000">
+
+<style>
+
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#f2f2f2;
+}
+
+header{
+background:#000;
+color:white;
+padding:12px 20px;
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+header img{
+height:45px;
+}
+
+.main{
+display:flex;
+padding:20px;
+gap:20px;
+}
+
+aside{
+width:220px;
+background:white;
+padding:15px;
+border-radius:8px;
+}
+
+.content{
+flex:1;
+}
+
+.search{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+gap:20px;
+}
+
+.card{
+background:white;
+border-radius:8px;
+padding:15px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.price{
+color:green;
+font-weight:bold;
+font-size:18px;
+margin-top:5px;
+}
+
+footer{
+margin-top:40px;
+background:#000;
+color:#ccc;
+text-align:center;
+padding:15px;
+font-size:13px;
+}
+
+@media(max-width:800px){
+
+.main{
+flex-direction:column;
+}
+
+aside{
+width:100%;
+}
+
+}
+
+</style>
+
+</head>
 
 <body>
 
 <header>
-  <h1>İLKEL OTO</h1>
-  <p>Onaylı Sahibinden İlanlar</p>
+<img src="logo.png" alt="İlkel Oto Logo">
+<div>
+<h1>İLKEL OTO</h1>
+<p>Onaylı Sahibinden İlanlar</p>
+</div>
 </header>
 
 <div class="main">
 
-<!-- SOL FİLTRELER -->
 <aside>
-
-  <h3>Markalar</h3>
-  <ul id="markalar" class="list">
-    <li class="active" data-marka="">Tümü</li>
-  </ul>
-
-  <ul id="modeller" class="list models"></ul>
-
-  <h3>Fiyat (₺)</h3>
-  <div class="filter-box">
-    <input id="fMin" type="number" placeholder="Min">
-    <input id="fMax" type="number" placeholder="Max">
-  </div>
-
-  <h3>Yıl</h3>
-  <div class="filter-box">
-    <input id="yMin" type="number" placeholder="Min">
-    <input id="yMax" type="number" placeholder="Max">
-  </div>
-
-  <h3>Kilometre</h3>
-  <div class="filter-box">
-    <input id="kMin" type="number" placeholder="Min">
-    <input id="kMax" type="number" placeholder="Max">
-  </div>
-
+<h3>Filtre</h3>
+<input placeholder="Marka">
+<input placeholder="Model">
+<input placeholder="Min Fiyat">
+<input placeholder="Max Fiyat">
 </aside>
 
-<!-- İÇERİK -->
 <div class="content">
 
-  <div class="search">
-    <input id="ara" placeholder="Marka, model, açıklama, fiyat ara...">
-  </div>
+<input class="search" placeholder="Ara: marka, model, fiyat...">
 
-  <div id="ilanlar" class="grid">Yükleniyor...</div>
+<div class="grid">
+
+<div class="card">
+<h3>Fiat Brava</h3>
+<p>Yıl: 2001</p>
+<p>KM: 150.000</p>
+<div class="price">250.000 ₺</div>
+</div>
+
+<div class="card">
+<h3>Fiat Linea</h3>
+<p>Yıl: 2012</p>
+<p>KM: 90.000</p>
+<div class="price">420.000 ₺</div>
+</div>
+
+<div class="card">
+<h3>Renault Megane</h3>
+<p>Yıl: 2018</p>
+<p>KM: 60.000</p>
+<div class="price">690.000 ₺</div>
+</div>
+
+</div>
 
 </div>
 
 </div>
 
-<footer>© 2026 İlkel Oto</footer>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "API_KEYİN",
-  authDomain: "ilkeloto.firebaseapp.com",
-  projectId: "ilkeloto"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const ilanAlan = document.getElementById("ilanlar");
-const markaAlan = document.getElementById("markalar");
-const modelAlan = document.getElementById("modeller");
-const araInput = document.getElementById("ara");
-
-const fMin = document.getElementById("fMin");
-const fMax = document.getElementById("fMax");
-const yMin = document.getElementById("yMin");
-const yMax = document.getElementById("yMax");
-const kMin = document.getElementById("kMin");
-const kMax = document.getElementById("kMax");
-
-let tumIlanlar = [];
-let aktifMarka = "";
-let aktifModel = "";
-let arama = "";
-
-async function yukle(){
-  const q = query(collection(db,"ilanlar"), where("durum","==","onayli"));
-  const snap = await getDocs(q);
-
-  const markalar = new Set();
-  tumIlanlar = [];
-
-  snap.forEach(d=>{
-    const i = { id:d.id, ...d.data() };
-    tumIlanlar.push(i);
-    markalar.add(i.marka);
-  });
-
-  markalar.forEach(m=>{
-    const li=document.createElement("li");
-    li.textContent=m;
-    li.dataset.marka=m;
-    markaAlan.appendChild(li);
-  });
-
-  filtre();
-}
-
-function filtre(){
-  let liste = tumIlanlar;
-
-  if(aktifMarka) liste = liste.filter(i=>i.marka===aktifMarka);
-  if(aktifModel) liste = liste.filter(i=>i.model===aktifModel);
-
-  if(arama){
-    const a=arama.toLowerCase();
-    liste=liste.filter(i =>
-      (i.marka||"").toLowerCase().includes(a) ||
-      (i.model||"").toLowerCase().includes(a) ||
-      (i.aciklama||"").toLowerCase().includes(a) ||
-      String(i.fiyat||"").includes(a)
-    );
-  }
-
-  if(fMin.value) liste = liste.filter(i=>i.fiyat>=Number(fMin.value));
-  if(fMax.value) liste = liste.filter(i=>i.fiyat<=Number(fMax.value));
-  if(yMin.value) liste = liste.filter(i=>i.yil>=Number(yMin.value));
-  if(yMax.value) liste = liste.filter(i=>i.yil<=Number(yMax.value));
-  if(kMin.value) liste = liste.filter(i=>i.km>=Number(kMin.value));
-  if(kMax.value) liste = liste.filter(i=>i.km<=Number(kMax.value));
-
-  goster(liste);
-}
-
-function goster(liste){
-  ilanAlan.innerHTML="";
-  if(liste.length===0){
-    ilanAlan.innerHTML="İlan bulunamadı";
-    return;
-  }
-
-  liste.forEach(i=>{
-    const c=document.createElement("div");
-    c.className="card";
-    c.onclick=()=>location.href="ilan-detay.html?id="+i.id;
-    c.innerHTML=`
-      <h3>${i.marka} ${i.model}</h3>
-      <p>Yıl: ${i.yil}</p>
-      <p>KM: ${i.km}</p>
-      <div class="price">${i.fiyat} ₺</div>
-      <p><b>Tel:</b> ${i.telefon}</p>
-    `;
-    ilanAlan.appendChild(c);
-  });
-}
-
-/* EVENTS */
-markaAlan.onclick=e=>{
-  if(e.target.tagName!=="LI") return;
-  document.querySelectorAll("#markalar li").forEach(li=>li.classList.remove("active"));
-  e.target.classList.add("active");
-  aktifMarka=e.target.dataset.marka;
-  aktifModel="";
-  modelAlan.innerHTML="";
-
-  if(aktifMarka){
-    const modeller=[...new Set(tumIlanlar.filter(i=>i.marka===aktifMarka).map(i=>i.model))];
-    modeller.forEach(m=>{
-      const li=document.createElement("li");
-      li.textContent=m;
-      li.dataset.model=m;
-      modelAlan.appendChild(li);
-    });
-  }
-  filtre();
-};
-
-modelAlan.onclick=e=>{
-  if(e.target.tagName!=="LI") return;
-  document.querySelectorAll("#modeller li").forEach(li=>li.classList.remove("active"));
-  e.target.classList.add("active");
-  aktifModel=e.target.dataset.model;
-  filtre();
-};
-
-araInput.oninput=()=>{arama=araInput.value.trim();filtre()};
-[fMin,fMax,yMin,yMax,kMin,kMax].forEach(i=>i.oninput=filtre);
-
-yukle();
-</script>
+<footer>
+© 2026 İlkel Oto | Tüm Hakları Saklıdır
+</footer>
 
 </body>
 </html>
