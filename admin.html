@@ -5,19 +5,26 @@
 <title>İLKEL OTO Admin</title>
 
 <style>
-body{font-family:Arial;background:#f2f2f2;padding:20px}
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:20px
+}
+
 .box{
 background:#fff;
 padding:20px;
 border-radius:8px;
-max-width:400px;
+max-width:420px;
 margin:auto
 }
+
 input,button{
 width:100%;
 padding:10px;
 margin-bottom:10px
 }
+
 button{
 background:#ffde00;
 border:none;
@@ -39,6 +46,8 @@ cursor:pointer
 <input id="km" placeholder="KM">
 <input id="price" placeholder="Fiyat">
 
+<input type="file" id="photo">
+
 <button onclick="save()">Kaydet</button>
 
 <p id="msg"></p>
@@ -51,25 +60,43 @@ function save(){
 
 let cars = JSON.parse(localStorage.getItem("cars")) || [];
 
-let car={
-brand:brand.value,
-model:model.value,
-year:year.value,
-km:km.value,
-price:price.value
+let file = photo.files[0];
+
+if(!file){
+alert("Lütfen fotoğraf seç");
+return;
+}
+
+let reader = new FileReader();
+
+reader.onload = function(){
+
+let car = {
+brand: brand.value,
+model: model.value,
+year: year.value,
+km: km.value,
+price: price.value,
+image: reader.result
 };
 
 cars.push(car);
 
-localStorage.setItem("cars",JSON.stringify(cars));
+localStorage.setItem("cars", JSON.stringify(cars));
 
-msg.innerHTML="✅ İlan Kaydedildi";
+msg.innerHTML = "✅ İlan Kaydedildi";
 
 brand.value="";
 model.value="";
 year.value="";
 km.value="";
 price.value="";
+photo.value="";
+
+};
+
+reader.readAsDataURL(file);
+
 }
 
 </script>
