@@ -7,8 +7,9 @@
 <style>
 body{font-family:Arial;background:#f2f2f2;padding:10px}
 .box{background:#fff;padding:15px;border-radius:8px;max-width:800px;margin:auto}
-.gallery img{width:100%;max-height:350px;object-fit:cover;margin-bottom:5px}
-.thumb img{width:70px;height:60px;object-fit:cover;margin:3px;cursor:pointer;border:1px solid #ccc}
+
+.gallery img{width:100%;max-height:350px;object-fit:cover}
+.thumb img{width:70px;height:60px;object-fit:cover;margin:3px;cursor:pointer}
 
 .price{color:green;font-size:22px;font-weight:bold}
 
@@ -17,21 +18,16 @@ body{font-family:Arial;background:#f2f2f2;padding:10px}
 .wp{background:#25d366}
 
 .favBtn{
-background:#fff;
 border:1px solid #ccc;
 padding:10px;
-border-radius:6px;
-cursor:pointer;
-margin-bottom:10px
+margin-bottom:10px;
+cursor:pointer
 }
 
-.activeFav{
-color:red;
-border-color:red
-}
+.activeFav{color:red;border-color:red}
 </style>
-
 </head>
+
 <body>
 
 <div class="box">
@@ -43,7 +39,6 @@ border-color:red
 
 <h2 id="title"></h2>
 <div class="price" id="price"></div>
-
 <p id="info"></p>
 
 <a id="callBtn" class="btn call">📞 Ara</a>
@@ -53,17 +48,17 @@ border-color:red
 
 <script>
 
-let params=new URLSearchParams(window.location.search);
+let params=new URLSearchParams(location.search);
 let id=params.get("id");
 
-let cars=JSON.parse(localStorage.getItem("cars")) || [];
-let favs=JSON.parse(localStorage.getItem("favs")) || [];
+let cars=JSON.parse(localStorage.getItem("cars"))||[];
+let favs=JSON.parse(localStorage.getItem("favs"))||[];
 
 let car=cars.find(x=>x.id==id);
 
 title.innerHTML=car.brand+" "+car.model;
 price.innerHTML=car.price+" ₺";
-info.innerHTML="Yıl: "+car.year+" | KM: "+car.km;
+info.innerHTML="Yıl: "+car.year+" | KM: "+car.km+" | Şehir: "+car.city;
 
 callBtn.href="tel:"+car.phone;
 wpBtn.href="https://wa.me/"+car.whatsapp;
@@ -74,7 +69,6 @@ car.images.forEach(img=>{
 thumbs.innerHTML+=`<img src="${img}" onclick="gallery.innerHTML='<img src=${img}>'">`;
 });
 
-// FAVORI
 const favBtn=document.getElementById("favBtn");
 
 function updateFav(){
@@ -88,7 +82,6 @@ favBtn.innerHTML="❤️ Favoriye Ekle";
 }
 
 favBtn.onclick=()=>{
-
 if(favs.includes(car.id)){
 favs=favs.filter(x=>x!=car.id);
 }else{
