@@ -9,16 +9,34 @@ body{font-family:Arial;background:#f2f2f2;padding:10px}
 .box{background:#fff;padding:15px;border-radius:8px;max-width:800px;margin:auto}
 .gallery img{width:100%;max-height:350px;object-fit:cover;margin-bottom:5px}
 .thumb img{width:70px;height:60px;object-fit:cover;margin:3px;cursor:pointer;border:1px solid #ccc}
+
 .price{color:green;font-size:22px;font-weight:bold}
+
 .btn{display:block;text-align:center;padding:12px;margin-top:10px;color:#fff;text-decoration:none;border-radius:6px}
 .call{background:#2196f3}
 .wp{background:#25d366}
+
+.favBtn{
+background:#fff;
+border:1px solid #ccc;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+margin-bottom:10px
+}
+
+.activeFav{
+color:red;
+border-color:red
+}
 </style>
 
 </head>
 <body>
 
 <div class="box">
+
+<button id="favBtn" class="favBtn">❤️ Favoriye Ekle</button>
 
 <div class="gallery" id="gallery"></div>
 <div class="thumb" id="thumbs"></div>
@@ -39,6 +57,8 @@ let params=new URLSearchParams(window.location.search);
 let id=params.get("id");
 
 let cars=JSON.parse(localStorage.getItem("cars")) || [];
+let favs=JSON.parse(localStorage.getItem("favs")) || [];
+
 let car=cars.find(x=>x.id==id);
 
 title.innerHTML=car.brand+" "+car.model;
@@ -53,6 +73,33 @@ gallery.innerHTML=`<img src="${car.images[0]}">`;
 car.images.forEach(img=>{
 thumbs.innerHTML+=`<img src="${img}" onclick="gallery.innerHTML='<img src=${img}>'">`;
 });
+
+// FAVORI
+const favBtn=document.getElementById("favBtn");
+
+function updateFav(){
+if(favs.includes(car.id)){
+favBtn.classList.add("activeFav");
+favBtn.innerHTML="❤️ Favoriden Çıkar";
+}else{
+favBtn.classList.remove("activeFav");
+favBtn.innerHTML="❤️ Favoriye Ekle";
+}
+}
+
+favBtn.onclick=()=>{
+
+if(favs.includes(car.id)){
+favs=favs.filter(x=>x!=car.id);
+}else{
+favs.push(car.id);
+}
+
+localStorage.setItem("favs",JSON.stringify(favs));
+updateFav();
+};
+
+updateFav();
 
 </script>
 
