@@ -3,20 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <title>İLKEL OTO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {font-family:Arial;margin:0;background:#f2f2f2}
-header{background:#000;color:#fff;padding:15px}
-.container{display:flex;padding:15px}
-.sidebar{width:240px;background:#fff;padding:15px;border-radius:6px}
-.content{flex:1;margin-left:15px}
-select,input{width:100%;padding:8px;margin-bottom:10px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
-.card{background:#fff;padding:15px;border-radius:6px}
-.price{color:green;font-weight:bold}
-</style>
 
+body{margin:0;font-family:Arial;background:#f3f3f3}
+
+/* HEADER */
+header{
+background:#000;
+color:#fff;
+padding:15px 20px
+}
+
+/* LAYOUT */
+.container{
+display:flex;
+padding:15px;
+gap:15px
+}
+
+/* FILTER PANEL */
+.filter{
+width:260px;
+background:#fff;
+padding:15px;
+border-radius:6px
+}
+
+.filter select,
+.filter input{
+width:100%;
+padding:8px;
+margin-bottom:10px
+}
+
+/* CONTENT */
+.content{
+flex:1
+}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+gap:15px
+}
+
+/* CARD */
+.card{
+background:#fff;
+padding:15px;
+border-radius:6px
+}
+
+.price{
+color:green;
+font-weight:bold
+}
+
+</style>
 </head>
+
 <body>
 
 <header>
@@ -26,14 +74,21 @@ select,input{width:100%;padding:8px;margin-bottom:10px}
 
 <div class="container">
 
-<div class="sidebar">
+<!-- SOL FİLTRE -->
+<div class="filter">
+
+<select id="category">
+<option value="">Kategori</option>
+<option value="Otomobil">Otomobil</option>
+<option value="Ticari">Ticari</option>
+</select>
 
 <select id="brand">
-<option value="">Marka Seç</option>
+<option value="">Marka</option>
 </select>
 
 <select id="model">
-<option value="">Model Seç</option>
+<option value="">Model</option>
 </select>
 
 <input type="number" id="minPrice" placeholder="Min Fiyat">
@@ -43,105 +98,70 @@ select,input{width:100%;padding:8px;margin-bottom:10px}
 
 </div>
 
+<!-- SAĞ LİSTE -->
 <div class="content">
-<div id="listings" class="grid"></div>
+<div id="list" class="grid"></div>
 </div>
 
 </div>
 
 <script>
 
+/* ÖRNEK VERİ (GERÇEK VERİ SONRA BAĞLANACAK) */
 const data = [
-
-{brand:"Fiat",model:"Egea",year:2020,km:40000,price:650000},
-{brand:"Fiat",model:"Linea",year:2012,km:90000,price:420000},
-{brand:"Fiat",model:"Brava",year:2001,km:150000,price:250000},
-{brand:"Fiat",model:"Doblo",year:2018,km:70000,price:520000},
-
-{brand:"Renault",model:"Clio",year:2019,km:50000,price:600000},
-{brand:"Renault",model:"Megane",year:2018,km:60000,price:690000},
-{brand:"Renault",model:"Symbol",year:2014,km:90000,price:350000},
-{brand:"Renault",model:"Taliant",year:2022,km:20000,price:780000},
-
-{brand:"Volkswagen",model:"Golf",year:2017,km:70000,price:820000},
-{brand:"Volkswagen",model:"Passat",year:2019,km:60000,price:1150000},
-{brand:"Volkswagen",model:"Polo",year:2020,km:45000,price:720000},
-
-{brand:"Toyota",model:"Corolla",year:2020,km:40000,price:900000},
-{brand:"Toyota",model:"Yaris",year:2019,km:50000,price:680000},
-{brand:"Toyota",model:"Auris",year:2017,km:70000,price:750000},
-
-{brand:"Hyundai",model:"i20",year:2020,km:40000,price:720000},
-{brand:"Hyundai",model:"i30",year:2019,km:50000,price:850000},
-{brand:"Hyundai",model:"Accent Blue",year:2015,km:90000,price:420000},
-
-{brand:"Ford",model:"Focus",year:2018,km:60000,price:780000},
-{brand:"Ford",model:"Fiesta",year:2017,km:70000,price:620000},
-{brand:"Ford",model:"Courier",year:2020,km:40000,price:650000},
-
-{brand:"Opel",model:"Astra",year:2019,km:50000,price:820000},
-{brand:"Opel",model:"Corsa",year:2020,km:40000,price:700000},
-{brand:"Opel",model:"Insignia",year:2018,km:70000,price:980000},
-
-{brand:"Peugeot",model:"301",year:2017,km:80000,price:580000},
-{brand:"Peugeot",model:"308",year:2019,km:50000,price:830000},
-{brand:"Peugeot",model:"3008",year:2020,km:40000,price:1200000},
-
-{brand:"BMW",model:"320i",year:2018,km:70000,price:1450000},
-{brand:"BMW",model:"520i",year:2019,km:60000,price:2100000},
-
-{brand:"Mercedes",model:"C180",year:2019,km:60000,price:1650000},
-{brand:"Mercedes",model:"E200",year:2018,km:70000,price:2200000},
-
-{brand:"Audi",model:"A3",year:2019,km:60000,price:1300000},
-{brand:"Audi",model:"A4",year:2018,km:70000,price:1550000}
-
+{cat:"Otomobil",brand:"Fiat",model:"Egea",price:650000},
+{cat:"Otomobil",brand:"Renault",model:"Clio",price:600000},
+{cat:"Ticari",brand:"Ford",model:"Courier",price:700000}
 ];
 
+const brandSel=document.getElementById("brand");
+const modelSel=document.getElementById("model");
+const list=document.getElementById("list");
 
-const brandSelect = document.getElementById("brand");
-const modelSelect = document.getElementById("model");
-const listings = document.getElementById("listings");
-
-const brands = [...new Set(data.map(i=>i.brand))];
-
+/* MARKA DOLDUR */
+function loadBrands(){
+let brands=[...new Set(data.map(i=>i.brand))];
 brands.forEach(b=>{
 let o=document.createElement("option");
 o.value=b;
 o.text=b;
-brandSelect.add(o);
+brandSel.add(o);
 });
+}
 
-brandSelect.onchange = ()=>{
-modelSelect.innerHTML="<option value=''>Model Seç</option>";
-const models = data.filter(i=>i.brand==brandSelect.value)
+/* MODEL DOLDUR */
+brandSel.onchange=()=>{
+modelSel.innerHTML="<option value=''>Model</option>";
+let models=data.filter(i=>i.brand==brandSel.value)
 .map(i=>i.model);
 [...new Set(models)].forEach(m=>{
 let o=document.createElement("option");
 o.value=m;
 o.text=m;
-modelSelect.add(o);
+modelSel.add(o);
 });
 };
 
-function show(list){
-listings.innerHTML="";
-list.forEach(i=>{
-listings.innerHTML+=`
+/* LİSTELE */
+function show(arr){
+list.innerHTML="";
+arr.forEach(i=>{
+list.innerHTML+=`
 <div class="card">
 <b>${i.brand} ${i.model}</b><br>
-Yıl: ${i.year}<br>
-KM: ${i.km}<br>
 <div class="price">${i.price} ₺</div>
 </div>`;
 });
 }
 
+/* FİLTRE */
 function filter(){
+
 let min=+minPrice.value||0;
 let max=+maxPrice.value||99999999;
 
-let result = data.filter(i=>
+let result=data.filter(i=>
+(!category.value||i.cat==category.value)&&
 (!brand.value||i.brand==brand.value)&&
 (!model.value||i.model==model.value)&&
 (i.price>=min&&i.price<=max)
@@ -150,6 +170,8 @@ let result = data.filter(i=>
 show(result);
 }
 
+/* İLK YÜKLEME */
+loadBrands();
 show(data);
 
 </script>
