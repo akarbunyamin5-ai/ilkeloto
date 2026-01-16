@@ -112,8 +112,8 @@ color:#999
 
 <script>
 
-// SÜREKLİ GÜNCEL OKU
-function getData(){
+// VERİ OKU
+function getCars(){
 return JSON.parse(localStorage.getItem("cars")) || [];
 }
 
@@ -121,6 +121,7 @@ let favs = JSON.parse(localStorage.getItem("favs")) || [];
 
 const list=document.getElementById("list");
 
+// FAVORI
 function isFav(id){
 return favs.includes(id);
 }
@@ -136,9 +137,10 @@ favs.push(id);
 }
 
 localStorage.setItem("favs",JSON.stringify(favs));
-render(getData());
+render(getCars());
 }
 
+// LİSTELE
 function render(arr){
 
 list.innerHTML="";
@@ -168,16 +170,18 @@ ${i.city}<br>
 
 }
 
+// DETAY
 function goDetail(id){
 location.href="ilan.html?id="+id;
 }
 
+// FİLTRE
 function filter(){
 
 let key=keyword.value.toLowerCase();
 let city=cityFilter.value;
 
-let data=getData();
+let data=getCars();
 
 let result=data.filter(i=>
 (i.brand.toLowerCase().includes(key)||
@@ -188,13 +192,15 @@ let result=data.filter(i=>
 render(result);
 }
 
-// OTOMATİK SENKRON (3 SANİYEDE BİR)
-setInterval(()=>{
-render(getData());
-},3000);
+// 🔥 KRİTİK: SEKMEYE GERİ DÖNÜNCE OTOMATİK YENİLE
+document.addEventListener("visibilitychange", function() {
+  if (!document.hidden) {
+    location.reload();
+  }
+});
 
 // İLK YÜKLEME
-render(getData());
+render(getCars());
 
 </script>
 
