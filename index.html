@@ -54,6 +54,7 @@ background:white;
 border-radius:8px;
 overflow:hidden;
 box-shadow:0 2px 6px rgba(0,0,0,0.1);
+cursor:pointer;
 }
 
 .card img{
@@ -128,7 +129,9 @@ const snap = await getDocs(collection(db,"cars"));
 allCars=[];
 
 snap.forEach(doc=>{
-allCars.push(doc.data());
+let car = doc.data();
+car.id = doc.id;
+allCars.push(car);
 });
 
 render(allCars);
@@ -144,13 +147,19 @@ data.forEach(car=>{
 
 listings.innerHTML+=`
 
-<div class="card">
+<div class="card" onclick="goDetail('${car.id}')">
+
 <img src="${car.image}">
+
 <div class="card-body">
+
 <b>${car.brand} ${car.model}</b><br>
 ${car.year} | ${car.km} KM
+
 <div class="price">${car.price} ₺</div>
+
 </div>
+
 </div>
 
 `;
@@ -191,6 +200,10 @@ return ok;
 
 render(filtered);
 
+}
+
+window.goDetail=function(id){
+window.location.href="ilan.html?id="+id;
 }
 
 loadCars();
