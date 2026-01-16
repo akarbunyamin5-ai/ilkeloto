@@ -5,52 +5,48 @@
 <title>Kayıt Ol - İLKEL OTO</title>
 
 <style>
-body {
+body{
     margin:0;
     height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    background:#0f0f0f;
+    background:#111;
     font-family:Arial;
 }
 
-.box {
-    background:#1a1a1a;
+.box{
+    background:#1f1f1f;
     padding:30px;
-    width:320px;
+    width:300px;
     border-radius:10px;
-    box-shadow:0 0 15px rgba(0,0,0,0.7);
     text-align:center;
+    color:#fff;
 }
 
-h2 {
-    color:white;
-}
-
-input {
+input{
     width:100%;
-    padding:12px;
+    padding:10px;
     margin-top:10px;
-    border-radius:6px;
     border:none;
+    border-radius:5px;
 }
 
-button {
+button{
     width:100%;
     padding:12px;
     margin-top:15px;
     background:#00c853;
-    color:black;
     border:none;
-    border-radius:6px;
+    color:white;
     font-weight:bold;
+    border-radius:6px;
     cursor:pointer;
 }
 
-#msg {
+#error{
     margin-top:10px;
-    color:white;
+    color:#ff5252;
 }
 </style>
 </head>
@@ -58,48 +54,55 @@ button {
 <body>
 
 <div class="box">
-<h2>Kayıt Ol</h2>
+    <h2>Kayıt Ol</h2>
 
-<input id="email" type="email" placeholder="Email">
-<input id="password" type="password" placeholder="Şifre">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Şifre">
 
-<button onclick="register()">Kayıt Ol</button>
+    <button onclick="register()">Kayıt Ol</button>
 
-<div id="msg"></div>
+    <div id="error"></div>
 </div>
 
-<!-- FIREBASE CDN -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const firebaseConfig =// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
+// 🔴 BURAYA KENDİ FİREBASE CONFIG'İN GELECEK
 const firebaseConfig = {
-  apiKey: "AIzaSyDp3wjVf9w3MTFtOB1o4Jcdc_H9nvlqSY8",
-  authDomain: "ilkeloto.firebaseapp.com",
-  projectId: "ilkeloto",
-  storageBucket: "ilkeloto.firebasestorage.app",
-  messagingSenderId: "503658235063",
-  appId: "1:503658235063:web:e271d2bc989be290b97932",
-  measurementId: "G-C3TKXBVPR6"
+
+    // SENİN YAPIŞTIRDIĞIN CONFIG BURADA KALACAK
+
 };
 
+
+// Firebase başlat
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+
+// Register fonksiyonu
 window.register = function(){
 
- const email = document.getElementById("email").value;
- const password = document.getElementById("password").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
- createUserWithEmailAndPassword(auth, email, password)
- .then(() => {
-    document.getElementById("msg").innerHTML = "✅ Kayıt başarılı!";
- })
- .catch((error) => {
-    document.getElementById("msg").innerHTML = "❌ " + error.message;
- });
+    createUserWithEmailAndPassword(auth, email, password)
+
+    .then(() => {
+
+        alert("Kayıt başarılı!");
+        window.location.href = "login.html";
+
+    })
+
+    .catch((error) => {
+
+        document.getElementById("error").innerText = error.message;
+
+    });
 
 }
 
