@@ -21,7 +21,7 @@ height:100vh;
 background:#222;
 padding:25px;
 border-radius:10px;
-width:320px;
+width:340px;
 }
 
 .panel h2{
@@ -73,6 +73,8 @@ color:#00ff90;
 <input id="km" type="number" placeholder="Kilometre">
 <input id="price" type="number" placeholder="Fiyat">
 
+<input type="file" id="photo">
+
 <button onclick="saveCar()">Kaydet</button>
 <button class="logout" onclick="logout()">Çıkış Yap</button>
 
@@ -81,17 +83,15 @@ color:#00ff90;
 </div>
 
 <script>
-
-// GİRİŞ KONTROLÜ
-if(localStorage.getItem("adminLogin") !== "true"){
-window.location.href="admin-login.html";
+// GİRİŞ KONTROL
+if(localStorage.getItem("adminLogin")!=="true"){
+location.href="admin-login.html";
 }
 
 function logout(){
 localStorage.removeItem("adminLogin");
-window.location.href="admin-login.html";
+location.href="admin-login.html";
 }
-
 </script>
 
 <!-- FIREBASE -->
@@ -100,6 +100,7 @@ window.location.href="admin-login.html";
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyDp3wjVf9w3MTFt0B1o4Jcdc_H9nvlqSY8",
@@ -112,36 +113,47 @@ appId: "1:503658235063:web:e271d2bc989be290b97932"
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 window.saveCar = async function(){
 
-const brand = document.getElementById("brand").value;
-const model = document.getElementById("model").value;
-const year = document.getElementById("year").value;
-const km = document.getElementById("km").value;
-const price = document.getElementById("price").value;
+const brand = brand.value;
+const model = model.value;
+const year = year.value;
+const km = km.value;
+const price = price.value;
+const file = photo.files[0];
 
-if(!brand || !model || !year || !km || !price){
-alert("Tüm alanları doldur");
+if(!brand || !model || !year || !km || !price || !file){
+alert("Tüm alanları doldur + foto seç");
 return;
 }
 
+// FOTO YÜKLE
+const fileRef = ref(storage, "cars/"+Date.now()+"-"+file.name);
+await uploadBytes(fileRef, file);
+const imageURL = await getDownloadURL(fileRef);
+
+// FIRESTORE KAYIT
 await addDoc(collection(db,"cars"),{
 brand,
 model,
 year:Number(year),
 km:Number(km),
 price:Number(price),
+image:imageURL,
 created:new Date()
 });
 
-document.getElementById("msg").innerText="İlan eklendi";
+msg.innerText="İlan başarıyla eklendi";
 
-document.getElementById("brand").value="";
-document.getElementById("model").value="";
-document.getElementById("year").value="";
-document.getElementById("km").value="";
-document.getElementById("price").value="";
+// TEMİZLE
+brand.value="";
+model.value="";
+year.value="";
+km.value="";
+price.value="";
+photo.value="";
 
 }
 
