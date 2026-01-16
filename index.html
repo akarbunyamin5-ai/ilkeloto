@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>İLKEL OTO</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
@@ -14,7 +13,7 @@ background:#f2f2f2;
 }
 
 header{
-background:#000;
+background:black;
 color:white;
 padding:15px;
 font-size:22px;
@@ -27,8 +26,6 @@ padding:15px;
 gap:15px;
 }
 
-/* SOL PANEL */
-
 .sidebar{
 width:260px;
 background:white;
@@ -36,28 +33,14 @@ padding:15px;
 border-radius:8px;
 }
 
-.sidebar h3{
-margin-top:0;
-}
-
-.sidebar input,
-.sidebar select{
+.sidebar input,.sidebar select{
 width:100%;
 padding:8px;
 margin-bottom:10px;
 }
 
-/* İLAN ALANI */
-
 .content{
 flex:1;
-}
-
-.searchbox{
-width:100%;
-padding:12px;
-font-size:16px;
-margin-bottom:15px;
 }
 
 .grid{
@@ -68,20 +51,25 @@ gap:15px;
 
 .card{
 background:white;
-padding:12px;
 border-radius:8px;
+overflow:hidden;
 box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
-.card h3{
-margin:0;
+.card img{
+width:100%;
+height:160px;
+object-fit:cover;
+}
+
+.card-body{
+padding:10px;
 }
 
 .price{
 color:green;
 font-weight:bold;
 font-size:18px;
-margin-top:5px;
 }
 
 </style>
@@ -97,36 +85,22 @@ margin-top:5px;
 
 <div class="sidebar">
 
-<h3>Filtrele</h3>
-
 <select id="brandFilter">
 <option value="">Marka</option>
 </select>
 
-<input type="number" id="minYear" placeholder="Min Yıl">
-<input type="number" id="maxYear" placeholder="Max Yıl">
-
-<input type="number" id="minKm" placeholder="Min KM">
-<input type="number" id="maxKm" placeholder="Max KM">
-
-<input type="number" id="minPrice" placeholder="Min Fiyat">
-<input type="number" id="maxPrice" placeholder="Max Fiyat">
+<input id="minPrice" type="number" placeholder="Min Fiyat">
+<input id="maxPrice" type="number" placeholder="Max Fiyat">
 
 <button onclick="applyFilter()">Filtrele</button>
 
 </div>
 
 <div class="content">
-
-<input class="searchbox" id="search" placeholder="Ara: Marka, Model">
-
 <div class="grid" id="listings"></div>
-
 </div>
 
 </div>
-
-<!-- FIREBASE -->
 
 <script type="module">
 
@@ -145,108 +119,79 @@ appId: "1:503658235063:web:e271d2bc989be290b97932"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let allCars = [];
+let allCars=[];
 
 async function loadCars(){
 
-const snapshot = await getDocs(collection(db,"cars"));
+const snap = await getDocs(collection(db,"cars"));
 
-allCars = [];
+allCars=[];
 
-snapshot.forEach(doc=>{
+snap.forEach(doc=>{
 allCars.push(doc.data());
 });
 
-renderCars(allCars);
+render(allCars);
 loadBrands();
 
 }
 
-// MARKALARI DOLDUR
+function render(data){
 
-function loadBrands(){
-
-const brands = [...new Set(allCars.map(c=>c.brand))];
-
-const select = document.getElementById("brandFilter");
-select.innerHTML = `<option value="">Marka</option>`;
-
-brands.forEach(b=>{
-select.innerHTML += `<option value="${b}">${b}</option>`;
-});
-
-}
-
-// KART ÇİZ
-
-function renderCars(data){
-
-const box = document.getElementById("listings");
-box.innerHTML="";
+listings.innerHTML="";
 
 data.forEach(car=>{
 
-box.innerHTML += `
+listings.innerHTML+=`
+
 <div class="card">
-<h3>${car.brand} ${car.model}</h3>
-<p>Yıl: ${car.year}</p>
-<p>KM: ${car.km}</p>
+<img src="${car.image}">
+<div class="card-body">
+<b>${car.brand} ${car.model}</b><br>
+${car.year} | ${car.km} KM
 <div class="price">${car.price} ₺</div>
 </div>
+</div>
+
 `;
 
 });
 
 }
 
-// FİLTRE
+function loadBrands(){
 
-window.applyFilter = function(){
+const brands=[...new Set(allCars.map(c=>c.brand))];
 
-let brand = document.getElementById("brandFilter").value;
+brandFilter.innerHTML="<option value=''>Marka</option>";
 
-let minYear = document.getElementById("minYear").value;
-let maxYear = document.getElementById("maxYear").value;
+brands.forEach(b=>{
+brandFilter.innerHTML+=`<option>${b}</option>`;
+});
 
-let minKm = document.getElementById("minKm").value;
-let maxKm = document.getElementById("maxKm").value;
+}
 
-let minPrice = document.getElementById("minPrice").value;
-let maxPrice = document.getElementById("maxPrice").value;
+window.applyFilter=function(){
 
-let search = document.getElementById("search").value.toLowerCase();
+let brand=brandFilter.value;
+let min=minPrice.value;
+let max=maxPrice.value;
 
-let filtered = allCars.filter(car=>{
+let filtered=allCars.filter(c=>{
 
-let ok = true;
+let ok=true;
 
-if(brand && car.brand != brand) ok=false;
-
-if(minYear && car.year < minYear) ok=false;
-if(maxYear && car.year > maxYear) ok=false;
-
-if(minKm && car.km < minKm) ok=false;
-if(maxKm && car.km > maxKm) ok=false;
-
-if(minPrice && car.price < minPrice) ok=false;
-if(maxPrice && car.price > maxPrice) ok=false;
-
-let text = (car.brand + car.model).toLowerCase();
-if(search && !text.includes(search)) ok=false;
+if(brand && c.brand!=brand) ok=false;
+if(min && c.price<min) ok=false;
+if(max && c.price>max) ok=false;
 
 return ok;
 
 });
 
-renderCars(filtered);
+render(filtered);
 
 }
-
-// CANLI ARAMA
-
-document.getElementById("search").addEventListener("input",applyFilter);
-
-// YÜKLE
 
 loadCars();
 
