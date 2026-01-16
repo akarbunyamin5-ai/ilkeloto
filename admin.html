@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>İLKEL OTO ADMIN</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
@@ -46,10 +45,11 @@ border:none;
 border-radius:6px;
 font-weight:bold;
 cursor:pointer;
+margin-bottom:8px;
 }
 
-button:hover{
-opacity:0.9;
+.logout{
+background:#ff3b3b;
 }
 
 .msg{
@@ -67,17 +67,32 @@ color:#00ff90;
 
 <h2>İlan Ekle</h2>
 
-<input id="brand" placeholder="Marka (Fiat, Renault)">
-<input id="model" placeholder="Model (Linea, Megane)">
+<input id="brand" placeholder="Marka">
+<input id="model" placeholder="Model">
 <input id="year" type="number" placeholder="Yıl">
 <input id="km" type="number" placeholder="Kilometre">
 <input id="price" type="number" placeholder="Fiyat">
 
 <button onclick="saveCar()">Kaydet</button>
+<button class="logout" onclick="logout()">Çıkış Yap</button>
 
 <div class="msg" id="msg"></div>
 
 </div>
+
+<script>
+
+// GİRİŞ KONTROLÜ
+if(localStorage.getItem("adminLogin") !== "true"){
+window.location.href="admin-login.html";
+}
+
+function logout(){
+localStorage.removeItem("adminLogin");
+window.location.href="admin-login.html";
+}
+
+</script>
 
 <!-- FIREBASE -->
 
@@ -120,7 +135,7 @@ price:Number(price),
 created:new Date()
 });
 
-document.getElementById("msg").innerText="İlan başarıyla eklendi";
+document.getElementById("msg").innerText="İlan eklendi";
 
 document.getElementById("brand").value="";
 document.getElementById("model").value="";
