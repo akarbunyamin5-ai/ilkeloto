@@ -12,7 +12,15 @@ header{
 background:#ffde00;
 padding:12px;
 display:flex;
-justify-content:space-between
+justify-content:space-between;
+align-items:center
+}
+
+header button{
+padding:8px 12px;
+border:none;
+cursor:pointer;
+font-weight:bold
 }
 
 .container{display:flex;padding:10px}
@@ -77,7 +85,12 @@ color:#999
 
 <header>
 <h2>İLKEL OTO</h2>
+
+<div>
+<button onclick="location.reload()">🔄 Yeni İlanları Yükle</button>
 <a href="favoriler.html">❤️ Favoriler</a>
+</div>
+
 </header>
 
 <div class="container">
@@ -191,13 +204,6 @@ let result=data.filter(i=>
 
 render(result);
 }
-
-// 🔥 KRİTİK: SEKMEYE GERİ DÖNÜNCE OTOMATİK YENİLE
-document.addEventListener("visibilitychange", function() {
-  if (!document.hidden) {
-    location.reload();
-  }
-});
 
 // İLK YÜKLEME
 render(getCars());
