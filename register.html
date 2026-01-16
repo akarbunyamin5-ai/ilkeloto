@@ -2,51 +2,50 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Kayıt Ol - İLKEL OTO</title>
+<title>Kayıt Ol - ILKEL OTO</title>
 
 <style>
-body{
-    margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#111;
-    font-family:Arial;
+body {
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#111;
+  font-family:Arial;
 }
 
-.box{
-    background:#1f1f1f;
-    padding:30px;
-    width:300px;
-    border-radius:10px;
-    text-align:center;
-    color:#fff;
+.box {
+  background:#222;
+  padding:30px;
+  width:320px;
+  border-radius:10px;
+  text-align:center;
+  color:white;
 }
 
-input{
-    width:100%;
-    padding:10px;
-    margin-top:10px;
-    border:none;
-    border-radius:5px;
+input {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:6px;
 }
 
-button{
-    width:100%;
-    padding:12px;
-    margin-top:15px;
-    background:#00c853;
-    border:none;
-    color:white;
-    font-weight:bold;
-    border-radius:6px;
-    cursor:pointer;
+button {
+  width:100%;
+  padding:12px;
+  margin-top:15px;
+  border:none;
+  border-radius:6px;
+  background:#00c853;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-#error{
-    margin-top:10px;
-    color:#ff5252;
+#msg {
+  margin-top:10px;
+  font-size:14px;
 }
 </style>
 </head>
@@ -54,14 +53,14 @@ button{
 <body>
 
 <div class="box">
-    <h2>Kayıt Ol</h2>
+<h2>Kayıt Ol</h2>
 
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Şifre">
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Şifre">
 
-    <button onclick="register()">Kayıt Ol</button>
+<button onclick="register()">Kayıt Ol</button>
 
-    <div id="error"></div>
+<div id="msg"></div>
 </div>
 
 <script type="module">
@@ -69,40 +68,30 @@ button{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-
-// 🔴 BURAYA KENDİ FİREBASE CONFIG'İN GELECEK
 const firebaseConfig = {
-
-    // SENİN YAPIŞTIRDIĞIN CONFIG BURADA KALACAK
-
+apiKey: "BURAYA SENİN API KEY VAR",
+authDomain: "ilkeloto.firebaseapp.com",
+projectId: "ilkeloto",
+storageBucket: "ilkeloto.appspot.com",
+messagingSenderId: "503658235063",
+appId: "1:503658235063:web:e271d2bc989be290b97932"
 };
 
-
-// Firebase başlat
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+window.register = function() {
 
-// Register fonksiyonu
-window.register = function(){
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    createUserWithEmailAndPassword(auth, email, password)
-
-    .then(() => {
-
-        alert("Kayıt başarılı!");
-        window.location.href = "login.html";
-
-    })
-
-    .catch((error) => {
-
-        document.getElementById("error").innerText = error.message;
-
-    });
+createUserWithEmailAndPassword(auth, email, password)
+.then(() => {
+document.getElementById("msg").innerHTML = "✅ Kayıt başarılı";
+})
+.catch((error) => {
+document.getElementById("msg").innerHTML = "❌ " + error.message;
+});
 
 }
 
