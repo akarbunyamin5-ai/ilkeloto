@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>İLKEL OTO ADMIN GİRİŞ</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#000;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:white;
+}
+
+.box{
+background:#111;
+padding:30px;
+border-radius:10px;
+width:300px;
+text-align:center;
+}
+
+input{
+width:100%;
+padding:12px;
+border:none;
+border-radius:6px;
+margin-bottom:10px;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#00c853;
+border:none;
+border-radius:6px;
+font-weight:bold;
+cursor:pointer;
+}
+
+#error{
+color:red;
+margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Admin Giriş</h2>
+
+<input type="password" id="pass" placeholder="Şifre">
+
+<button onclick="login()">Giriş Yap</button>
+
+<div id="error"></div>
+
+</div>
+
+<script>
+
+function login(){
+
+const pass = document.getElementById("pass").value;
+
+// BURASI ADMIN ŞİFREN
+const adminPassword = "123456";
+
+if(pass === adminPassword){
+
+localStorage.setItem("adminLogin","true");
+
+window.location.href="admin.html";
+
+}else{
+
+document.getElementById("error").innerText="Hatalı şifre";
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
