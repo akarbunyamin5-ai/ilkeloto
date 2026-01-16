@@ -2,81 +2,96 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İLKEL OTO</title>
+<title>İLKEL OTO - Onaylı Sahibinden İlanlar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
-body{margin:0;font-family:Arial;background:#f2f2f2}
+body{
+margin:0;
+font-family:Arial;
+background:#f2f2f2;
+}
 
 header{
-background:#ffde00;
-padding:12px;
+background:#000;
+color:white;
+padding:15px;
+font-size:22px;
+font-weight:bold;
+}
+
+.container{
 display:flex;
-justify-content:space-between;
-align-items:center
+padding:15px;
+gap:15px;
 }
 
-header button{
-padding:8px 12px;
-border:none;
-cursor:pointer;
-font-weight:bold
+/* SOL FİLTRE */
+
+.sidebar{
+width:220px;
+background:white;
+padding:15px;
+border-radius:8px;
+height:fit-content;
 }
 
-.container{display:flex;padding:10px}
-
-.filter{
-width:260px;
-background:#fff;
-padding:10px;
-border-radius:6px
+.sidebar h3{
+margin-top:0;
 }
 
-.filter input,.filter select{
+.sidebar select,
+.sidebar input{
 width:100%;
 padding:8px;
-margin-bottom:8px
+margin-bottom:10px;
 }
 
-.content{flex:1;margin-left:10px}
+/* İLAN ALANI */
+
+.content{
+flex:1;
+}
+
+.searchbox{
+width:100%;
+padding:12px;
+font-size:16px;
+margin-bottom:15px;
+}
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-gap:10px
+grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+gap:15px;
 }
 
 .card{
-background:#fff;
-padding:10px;
-border:1px solid #ddd;
-border-radius:6px;
-position:relative;
-cursor:pointer
+background:white;
+padding:12px;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
-.card img{
-width:100%;
-height:160px;
-object-fit:cover
+.card h3{
+margin:0 0 5px 0;
 }
 
 .price{
 color:green;
 font-weight:bold;
-font-size:18px
+font-size:18px;
+margin-top:5px;
 }
 
-.fav{
-position:absolute;
-top:8px;
-right:8px;
-font-size:22px;
-cursor:pointer;
-color:#999
+footer{
+background:black;
+color:white;
+text-align:center;
+padding:12px;
+margin-top:20px;
 }
-
-.fav.active{color:red}
 
 </style>
 </head>
@@ -84,129 +99,133 @@ color:#999
 <body>
 
 <header>
-<h2>İLKEL OTO</h2>
-
-<div>
-<button onclick="location.reload()">🔄 Yeni İlanları Yükle</button>
-<a href="favoriler.html">❤️ Favoriler</a>
-</div>
-
+İLKEL OTO — Onaylı Sahibinden İlanlar
 </header>
 
 <div class="container">
 
-<div class="filter">
+<div class="sidebar">
+<h3>Filtre</h3>
 
-<input id="keyword" placeholder="Ara">
-
-<select id="cityFilter">
-<option value="">Şehir</option>
-<option>İstanbul</option>
-<option>Ankara</option>
-<option>İzmir</option>
-<option>Bursa</option>
-<option>Antalya</option>
-<option>Adana</option>
-<option>Konya</option>
-<option>Gaziantep</option>
-<option>Kocaeli</option>
-<option>Mersin</option>
+<select id="brandFilter">
+<option value="">Tüm Markalar</option>
 </select>
 
-<button onclick="filter()">Ara</button>
+<input type="number" id="minPrice" placeholder="Min Fiyat">
+<input type="number" id="maxPrice" placeholder="Max Fiyat">
 
+<button onclick="applyFilter()">Filtrele</button>
 </div>
 
 <div class="content">
-<div id="list" class="grid"></div>
-</div>
+
+<input class="searchbox" id="search" placeholder="Ara: marka, model, yıl, fiyat">
+
+<div class="grid" id="listings"></div>
 
 </div>
 
-<script>
-
-// VERİ OKU
-function getCars(){
-return JSON.parse(localStorage.getItem("cars")) || [];
-}
-
-let favs = JSON.parse(localStorage.getItem("favs")) || [];
-
-const list=document.getElementById("list");
-
-// FAVORI
-function isFav(id){
-return favs.includes(id);
-}
-
-function toggleFav(id,e){
-
-e.stopPropagation();
-
-if(isFav(id)){
-favs=favs.filter(x=>x!=id);
-}else{
-favs.push(id);
-}
-
-localStorage.setItem("favs",JSON.stringify(favs));
-render(getCars());
-}
-
-// LİSTELE
-function render(arr){
-
-list.innerHTML="";
-
-arr.forEach(i=>{
-
-let favClass=isFav(i.id)?"fav active":"fav";
-
-list.innerHTML+=`
-
-<div class="card" onclick="goDetail(${i.id})">
-
-<div class="${favClass}" onclick="toggleFav(${i.id},event)">❤</div>
-
-<img src="${i.images[0]}">
-
-<b>${i.brand} ${i.model}</b><br>
-${i.city}<br>
-
-<div class="price">${i.price} ₺</div>
-
 </div>
 
+<footer>
+© 2026 ilkeloto.com.tr
+</footer>
+
+<!-- FIREBASE BAĞLANTI -->
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyDp3wjVf9w3MTFt0B1o4Jcdc_H9nvlqSY8",
+authDomain: "ilkeloto.firebaseapp.com",
+projectId: "ilkeloto",
+storageBucket: "ilkeloto.appspot.com",
+messagingSenderId: "503658235063",
+appId: "1:503658235063:web:e271d2bc989be290b97932"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let allCars = [];
+
+async function loadCars(){
+
+const querySnapshot = await getDocs(collection(db,"cars"));
+
+querySnapshot.forEach(doc=>{
+allCars.push(doc.data());
+});
+
+renderCars(allCars);
+loadBrands();
+
+}
+
+function renderCars(data){
+
+const box = document.getElementById("listings");
+box.innerHTML = "";
+
+data.forEach(car=>{
+
+box.innerHTML += `
+<div class="card">
+<h3>${car.brand} ${car.model}</h3>
+<p>Yıl: ${car.year}</p>
+<p>KM: ${car.km}</p>
+<div class="price">${car.price} ₺</div>
+</div>
 `;
 
 });
 
 }
 
-// DETAY
-function goDetail(id){
-location.href="ilan.html?id="+id;
+function loadBrands(){
+
+const brands = [...new Set(allCars.map(c=>c.brand))];
+
+const select = document.getElementById("brandFilter");
+
+brands.forEach(b=>{
+select.innerHTML += `<option value="${b}">${b}</option>`;
+});
+
 }
 
-// FİLTRE
-function filter(){
+window.applyFilter = function(){
 
-let key=keyword.value.toLowerCase();
-let city=cityFilter.value;
+let brand = document.getElementById("brandFilter").value;
+let min = document.getElementById("minPrice").value;
+let max = document.getElementById("maxPrice").value;
+let text = document.getElementById("search").value.toLowerCase();
 
-let data=getCars();
+let filtered = allCars.filter(c=>{
 
-let result=data.filter(i=>
-(i.brand.toLowerCase().includes(key)||
- i.model.toLowerCase().includes(key)) &&
-(!city || i.city==city)
-);
+let ok = true;
 
-render(result);
+if(brand && c.brand != brand) ok=false;
+if(min && c.price < min) ok=false;
+if(max && c.price > max) ok=false;
+
+let searchText = (c.brand+c.model+c.year).toLowerCase();
+if(text && !searchText.includes(text)) ok=false;
+
+return ok;
+
+});
+
+renderCars(filtered);
+
 }
 
-// İLK YÜKLEME
-render(getCars());
+document.getElementById("search").addEventListener("input",applyFilter);
+
+loadCars();
 
 </script>
 
