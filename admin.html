@@ -2,62 +2,60 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İLKEL OTO Admin Panel</title>
+<title>İLKEL OTO ADMIN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
 body{
+margin:0;
 font-family:Arial;
-background:#f2f2f2;
-padding:20px
+background:#111;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
 
-.box{
-background:#fff;
-padding:20px;
-border-radius:8px;
-max-width:500px;
-margin:auto
+.panel{
+background:#222;
+padding:25px;
+border-radius:10px;
+width:320px;
 }
 
-input,select,button{
+.panel h2{
+text-align:center;
+margin-bottom:15px;
+}
+
+input{
 width:100%;
 padding:10px;
-margin-bottom:10px
+margin-bottom:10px;
+border-radius:6px;
+border:none;
 }
 
 button{
-background:#ffde00;
+width:100%;
+padding:12px;
+background:#00c853;
 border:none;
-font-weight:bold;
-cursor:pointer
-}
-
-.list{
-margin-top:30px
-}
-
-.item{
-background:#fff;
-padding:10px;
 border-radius:6px;
-margin-bottom:10px;
-border:1px solid #ddd
+font-weight:bold;
+cursor:pointer;
 }
 
-.actions button{
-width:48%;
-margin-top:5px
+button:hover{
+opacity:0.9;
 }
 
-.del{
-background:#f44336;
-color:white
-}
-
-.edit{
-background:#2196f3;
-color:white
+.msg{
+text-align:center;
+margin-top:10px;
+color:#00ff90;
 }
 
 </style>
@@ -65,198 +63,72 @@ color:white
 
 <body>
 
-<div class="box">
+<div class="panel">
 
-<h2>İLAN EKLE</h2>
+<h2>İlan Ekle</h2>
 
-<select id="brand"></select>
-<select id="model"></select>
+<input id="brand" placeholder="Marka (Fiat, Renault)">
+<input id="model" placeholder="Model (Linea, Megane)">
+<input id="year" type="number" placeholder="Yıl">
+<input id="km" type="number" placeholder="Kilometre">
+<input id="price" type="number" placeholder="Fiyat">
 
-<input id="year" placeholder="Yıl">
-<input id="km" placeholder="KM">
-<input id="price" placeholder="Fiyat">
+<button onclick="saveCar()">Kaydet</button>
 
-<select id="city">
-<option>İl Seç</option>
-<option>İstanbul</option>
-<option>Ankara</option>
-<option>İzmir</option>
-<option>Bursa</option>
-<option>Antalya</option>
-<option>Adana</option>
-<option>Konya</option>
-<option>Gaziantep</option>
-<option>Kocaeli</option>
-<option>Mersin</option>
-</select>
-
-<input id="phone" placeholder="Telefon">
-<input id="whatsapp" placeholder="WhatsApp">
-
-<input type="file" id="photos" multiple>
-
-<button onclick="save()">➕ İlan Ekle</button>
-
-<p id="msg"></p>
+<div class="msg" id="msg"></div>
 
 </div>
 
-<div class="list" id="list"></div>
+<!-- FIREBASE -->
 
-<script>
+<script type="module">
 
-// MARKA MODEL
-const brandData={
-Fiat:["Egea","Linea","Doblo"],
-Renault:["Clio","Megane","Symbol"],
-Volkswagen:["Golf","Passat","Polo"],
-Toyota:["Corolla","Yaris"],
-Ford:["Focus","Courier"],
-Hyundai:["i20","Tucson"],
-BMW:["320i","520i"],
-Mercedes:["C180","E200"],
-Tesla:["Model 3","Model Y"],
-TOGG:["T10X"]
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyDp3wjVf9w3MTFt0B1o4Jcdc_H9nvlqSY8",
+authDomain: "ilkeloto.firebaseapp.com",
+projectId: "ilkeloto",
+storageBucket: "ilkeloto.appspot.com",
+messagingSenderId: "503658235063",
+appId: "1:503658235063:web:e271d2bc989be290b97932"
 };
 
-const brandSel=document.getElementById("brand");
-const modelSel=document.getElementById("model");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-brandSel.innerHTML="<option>Marka Seç</option>";
+window.saveCar = async function(){
 
-for(let b in brandData){
-brandSel.innerHTML+=`<option>${b}</option>`;
+const brand = document.getElementById("brand").value;
+const model = document.getElementById("model").value;
+const year = document.getElementById("year").value;
+const km = document.getElementById("km").value;
+const price = document.getElementById("price").value;
+
+if(!brand || !model || !year || !km || !price){
+alert("Tüm alanları doldur");
+return;
 }
 
-brandSel.onchange=()=>{
-modelSel.innerHTML="<option>Model Seç</option>";
-brandData[brandSel.value].forEach(m=>{
-modelSel.innerHTML+=`<option>${m}</option>`;
-});
-};
-
-// VERİ
-let cars=JSON.parse(localStorage.getItem("cars"))||[];
-const list=document.getElementById("list");
-
-// EKLE
-function save(){
-
-let files=photos.files;
-if(files.length==0){alert("Foto seç");return;}
-
-let images=[];
-let loaded=0;
-
-for(let i=0;i<files.length;i++){
-
-let reader=new FileReader();
-
-reader.onload=function(){
-
-images.push(reader.result);
-loaded++;
-
-if(loaded==files.length){
-
-let car={
-id:Date.now(),
-brand:brandSel.value,
-model:modelSel.value,
-year:year.value,
-km:km.value,
-price:price.value,
-city:city.value,
-phone:phone.value,
-whatsapp:whatsapp.value,
-images:images
-};
-
-cars.push(car);
-localStorage.setItem("cars",JSON.stringify(cars));
-
-msg.innerHTML="✅ İlan Eklendi";
-
-year.value="";
-km.value="";
-price.value="";
-phone.value="";
-whatsapp.value="";
-photos.value="";
-
-render();
-
-}
-
-};
-
-reader.readAsDataURL(files[i]);
-}
-
-}
-
-// LİSTELE
-function render(){
-
-list.innerHTML="<h2>İLANLAR</h2>";
-
-cars.forEach(c=>{
-
-list.innerHTML+=`
-
-<div class="item">
-
-<b>${c.brand} ${c.model}</b><br>
-${c.city} | ${c.year} | ${c.km} KM<br>
-<b>${c.price} ₺</b>
-
-<div class="actions">
-<button class="edit" onclick="edit(${c.id})">✏️ Düzenle</button>
-<button class="del" onclick="remove(${c.id})">🗑 Sil</button>
-</div>
-
-</div>
-
-`;
-
+await addDoc(collection(db,"cars"),{
+brand,
+model,
+year:Number(year),
+km:Number(km),
+price:Number(price),
+created:new Date()
 });
 
+document.getElementById("msg").innerText="İlan başarıyla eklendi";
+
+document.getElementById("brand").value="";
+document.getElementById("model").value="";
+document.getElementById("year").value="";
+document.getElementById("km").value="";
+document.getElementById("price").value="";
+
 }
-
-// SİL
-function remove(id){
-
-if(!confirm("İlan silinsin mi?")) return;
-
-cars=cars.filter(x=>x.id!=id);
-localStorage.setItem("cars",JSON.stringify(cars));
-
-render();
-}
-
-// DÜZENLE
-function edit(id){
-
-let car=cars.find(x=>x.id==id);
-
-let newPrice=prompt("Yeni fiyat",car.price);
-let newKm=prompt("Yeni KM",car.km);
-let newYear=prompt("Yeni yıl",car.year);
-let newCity=prompt("Yeni şehir",car.city);
-let newPhone=prompt("Yeni telefon",car.phone);
-
-car.price=newPrice;
-car.km=newKm;
-car.year=newYear;
-car.city=newCity;
-car.phone=newPhone;
-
-localStorage.setItem("cars",JSON.stringify(cars));
-
-render();
-}
-
-render();
 
 </script>
 
