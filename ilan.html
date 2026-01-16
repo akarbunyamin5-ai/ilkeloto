@@ -2,97 +2,160 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlan Detay</title>
+<title>İlan Detayı - İLKEL OTO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{font-family:Arial;background:#f2f2f2;padding:10px}
-.box{background:#fff;padding:15px;border-radius:8px;max-width:800px;margin:auto}
 
-.gallery img{width:100%;max-height:350px;object-fit:cover}
-.thumb img{width:70px;height:60px;object-fit:cover;margin:3px;cursor:pointer}
-
-.price{color:green;font-size:22px;font-weight:bold}
-
-.btn{display:block;text-align:center;padding:12px;margin-top:10px;color:#fff;text-decoration:none;border-radius:6px}
-.call{background:#2196f3}
-.wp{background:#25d366}
-
-.favBtn{
-border:1px solid #ccc;
-padding:10px;
-margin-bottom:10px;
-cursor:pointer
+body{
+margin:0;
+font-family:Arial;
+background:#f2f2f2;
 }
 
-.activeFav{color:red;border-color:red}
+header{
+background:black;
+color:white;
+padding:15px;
+font-size:20px;
+font-weight:bold;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:15px;
+}
+
+.card{
+background:white;
+border-radius:8px;
+overflow:hidden;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card img{
+width:100%;
+height:350px;
+object-fit:cover;
+}
+
+.content{
+padding:15px;
+}
+
+.price{
+font-size:26px;
+font-weight:bold;
+color:green;
+margin:10px 0;
+}
+
+.info{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:10px;
+margin-top:10px;
+}
+
+.info div{
+background:#f7f7f7;
+padding:10px;
+border-radius:6px;
+text-align:center;
+font-weight:bold;
+}
+
+.back{
+margin-top:15px;
+display:inline-block;
+text-decoration:none;
+color:black;
+font-weight:bold;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="box">
+<header>
+İLKEL OTO — İlan Detayı
+</header>
 
-<button id="favBtn" class="favBtn">❤️ Favoriye Ekle</button>
+<div class="container">
 
-<div class="gallery" id="gallery"></div>
-<div class="thumb" id="thumbs"></div>
+<div class="card">
+
+<img id="photo">
+
+<div class="content">
 
 <h2 id="title"></h2>
-<div class="price" id="price"></div>
-<p id="info"></p>
 
-<a id="callBtn" class="btn call">📞 Ara</a>
-<a id="wpBtn" class="btn wp">💬 WhatsApp</a>
+<div class="price" id="price"></div>
+
+<div class="info">
+<div>Yıl<br><span id="year"></span></div>
+<div>KM<br><span id="km"></span></div>
+<div>Marka<br><span id="brand"></span></div>
+<div>Model<br><span id="model"></span></div>
+</div>
+
+<a class="back" href="index.html">← Geri Dön</a>
 
 </div>
 
-<script>
+</div>
 
-let params=new URLSearchParams(location.search);
-let id=params.get("id");
+</div>
 
-let cars=JSON.parse(localStorage.getItem("cars"))||[];
-let favs=JSON.parse(localStorage.getItem("favs"))||[];
+<script type="module">
 
-let car=cars.find(x=>x.id==id);
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-title.innerHTML=car.brand+" "+car.model;
-price.innerHTML=car.price+" ₺";
-info.innerHTML="Yıl: "+car.year+" | KM: "+car.km+" | Şehir: "+car.city;
-
-callBtn.href="tel:"+car.phone;
-wpBtn.href="https://wa.me/"+car.whatsapp;
-
-gallery.innerHTML=`<img src="${car.images[0]}">`;
-
-car.images.forEach(img=>{
-thumbs.innerHTML+=`<img src="${img}" onclick="gallery.innerHTML='<img src=${img}>'">`;
-});
-
-const favBtn=document.getElementById("favBtn");
-
-function updateFav(){
-if(favs.includes(car.id)){
-favBtn.classList.add("activeFav");
-favBtn.innerHTML="❤️ Favoriden Çıkar";
-}else{
-favBtn.classList.remove("activeFav");
-favBtn.innerHTML="❤️ Favoriye Ekle";
-}
-}
-
-favBtn.onclick=()=>{
-if(favs.includes(car.id)){
-favs=favs.filter(x=>x!=car.id);
-}else{
-favs.push(car.id);
-}
-
-localStorage.setItem("favs",JSON.stringify(favs));
-updateFav();
+const firebaseConfig = {
+apiKey: "AIzaSyDp3wjVf9w3MTFt0B1o4Jcdc_H9nvlqSY8",
+authDomain: "ilkeloto.firebaseapp.com",
+projectId: "ilkeloto",
+storageBucket: "ilkeloto.appspot.com",
+messagingSenderId: "503658235063",
+appId: "1:503658235063:web:e271d2bc989be290b97932"
 };
 
-updateFav();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// URL ID OKU
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+async function loadDetail(){
+
+const snap = await getDocs(collection(db,"cars"));
+
+snap.forEach(doc=>{
+
+if(doc.id === id){
+
+const car = doc.data();
+
+photo.src = car.image;
+title.innerText = car.brand + " " + car.model;
+price.innerText = car.price + " ₺";
+year.innerText = car.year;
+km.innerText = car.km;
+brand.innerText = car.brand;
+model.innerText = car.model;
+
+}
+
+});
+
+}
+
+loadDetail();
 
 </script>
 
